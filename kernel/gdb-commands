@@ -1,0 +1,10 @@
+/home/zack/Desktop/weenix/kernel/main/gdt.gdb
+/home/zack/Desktop/weenix/kernel/mm/pagetable.gdb
+/home/zack/Desktop/weenix/kernel/mm/memcheck.py
+/home/zack/Desktop/weenix/kernel/mm/page.py
+/home/zack/Desktop/weenix/kernel/mm/slab.py
+/home/zack/Desktop/weenix/kernel/proc/kthread.gdb
+/home/zack/Desktop/weenix/kernel/proc/proc.py
+/home/zack/Desktop/weenix/kernel/util/debug.py
+/home/zack/Desktop/weenix/kernel/util/list.py
+/home/zack/Desktop/weenix/kernel/vm/vmmap.gdb
