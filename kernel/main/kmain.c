@@ -173,7 +173,18 @@ bootstrap(int arg1, void *arg2)
         /* necessary to finalize page table information */
         pt_template_init();
 
-        NOT_YET_IMPLEMENTED("PROCS: bootstrap");
+        //NOT_YET_IMPLEMENTED("PROCS: bootstrap");
+        proc_t *proc = proc_create("idle_process");
+        KASSERT(proc != NULL);
+        KASSERT(proc->p_pid == 0);
+        curproc = proc;
+
+        // context is created in kthread_create
+        kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
+        KASSERT(thr != NULL);
+        curthr = thr;
+
+        context_make_active(thr->kt_ctx);
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
@@ -268,8 +279,21 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_create");
-        return NULL;
+        // NOT_YET_IMPLEMENTED("PROCS: initproc_create");
+		proc_t *proc = proc_create("init_process");
+		KASSERT(proc != NULL);
+		KASSERT(proc->p_pid == 1);
+		curproc = proc;
+
+		// kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
+		// thread is contained in process in kthread_create;
+		// argument 1234 is used for test purpose
+		kthread_t *thr = kthread_create(curproc, initproc_run, 1234, NULL);
+		KASSERT(thr != NULL);
+		curthr = thr;
+
+		dbg(DBG_KMAIN, "PID_INIT proc address: %p,  PID_INIT thr address: %p\n", proc, thr);
+        return thr;
 }
 
 /**
@@ -286,7 +310,7 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_run");
-
+        //NOT_YET_IMPLEMENTED("PROCS: initproc_run");
+		dbg(DBG_KMAIN, "initproc_run argument should be 1234: %ld\n", arg1);
         return NULL;
 }
