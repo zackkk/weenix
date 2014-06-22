@@ -397,16 +397,17 @@ proc_kill_all()
         //be alive
         while(1){
                 
-                //If there are no elements in the children list
-                if(proc_initproc->p_children.l_next == &(proc_initproc->p_children)){
+                //We have pointer to first process in children list
+                //alive children are at the head of the queue
+                current_proc =  list_head(&proc_initproc->p_children, proc_t, p_child_link);
+                
+                //if head is dead
+                if(current_proc->p_state == PROC_DEAD){
                         //List pointing to itself is empty
                         //Means we have no more children.
                         break;
                 }
                 else{
-                        //We have pointer to first process in children list
-                        current_proc =  list_head(&proc_initproc->p_children, proc_t, p_child_link);
-                       
                         //Remove dead process from init's list
                         list_remove(&current_proc->p_child_link);
                 
@@ -414,15 +415,12 @@ proc_kill_all()
                         proc_kill(current_proc, 0);
                         
                         //Add process to the END of the init process children
+                        //Waiting to be ripped apart by the init process
                         list_insert_head(&(proc_initproc->p_children), &(current_proc->p_child_link));
-                        
                 }
                 
         }
-        
-        //Make sure init children list is empty
-        KASSERT(proc_initproc->p_children.l_next == &(proc_initproc->p_children));
-        
+
         return;
         
 }
