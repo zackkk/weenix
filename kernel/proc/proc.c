@@ -144,6 +144,7 @@ proc_create(char *name)
         }
         
         //caller sets curproc
+        //Initialize p_wait queue
         
         /*init the children and thread list, empty*/
         list_init(&new_process->p_children);
@@ -159,8 +160,7 @@ proc_create(char *name)
         new_process->p_state = 0;
         
         /*init wait queue*/
-        list_init(&(new_process->p_wait.tq_list));
-        new_process->p_wait.tq_size = 0;
+        sched_queue_init(&new_process->p_wait);
         
         /*Create process page directory*/
         new_process->p_pagedir = pt_create_pagedir();
@@ -248,6 +248,7 @@ void
 proc_cleanup(int status)
 {
         /*current process calls this function*/
+        struct kthread *parent_thread = NULL;
         
         KASSERT(NULL != proc_initproc); /* should have an "init" process */
         dbg(DBG_PRINT,"GRADING1A 2.b We have an init process\n");
@@ -294,11 +295,19 @@ proc_cleanup(int status)
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
                 
-                /* wake up parent process*/        
-                /*TEST*/
-                /*each process has only one thread. Make parent thread runnable*/
-                kthread_t *parent_thread = list_item(curproc->p_pproc->p_threads.l_next, kthread_t, kt_plink);
-                sched_make_runnable(parent_thread);
+                /* wake up parent process*/       
+                parent_thread = sched_wakeup_on(&curproc->p_pproc->p_wait);                      //Wake up parent if wait on queue (waitpid queue)
+                                                                                        
+                
+                //If it wasn't waiting
+                if(parent_thread == NULL){
+                       //get parent thread
+                       parent_thread = list_item(curproc->p_pproc->p_threads.l_next, kthread_t, kt_plink);
+                       
+                       if(parent_thread->kt_state == KT_SLEEP || parent_thread->kt_state == KT_SLEEP_CANCELLABLE){
+                                sched_make_runnable(parent_thread);                               //if sleeping, make it run
+                       }
+                }
         }
         else{
                 // We must be the the init process, and p_children must point to
@@ -358,19 +367,10 @@ proc_kill(proc_t *p, int status)
         }
         
         //Remove dead p process from _curproc_list
-        list_remove(&p->p_list_link);
+        //list_remove(&p->p_list_link);
         
         dbg(DBG_PRINT,"Process %s (pid %d) has been killed\n", p->p_comm, p->p_pid);
-        
-        //free slab...
-        //slab_obj_free(proc_allocator, p);
-        
-        
-        //Implementation two... Just set process to dead... add to init list of children
-        //In this case, we remove from head
-        //Set process to dead, reparent to init at END of tail
-        //
-        
+
         
         return;
         
@@ -401,6 +401,8 @@ proc_kill_all()
                 //alive children are at the head of the queue
                 current_proc =  list_head(&proc_initproc->p_children, proc_t, p_child_link);
                 
+                //dbg(DBG_PRINT, "Current process: %s, pid %d\n", current_proc->p_comm, current_proc->p_pid);
+                
                 //if head is dead
                 if(current_proc->p_state == PROC_DEAD){
                         //List pointing to itself is empty
@@ -416,7 +418,7 @@ proc_kill_all()
                         
                         //Add process to the END of the init process children
                         //Waiting to be ripped apart by the init process
-                        list_insert_head(&(proc_initproc->p_children), &(current_proc->p_child_link));
+                        list_insert_tail(&(proc_initproc->p_children), &(current_proc->p_child_link));
                 }
                 
         }
@@ -461,13 +463,43 @@ proc_thread_exited(void *retval)
 pid_t
 do_waitpid(pid_t pid, int options, int *status)
 {
+        proc_t *my_child_proc = NULL;
+        list_link_t *link = NULL;
+        int return_pid = -1;
+        
+        if(pid == -1){
+                //look for a dead child
+                for(link = curproc->p_children.l_next; link != &(curproc->p_children); link = link->l_next){
+                        
+                        //get child
+                        my_child_proc = list_item(link, proc_t, p_child_link);
+                        
+                        //if next element is head of queue, we didn't find a dead child, sleep.
+                        
+                        //We found a dead child
+                        if(my_child_proc->p_state == PROC_DEAD){
+                                
+                                *status = my_child_proc->p_status;                      //return status
+                                list_remove(&my_child_proc->p_child_link);               //remove dead process from list of curproc children list
+                                list_remove(&my_child_proc->p_list_link);                //remove from global process list
+                                return_pid = my_child_proc->p_pid;                      //copy return pid
+                                slab_obj_free(proc_allocator, my_child_proc);           //free memory used by process
+                                
+                                return return_pid;
+                                                                                        
+                        }
+                }
+                
+                //If we reached here we did not find a dead child.
+                sched_sleep_on(&curproc->p_wait);
+                return -1;
+        }
         
         /*TODO: look for pid in curproc children,
          continue if found and DEAD, reclaiming exit status and so on
          list_remove(&curproc->p_child_link);
         */
-        
-        NOT_YET_IMPLEMENTED("PROCS: do_waitpid");
+
         return 0;
 }
 

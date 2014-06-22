@@ -197,9 +197,8 @@ bootstrap(int arg1, void *arg2)
 	proc_t *my_child_proc2 = list_item(curproc->p_children.l_next->l_next, proc_t, p_child_link);
 	
 	
-	/*now process 3 calls exit, its child becomes init's child*/
+	/*now init proc calls exit, its child becomes init's child*/
 	curproc = new_proc2;
-	//proc_cleanup(2);
 	proc_kill_all();
 	
 	
