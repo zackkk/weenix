@@ -90,7 +90,7 @@ kthread_destroy(kthread_t *t)
  * stack is DEFAULT_STACK_SIZE.
  *
  * Don't forget to initialize the thread context with the
- * context_setup function. The context should have the same page table
+ * context_setup function. The context should have the same pagetable
  * pointer as the process.
  */
 kthread_t *
@@ -113,12 +113,12 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		KASSERT(p != NULL);
 
 		kthread_t *thr = slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
-		dbg(DBG_THR, "kthread is created at: %p\n", thr);
+		dbg(DBG_PRINT, "kthread is created at: %p\n", thr);
 		thr->kt_kstack = alloc_stack();
 
 		context_t kthread_context;
 		context_setup(&kthread_context, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
-		dbg(DBG_THR, "kthread context is set up at: %p\n", &kthread_context);
+		dbg(DBG_PRINT, "kthread context is set up at: %p\n", &kthread_context);
 
 		thr->kt_ctx = kthread_context;
 		thr->kt_retval = NULL;
@@ -131,7 +131,7 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		/* each process only has one thread associated with it. */
 		list_insert_tail(&p->p_threads, &thr->kt_plink);
 
-		dbg(DBG_THR, "kthread created successfully!\n");
+		dbg(DBG_PRINT, "kthread created successfully!\n");
         return thr;
 }
 

@@ -169,6 +169,7 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "*****runs into bootstrap*****\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
@@ -204,6 +205,7 @@ bootstrap(int arg1, void *arg2)
 static void *
 idleproc_run(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "*****runs into idleproc_run*****\n");
         int status;
         pid_t child;
 
@@ -278,21 +280,23 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
+		dbg(DBG_PRINT, "*****runs into initproc_create*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
 		proc_t *proc = proc_create("init_process");
 		KASSERT(proc != NULL);
 		KASSERT(proc->p_pid == 1);
-		curproc = proc;
+		/*curproc = proc;*/
 
 		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
 		 * thread is contained in process in kthread_create;
 		 * argument 1234 is used for test purpose */
-		kthread_t *thr = kthread_create(curproc, initproc_run, 1234, NULL);
+		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
 		KASSERT(thr != NULL);
-		curthr = thr;
+		/* curthr = thr; */
 
 		dbg(DBG_PRINT, "PID_INIT proc address: %p,  PID_INIT thr address: %p\n", proc, thr);
         return thr;
+
 }
 
 /**
@@ -309,6 +313,7 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
 		dbg(DBG_PRINT, "initproc_run argument should be 1234: %d\n", arg1);
         return NULL;
