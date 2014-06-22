@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="a6763c55-c554-4fd5-8176-2f35842d2b08" kpf_version="4" name="weenix.kpf">
+<preference-set idref="a6763c55-c554-4fd5-8176-2f35842d2b08">
+  <boolean id="import_live">1</boolean>
+</preference-set>
+</project>

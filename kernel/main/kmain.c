@@ -69,7 +69,6 @@ static void      *initproc_run(int arg1, void *arg2);
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
 
-// git test
 
 /**
  * This is the first real C function ever called. It performs a lot of
@@ -172,19 +171,41 @@ bootstrap(int arg1, void *arg2)
 {
         /* necessary to finalize page table information */
         pt_template_init();
-
-        //NOT_YET_IMPLEMENTED("PROCS: bootstrap");
-        proc_t *proc = proc_create("idle_process");
-        KASSERT(proc != NULL);
-        KASSERT(proc->p_pid == 0);
-        curproc = proc;
-
-        // context is created in kthread_create
-        kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
-        KASSERT(thr != NULL);
-        curthr = thr;
-
-        context_make_active(thr->kt_ctx);
+	
+	/*test*/
+	/*Create idle process*/
+	proc_t *new_proc = proc_create("idle");
+	curproc = new_proc;
+	
+	/*Create init process*/
+	proc_t *new_proc2 = proc_create("init");
+	
+	
+	/*simulate that now proce 2 is running*/
+	curproc = new_proc2;
+	proc_t *new_proc3 = proc_create("init_child_1");
+	
+	curproc = new_proc3;
+	proc_t *new_proc4 = proc_create("child_1_child_1");
+	proc_t *new_proc6 = proc_create("child_1_child_2");
+	
+	curproc = new_proc2;
+	proc_t *new_proc5 = proc_create("init_child_2");
+	
+	
+	proc_t *my_child_proc1 = list_item(curproc->p_children.l_next, proc_t, p_child_link);
+	proc_t *my_child_proc2 = list_item(curproc->p_children.l_next->l_next, proc_t, p_child_link);
+	
+	
+	/*now process 3 calls exit, its child becomes init's child*/
+	curproc = new_proc2;
+	//proc_cleanup(2);
+	proc_kill_all();
+	
+	
+	int i =0;
+	
+	/*end_of_test*/
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
@@ -279,21 +300,9 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-        // NOT_YET_IMPLEMENTED("PROCS: initproc_create");
-		proc_t *proc = proc_create("init_process");
-		KASSERT(proc != NULL);
-		KASSERT(proc->p_pid == 1);
-		curproc = proc;
+	NOT_YET_IMPLEMENTED("PROCS: initproc_create");
+	return NULL;
 
-		// kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
-		// thread is contained in process in kthread_create;
-		// argument 1234 is used for test purpose
-		kthread_t *thr = kthread_create(curproc, initproc_run, 1234, NULL);
-		KASSERT(thr != NULL);
-		curthr = thr;
-
-		dbg(DBG_KMAIN, "PID_INIT proc address: %p,  PID_INIT thr address: %p\n", proc, thr);
-        return thr;
 }
 
 /**
@@ -310,7 +319,7 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-        //NOT_YET_IMPLEMENTED("PROCS: initproc_run");
-		dbg(DBG_KMAIN, "initproc_run argument should be 1234: %ld\n", arg1);
+        /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
+	/*dbg(DBG_KMAIN, "initproc_run argument should be 1234: %ld\n", arg1);*/
         return NULL;
 }
