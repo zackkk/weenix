@@ -111,14 +111,13 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 	*/
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_create"); */
 		KASSERT(p != NULL);
+		dbg(DBG_PRINT, "the process of the kthread is empty\n");
 
 		kthread_t *thr = slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
-		dbg(DBG_PRINT, "kthread is created at: %p\n", thr);
 		thr->kt_kstack = alloc_stack();
 
 		context_t kthread_context;
 		context_setup(&kthread_context, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
-		dbg(DBG_PRINT, "kthread context is set up at: %p\n", &kthread_context);
 
 		thr->kt_ctx = kthread_context;
 		thr->kt_retval = NULL;
@@ -150,7 +149,8 @@ void
 kthread_cancel(kthread_t *kthr, void *retval)
 {
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_cancel"); */
-		KASSERT(kthr != NULL);
+		KASSERT(NULL != kthr);
+		dbg(DBG_PRINT, "the kthread is empty\n");
 
 		if(kthr == curthr){
 			kthread_exit(retval);
@@ -182,6 +182,9 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
+		kASSERT(!curthr->kt_wchan); /* queue should be empty */
+		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev); /* queue should be empty */
+		KASSERT(curthr->kt_proc == curproc);
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_exit"); */
 		curthr->kt_retval = retval;
 		curthr->kt_state = KT_EXITED;
