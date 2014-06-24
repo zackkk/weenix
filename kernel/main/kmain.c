@@ -172,6 +172,7 @@ bootstrap(int arg1, void *arg2)
 		dbg(DBG_PRINT, "*****runs into bootstrap*****\n");
         /* necessary to finalize page table information */
         pt_template_init();
+<<<<<<< HEAD
 
         /* NOT_YET_IMPLEMENTED("PROCS: bootstrap"); */
         proc_t *proc = proc_create("idle_process");
@@ -188,6 +189,49 @@ bootstrap(int arg1, void *arg2)
         dbg(DBG_PRINT, "the thread for the idle process has been created successfully\n");
 
         context_make_active(&(thr->kt_ctx));
+=======
+	
+		int i =0;
+	/*test*/
+	/*Create idle process*/
+	proc_t *new_proc = proc_create("idle");
+	curproc = new_proc;
+	
+	/*Create init process*/
+	proc_t *new_proc2 = proc_create("init");
+	curproc = new_proc2;
+	//do_waitpid(-1, 0, &i);
+	
+	
+	/*simulate that now proce 2 is running*/
+	curproc = new_proc2;
+	//proc_kill_all();
+	
+	proc_t *new_proc3 = proc_create("init_child_1");
+	
+	curproc = new_proc3;
+	proc_t *new_proc4 = proc_create("child_1_child_1");
+	proc_t *new_proc6 = proc_create("child_1_child_2");
+	
+	curproc = new_proc2;
+	proc_t *new_proc5 = proc_create("init_child_2");
+	
+	
+	proc_t *my_child_proc1 = list_item(curproc->p_children.l_next, proc_t, p_child_link);
+	proc_t *my_child_proc2 = list_item(curproc->p_children.l_next->l_next, proc_t, p_child_link);
+	
+	
+	/*now init proc calls exit, its child becomes init's child*/
+	curproc = new_proc2;
+	//proc_kill_all();
+	
+	//proc_kill(new_proc3, 0);
+	
+	//init wait on pid = 2
+	do_waitpid(30, 0, &i);
+	
+	/*end_of_test*/
+>>>>>>> kernel1_eduardo
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
