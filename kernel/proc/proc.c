@@ -295,13 +295,13 @@ proc_cleanup(int status)
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
                 
-                /* wake up parent process*/       
+                /* wake up parent proces if waiting on waitpid()*/       
                 parent_thread = sched_wakeup_on(&curproc->p_pproc->p_wait);                      //Wake up parent if wait on queue (waitpid queue)
                                                                                         
                 
                 //If it wasn't waiting
                 if(parent_thread == NULL){
-                       //get parent thread
+                       //get parent thread 
                        parent_thread = list_item(curproc->p_pproc->p_threads.l_next, kthread_t, kt_plink);
                        
                        if(parent_thread->kt_state == KT_SLEEP || parent_thread->kt_state == KT_SLEEP_CANCELLABLE){
@@ -322,6 +322,10 @@ proc_cleanup(int status)
                 curproc->p_status = status;
         }
         
+        KASSERT(NULL != curproc->p_pproc); /* this process should have parent process */
+        dbg(DBG_PRINT,"GRADING1A 2.b The current dead process has a parent\n");
+                                                             
+                                                        
         
         return;
 }
@@ -391,6 +395,8 @@ proc_kill_all()
         proc_t *current_proc = NULL;
         list_link_t *list_item = NULL;
         
+        
+        
         //This loop will exit when all children of init are dead.
         //Each time we kill a process, we reparent its children to init
         //Thus, when we exit the loop, all process except idle and init will
@@ -400,6 +406,12 @@ proc_kill_all()
                 //We have pointer to first process in children list
                 //alive children are at the head of the queue
                 current_proc =  list_head(&proc_initproc->p_children, proc_t, p_child_link);
+                
+                if(proc_initproc->p_children.l_next == &proc_initproc->p_children){
+                        dbg(DBG_PRINT, "Init process has no children\n");
+                        break;
+                }
+                
                 
                 //dbg(DBG_PRINT, "Current process: %s, pid %d\n", current_proc->p_comm, current_proc->p_pid);
                 

@@ -183,6 +183,8 @@ bootstrap(int arg1, void *arg2)
 	
 	/*simulate that now proce 2 is running*/
 	curproc = new_proc2;
+	proc_kill_all();
+	
 	proc_t *new_proc3 = proc_create("init_child_1");
 	
 	curproc = new_proc3;
