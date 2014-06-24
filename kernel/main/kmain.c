@@ -69,6 +69,7 @@ static void      *initproc_run(int arg1, void *arg2);
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
 
+
 /**
  * This is the first real C function ever called. It performs a lot of
  * hardware-specific initialization, then creates a pseudo-context to
@@ -93,7 +94,7 @@ kmain()
 
         acpi_init();
         apic_init();
-	      pci_init();
+	    pci_init();
         intr_init();
 
         gdt_init();
@@ -168,10 +169,25 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "*****runs into bootstrap*****\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
-        NOT_YET_IMPLEMENTED("PROCS: bootstrap");
+        /* NOT_YET_IMPLEMENTED("PROCS: bootstrap"); */
+        proc_t *proc = proc_create("idle_process");
+        curproc = proc;
+        KASSERT(NULL != curproc);
+        dbg(DBG_PRINT, "the idle process has been created successfully\n");
+        KASSERT(PID_IDLE == curproc->p_pid);
+        dbg(DBG_PRINT, "what has been created is the idle process\n");
+
+        /* context is created in kthread_create */
+        kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
+        curthr = thr;
+        KASSERT(NULL != curthr);
+        dbg(DBG_PRINT, "the thread for the idle process has been created successfully\n");
+
+        context_make_active(&(thr->kt_ctx));
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
@@ -192,6 +208,7 @@ bootstrap(int arg1, void *arg2)
 static void *
 idleproc_run(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "*****runs into idleproc_run*****\n");
         int status;
         pid_t child;
 
@@ -266,8 +283,25 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_create");
-        return NULL;
+		dbg(DBG_PRINT, "*****runs into initproc_create*****\n");
+        /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
+		proc_t *proc = proc_create("init_process");
+		KASSERT(NULL != proc);
+		dbg(DBG_PRINT, "the init process has been created successfully\n");
+		KASSERT(PID_INIT == proc->p_pid);
+		dbg(DBG_PRINT, "what has been created is the init process\n");
+
+		/*curproc = proc;*/
+
+		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
+		 * thread is contained in process in kthread_create;
+		 * argument 1234 is used for test purpose */
+		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
+		KASSERT(NULL != thr);
+		dbg(DBG_PRINT, "the thread for the init process has been created successfully\n");
+
+        return thr;
+
 }
 
 /**
@@ -284,7 +318,8 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_run");
-
+		dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
+        /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
+		dbg(DBG_PRINT, "initproc_run argument should be 1234: %d\n", arg1);
         return NULL;
 }
