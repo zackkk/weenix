@@ -396,7 +396,6 @@ proc_kill_all()
         list_link_t *list_item = NULL;
         
         
-        
         //This loop will exit when all children of init are dead.
         //Each time we kill a process, we reparent its children to init
         //Thus, when we exit the loop, all process except idle and init will
@@ -475,44 +474,164 @@ proc_thread_exited(void *retval)
 pid_t
 do_waitpid(pid_t pid, int options, int *status)
 {
-        proc_t *my_child_proc = NULL;
+        proc_t *p = NULL;
+        kthread_t *thr = NULL;
         list_link_t *link = NULL;
         int return_pid = -1;
         
+        /*If current process has no children, return -ECHILD*/
+        if(curproc->p_children.l_next == &curproc->p_children){
+                dbg(DBG_PRINT, "Current process has no children\n");
+                return -ECHILD;
+        }
+        
+        
+        //If pid -1...
         if(pid == -1){
+                //********************IMPL 1 Non-blocking************************
                 //look for a dead child
-                for(link = curproc->p_children.l_next; link != &(curproc->p_children); link = link->l_next){
+                /*for(link = curproc->p_children.l_next; link != &(curproc->p_children); link = link->l_next){
                         
                         //get child
-                        my_child_proc = list_item(link, proc_t, p_child_link);
+                        p = list_item(link, proc_t, p_child_link);
                         
-                        //if next element is head of queue, we didn't find a dead child, sleep.
+                        KASSERT(NULL != p);
+                        dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
+                        
+                        KASSERT(NULL != p->p_pagedir);
+                        dbg(DBG_PRINT,"GRADING1A 2.b Process p has a page directory\n");
                         
                         //We found a dead child
-                        if(my_child_proc->p_state == PROC_DEAD){
+                        if(p->p_state == PROC_DEAD){
                                 
-                                *status = my_child_proc->p_status;                      //return status
-                                list_remove(&my_child_proc->p_child_link);               //remove dead process from list of curproc children list
-                                list_remove(&my_child_proc->p_list_link);                //remove from global process list
-                                return_pid = my_child_proc->p_pid;                      //copy return pid
-                                slab_obj_free(proc_allocator, my_child_proc);           //free memory used by process
+                                *status = p->p_status;                      //return status
+                                list_remove(&p->p_child_link);               //remove dead process from list of curproc children list
+                                list_remove(&p->p_list_link);                //remove from global process list
+                                return_pid = p->p_pid;                      //copy return pid
+                                slab_obj_free(proc_allocator, p);           //free memory used by process
                                 
                                 return return_pid;
                                                                                         
                         }
                 }
                 
+                print(DBG_PRINT, "No dead process found. Process put on p_wait queue\n");
+                
                 //If we reached here we did not find a dead child.
+                //Put process to sleep... When it wakes up, it will call
+                //do_waitpid again.
                 sched_sleep_on(&curproc->p_wait);
-                return -1;
+                return 0;*/
+        
+                //********************IMPL 1************************
+                
+                
+                //********************IMPL 2 blocking???************************
+                //look for a dead child
+                link = curproc->p_children.l_next;  
+                
+                while(1){
+                        
+                        //If we wrap around the list, we didnt found child
+                        if(link == &(curproc->p_children)){
+                                dbg(DBG_PRINT, "No dead process found yet. Waiting on p_wait\n");
+                                sched_sleep_on(&curproc->p_wait);
+                                
+                                //test
+                                //dbg(DBG_PRINT, "did not find a dead children\n");
+                                //return -1;
+
+                                //if sleep_on blocks wait_pid()
+                                link = curproc->p_children.l_next;      //Start again from head of queue, looking for a dead child 
+                        }
+                        
+                        //get child
+                        p = list_item(link, proc_t, p_child_link);
+                        
+                        KASSERT(NULL != p);
+                        dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
+                        
+                        KASSERT(NULL != p->p_pagedir);
+                        dbg(DBG_PRINT,"GRADING1A 2.c Process p has a page directory\n");
+                        
+                        //if next element is head of queue, we didn't find a dead child, sleep.
+                        
+                        //We found a dead child
+                        if(p->p_state == PROC_DEAD){
+                                
+                                *status = p->p_status;                      //return status
+                                list_remove(&p->p_child_link);               //remove dead process from list of curproc children list
+                                list_remove(&p->p_list_link);                //remove from global process list
+                                return_pid = p->p_pid;                      //copy return pid
+                                slab_obj_free(proc_allocator, p);           //free memory used by process
+                                
+                                KASSERT(-1 == pid || p->p_pid == pid);
+                                dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d\n", p->p_pid);
+                                
+                                return return_pid;
+                                                                                        
+                        }
+                        
+                        link = link->l_next;
+                }
+                //********************IMPL 2************************
+        }
+        else if(pid > 0){
+                
+                //Look for the given pid...
+                for(link = curproc->p_children.l_next; link != &(curproc->p_children); link = link->l_next){
+                        
+                        //get child
+                        p = list_item(link, proc_t, p_child_link);
+                        
+                        KASSERT(NULL != p);
+                        dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
+                        
+                        KASSERT(NULL != p->p_pagedir);
+                        dbg(DBG_PRINT,"GRADING1A 2.b Process p has a page directory\n");
+                        
+                        //we found the process with the given pid...
+                        if(p->p_pid == pid){
+                                //If dead, reap off
+                                if(p->p_state == PROC_DEAD){
+                                        *status = p->p_status;                      //return status
+                                        list_remove(&p->p_child_link);               //remove dead process from list of curproc children list
+                                        list_remove(&p->p_list_link);                //remove from global process list
+                                        return_pid = p->p_pid;                      //copy return pid
+                                        slab_obj_free(proc_allocator, p);           //free memory used by process
+                                        
+                                        KASSERT(-1 == pid || p->p_pid == pid);
+                                        dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d\n", p->p_pid);
+                                        
+                                        return return_pid;
+                                        
+                                }
+                                else{
+                                        //dbg(DBG_PRINT, "Process with pid %d found but not dead\n", p->p_pid);
+                                        //return -1;
+                                        //Not dead... wait...
+                                        sched_sleep_on(&curproc->p_wait);
+                                        
+                                        //if sched_sleep_on() is block, 
+                                        *status = p->p_status;                      //return status
+                                        list_remove(&p->p_child_link);               //remove dead process from list of curproc children list
+                                        list_remove(&p->p_list_link);                //remove from global process list
+                                        return_pid = p->p_pid;                      //copy return pid
+                                        slab_obj_free(proc_allocator, p);           //free memory used by process
+                                        
+                                        KASSERT(-1 == pid || p->p_pid == pid);
+                                        dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d... Needs to block\n", p->p_pid);
+                                        
+                                        return return_pid;
+                                }
+                        }
+                }
+                
+                //If we got out of the for loop, we didn't find the required pid.
+                return -ECHILD;                
         }
         
-        /*TODO: look for pid in curproc children,
-         continue if found and DEAD, reclaiming exit status and so on
-         list_remove(&curproc->p_child_link);
-        */
-
-        return 0;
+        return -ECHILD;
 }
 
 /*

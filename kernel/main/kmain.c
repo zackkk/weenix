@@ -172,6 +172,7 @@ bootstrap(int arg1, void *arg2)
         /* necessary to finalize page table information */
         pt_template_init();
 	
+		int i =0;
 	/*test*/
 	/*Create idle process*/
 	proc_t *new_proc = proc_create("idle");
@@ -179,11 +180,13 @@ bootstrap(int arg1, void *arg2)
 	
 	/*Create init process*/
 	proc_t *new_proc2 = proc_create("init");
+	curproc = new_proc2;
+	//do_waitpid(-1, 0, &i);
 	
 	
 	/*simulate that now proce 2 is running*/
 	curproc = new_proc2;
-	proc_kill_all();
+	//proc_kill_all();
 	
 	proc_t *new_proc3 = proc_create("init_child_1");
 	
@@ -201,10 +204,12 @@ bootstrap(int arg1, void *arg2)
 	
 	/*now init proc calls exit, its child becomes init's child*/
 	curproc = new_proc2;
-	proc_kill_all();
+	//proc_kill_all();
 	
+	//proc_kill(new_proc3, 0);
 	
-	int i =0;
+	//init wait on pid = 2
+	do_waitpid(2, 0, &i);
 	
 	/*end_of_test*/
 
