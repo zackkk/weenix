@@ -488,7 +488,9 @@ do_waitpid(pid_t pid, int options, int *status)
         }
         
         //If pid -1...
-        if(pid == -1){                
+        if(pid == -1){
+                
+                dbg(DBG_PRINT,"pid is -1\n");
                 
                 //********************IMPL 2 blocking???************************
                 //look for a dead child
@@ -548,6 +550,8 @@ do_waitpid(pid_t pid, int options, int *status)
                 //********************IMPL 2************************
         }
         else if(pid > 0){
+                
+                dbg(DBG_PRINT,"pid is greater than 0\n");
                 
                 //Look for the given pid...
                 for(link = curproc->p_children.l_next; link != &(curproc->p_children); link = link->l_next){
