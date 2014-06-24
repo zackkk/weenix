@@ -9,6 +9,14 @@
 /* You are also NOT permitted to remove this comment block from this file.    */
 /******************************************************************************/
 
+/*
+ * TODO
+ * 
+ * 
+ * check conext (only allow thread context)
+ * 
+ * 
+ */
 #include "globals.h"
 #include "errno.h"
 
@@ -16,6 +24,8 @@
 
 #include "proc/kthread.h"
 #include "proc/kmutex.h"
+
+#include "util/list.h"
 
 /*
  * IMPORTANT: Mutexes can _NEVER_ be locked or unlocked from an
@@ -26,7 +36,15 @@
 void
 kmutex_init(kmutex_t *mtx)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kmutex_init");
+	/*aliases*/
+	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*mutex wait queue*/
+		
+	/*initialize km_waitq*/
+	sched_queue_init(waitqPtr);
+	
+	/*initialize km_holder*/
+	mtx->km_holder = NULL;
+	
 }
 
 /*
@@ -38,7 +56,22 @@ kmutex_init(kmutex_t *mtx)
 void
 kmutex_lock(kmutex_t *mtx)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kmutex_lock");
+	KASSERT(curthr && (curthr != mtx->km_holder));
+	dbg(DBG_PRINT, "(GRADING1A 5.a)");
+	
+	/*aliases*/
+	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*mutex wait queue*/
+	kthread_t *mutexOwner = mtx->km_holder; /*pointer to owner of the mutex*/
+
+	/*if mutex already locked, add curthr to mutex wait queue*/
+	if(mutexOwner != NULL) {
+		sched_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
+		sched_switch(); /*give CPU to another thread while this one waits on the mutex*/
+	}
+	/*mutex not held by anyone. take it, and continue execution*/
+	else {
+		mutexOwner = curthr; /*mutex is now locked by current thread, keep executing*/
+	}
 }
 
 /*
@@ -48,8 +81,29 @@ kmutex_lock(kmutex_t *mtx)
 int
 kmutex_lock_cancellable(kmutex_t *mtx)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kmutex_lock_cancellable");
-        return 0;
+	KASSERT(curthr && (curthr != mtx->km_holder));
+	dbg(DBG_PRINT, "(GRADING1A 5.b)");
+	
+	/*aliases*/
+	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*mutex wait queue*/
+	kthread_t *mutexOwner = mtx->km_holder; /*pointer to owner of the mutex*/
+
+	/*if mutex already locked, add curthr to mutex wait queue*/
+	if(mutexOwner != NULL) {
+		sched_cancellable_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
+		sched_switch(); /*give CPU to another thread while this one waits on the mutex*/
+	}
+	/*mutex not held by anyone. take it, and continue execution*/
+	else {
+		mutexOwner = curthr; /*mutex is now locked by current thread, keep executing*/
+	}
+	
+	/*if thread was cancelled, it does not hold the mutex, so return -EINTR*/
+	if(curthr != mtx->km_holder)
+			return EINTR;
+	
+	/*thread holds mutex*/
+	return 0;
 }
 
 /*
@@ -69,5 +123,23 @@ kmutex_lock_cancellable(kmutex_t *mtx)
 void
 kmutex_unlock(kmutex_t *mtx)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kmutex_unlock");
+	KASSERT(curthr && (curthr == mtx->km_holder)); /*we know that the caller has mutex locked*/
+	dbg(DBG_PRINT, "(GRADING1A 5.c)");
+	
+	/*aliases*/
+	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*wait queue*/	
+	kthread_t *mutexOwner = mtx->km_holder; /*pointer to owner of the mutex*/
+	
+	/*if mutex queue is empty, unlock mutex*/
+	if(sched_queue_empty(waitqPtr)) { 
+		mutexOwner = NULL;
+	}
+	/*mutex queue not empty: give mutex to head of list, put head of list in run queue*/
+	else {
+		mutexOwner = sched_wakeup_on(waitqPtr); /*de-queue head of mutex wait list, set thread as mutex owner*/
+		sched_make_runnable(mutexOwner); /*add mutex owner to run queue*/
+	}
+	
+	KASSERT(curthr != mtx->km_holder);
+	dbg(DBG_PRINT, "(GRADING1A 5.c)");
 }
