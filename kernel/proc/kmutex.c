@@ -57,7 +57,7 @@ void
 kmutex_lock(kmutex_t *mtx)
 {
 	KASSERT(curthr && (curthr != mtx->km_holder));
-	dbg(DBG_PRINT, "(GRADING1A 5.a)");
+	dbg(DBG_PRINT, "(GRADING1A 5.a) KASSERT successful");
 	
 	/*aliases*/
 	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*mutex wait queue*/
@@ -65,12 +65,14 @@ kmutex_lock(kmutex_t *mtx)
 
 	/*if mutex already locked, add curthr to mutex wait queue*/
 	if(mutexOwner != NULL) {
+		dbg(DBG_PRINT, "(GRADING1A 5.a) mutex already locked - put (non-cancellable) thread to sleep");
 		sched_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
-		sched_switch(); /*give CPU to another thread while this one waits on the mutex*/
+		dbg(DBG_PRINT, "(GRADING1A 5.a) (non-cancellable) thread woken up - mutex obtained");
 	}
 	/*mutex not held by anyone. take it, and continue execution*/
 	else {
 		mutexOwner = curthr; /*mutex is now locked by current thread, keep executing*/
+		dbg(DBG_PRINT, "(GRADING1A 5.a) mutex not locked, (non-cancellable) thread obtained it");
 	}
 }
 
@@ -90,17 +92,21 @@ kmutex_lock_cancellable(kmutex_t *mtx)
 
 	/*if mutex already locked, add curthr to mutex wait queue*/
 	if(mutexOwner != NULL) {
+		dbg(DBG_PRINT, "(GRADING1A 5.b) mutex already locked - put (cancellable) thread to sleep");
 		sched_cancellable_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
-		sched_switch(); /*give CPU to another thread while this one waits on the mutex*/
+		dbg(DBG_PRINT, "(GRADING1A 5.b) (cancellable) thread woken up - mutex obtained");
 	}
 	/*mutex not held by anyone. take it, and continue execution*/
 	else {
 		mutexOwner = curthr; /*mutex is now locked by current thread, keep executing*/
+		dbg(DBG_PRINT, "(GRADING1A 5.b) mutex not locked, (cancellable) thread obtained it");
 	}
 	
 	/*if thread was cancelled, it does not hold the mutex, so return -EINTR*/
-	if(curthr != mtx->km_holder)
-			return EINTR;
+	if(curthr != mtx->km_holder) {
+		dbg(DBG_PRINT, "(GRADING1A 5.b) (cancellable) canceled, mutex not held");
+		return EINTR;
+	}
 	
 	/*thread holds mutex*/
 	return 0;
@@ -133,13 +139,15 @@ kmutex_unlock(kmutex_t *mtx)
 	/*if mutex queue is empty, unlock mutex*/
 	if(sched_queue_empty(waitqPtr)) { 
 		mutexOwner = NULL;
+		dbg(DBG_PRINT, "(GRADING1A 5.c) mutex unlocked - mutex wait queue empty");
 	}
 	/*mutex queue not empty: give mutex to head of list, put head of list in run queue*/
 	else {
 		mutexOwner = sched_wakeup_on(waitqPtr); /*de-queue head of mutex wait list, set thread as mutex owner*/
 		sched_make_runnable(mutexOwner); /*add mutex owner to run queue*/
+		dbg(DBG_PRINT, "(GRADING1A 5.c) mutex unlocked - head of mutex wait queue woken up, made runnable");
 	}
 	
 	KASSERT(curthr != mtx->km_holder);
-	dbg(DBG_PRINT, "(GRADING1A 5.c)");
+	dbg(DBG_PRINT, "(GRADING1A 5.c) mutex unlocked - old thread no longer hold mutex");
 }
