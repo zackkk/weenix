@@ -269,8 +269,6 @@ sched_switch(void)
 void
 sched_make_runnable(kthread_t *thr)
 {
-        KASSERT(&kt_runq != thr->kt_wchan);
-dbg(DBG_PRINT,"gradeline 4.a , sched_make_runnabl");
         uint8_t original;
 
         original = intr_getipl();

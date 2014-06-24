@@ -75,23 +75,5 @@ Insufficient/Confusing dbg : (Comments?)
 Kernel panic : (Comments?)
 Cannot halt kernel cleanly : (Comments?)
 
-+------+
-| BUGS |
-+------+
 
-Comments: ?
-
-+---------------------------+
-| CONTRIBUTION FROM MEMBERS |
-+---------------------------+
-
-If not equal-share contribution, please list percentages.
-
-+-------+
-| OTHER |
-+-------+
-
-Special DBG setting in Config.mk for certain tests: ?
-Comments on deviation from spec (you will still lose points, but it's better to let the grader know): ?
-General comments on design decisions: ?
 
