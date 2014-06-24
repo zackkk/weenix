@@ -209,7 +209,7 @@ bootstrap(int arg1, void *arg2)
 	//proc_kill(new_proc3, 0);
 	
 	//init wait on pid = 2
-	do_waitpid(2, 0, &i);
+	do_waitpid(30, 0, &i);
 	
 	/*end_of_test*/
 
