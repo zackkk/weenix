@@ -1,8 +1,4 @@
-/home/zack/Desktop/weenix/kernel/mm/pagetable.gdb
-/home/zack/Desktop/weenix/kernel/mm/memcheck.py
-/home/zack/Desktop/weenix/kernel/mm/page.py
-/home/zack/Desktop/weenix/kernel/mm/slab.py
-/mnt/shared-mac/kernel1/weenix/kernel/mm/pagetable.gdb
-/mnt/shared-mac/kernel1/weenix/kernel/mm/memcheck.py
-/mnt/shared-mac/kernel1/weenix/kernel/mm/page.py
-/mnt/shared-mac/kernel1/weenix/kernel/mm/slab.py
+/home/eduardo/weenix_dev/kernel/mm/pagetable.gdb
+/home/eduardo/weenix_dev/kernel/mm/memcheck.py
+/home/eduardo/weenix_dev/kernel/mm/page.py
+/home/eduardo/weenix_dev/kernel/mm/slab.py

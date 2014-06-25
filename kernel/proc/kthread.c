@@ -111,15 +111,14 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 	*/
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_create"); */
 		KASSERT(NULL != p);
-		dbg(DBG_PRINT, "the process of the kthread is not empty\n");
+		dbg(DBG_PRINT, "GRADING1A 3.a the process of the kthread is not empty\n");
 
-		kthread_t *thr = slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
+		kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
 		thr->kt_kstack = alloc_stack();
 
-		context_t kthread_context;
-		context_setup(&kthread_context, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
+                
+                context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 
-		thr->kt_ctx = kthread_context;
 		thr->kt_retval = NULL;
 		thr->kt_errno = NULL;
 		thr->kt_cancelled = 0;
@@ -127,12 +126,12 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		thr->kt_proc = p;
 		thr->kt_state = KT_RUN;
 
-		sched_make_runnable(thr);
+		//sched_make_runnable(thr);
 
 		/* each process only has one thread associated with it. */
 		list_insert_tail(&p->p_threads, &thr->kt_plink);
 
-		dbg(DBG_PRINT, "kthread created successfully!\n");
+		//dbg(DBG_PRINT, "kthread created successfully!\n");
         return thr;
 }
 
@@ -152,7 +151,7 @@ kthread_cancel(kthread_t *kthr, void *retval)
 {
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_cancel"); */
 		KASSERT(NULL != kthr);
-		dbg(DBG_PRINT, "the kthread is not empty\n");
+		dbg(DBG_PRINT, "GRADING1A 3.b the kthread is not empty\n");
 
 		if(kthr == curthr){
 			kthread_exit(retval);
@@ -168,7 +167,7 @@ kthread_cancel(kthread_t *kthr, void *retval)
 				sched_make_runnable(kthr);
 			}
 		}
-		dbg(DBG_PRINT, "kthread has been cancelled successfully!\n");
+		//dbg(DBG_PRINT, "kthread has been cancelled successfully!\n");
 }
 
 /*
@@ -185,11 +184,11 @@ void
 kthread_exit(void *retval)
 {
 		KASSERT(curthr->kt_wchan != NULL); /* queue should be empty */
-		dbg(DBG_PRINT, "kthread's blocked on queue head is empty\n");
+		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue head is empty\n");
 		KASSERT(curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev); /* queue should be empty */
-		dbg(DBG_PRINT, "kthread's blocked on queue links are empty\n");
+		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue links are empty\n");
 		KASSERT(curthr->kt_proc == curproc);
-		dbg(DBG_PRINT, "curthr and curproc match successfully\n");
+		dbg(DBG_PRINT, "GRADING1A 3.c curthr and curproc match successfully\n");
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_exit"); */
 		curthr->kt_retval = retval;
 		curthr->kt_state = KT_EXITED;

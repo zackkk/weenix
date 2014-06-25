@@ -105,7 +105,7 @@ kmutex_lock_cancellable(kmutex_t *mtx)
 	/*if thread was cancelled, it does not hold the mutex, so return -EINTR*/
 	if(curthr != mtx->km_holder) {
 		dbg(DBG_PRINT, "(GRADING1A 5.b) (cancellable) canceled, mutex not held");
-		return EINTR;
+		return -EINTR;
 	}
 	
 	/*thread holds mutex*/

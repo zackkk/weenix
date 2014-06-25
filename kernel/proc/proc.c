@@ -195,14 +195,14 @@ proc_create(char *name)
         new_process->p_list_link.l_next = NULL;
         new_process->p_list_link.l_prev = NULL;
         list_insert_tail(&_proc_list, &new_process->p_list_link);
-        
+        /*
         if(new_process->p_pproc != NULL){
                 dbg(DBG_PRINT,"Created process %s with pid %d with parent pid %d\n", new_process->p_comm, new_process->p_pid, new_process->p_pproc->p_pid);
         }
         else{
                 dbg(DBG_PRINT,"Created process %s with pid %d\n", new_process->p_comm, new_process->p_pid);
         }
-        
+        */
         
         /*Iterate through list to check we have a proper order of processes.*/
         /*list_link_t *link = NULL;
@@ -290,7 +290,7 @@ proc_cleanup(int status)
                         /*add child to list of init children...*/
                         list_insert_tail(&(proc_initproc->p_children), &(my_child_proc->p_child_link));
                         
-                        dbg(DBG_PRINT, "Process %s reparent\'d to %s process\n", my_child_proc->p_comm, my_child_proc->p_pproc->p_comm);
+                        //dbg(DBG_PRINT, "Process %s reparent\'d to %s process\n", my_child_proc->p_comm, my_child_proc->p_pproc->p_comm);
                 }
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
@@ -483,14 +483,14 @@ do_waitpid(pid_t pid, int options, int *status)
         
         /*If current process has no children, return -ECHILD*/
         if(curproc->p_children.l_next == &curproc->p_children){
-                dbg(DBG_PRINT, "Current process has no children\n");
+                //dbg(DBG_PRINT, "Current process has no children\n");
                 return -ECHILD;
         }
         
         //If pid -1...
         if(pid == -1){
                 
-                dbg(DBG_PRINT,"pid is -1\n");
+                //dbg(DBG_PRINT,"pid is -1\n");
                 
                 //********************IMPL 2 blocking???************************
                 //look for a dead child
@@ -500,7 +500,7 @@ do_waitpid(pid_t pid, int options, int *status)
                         
                         //If we wrap around the list, we didnt found child
                         if(link == &(curproc->p_children)){
-                                dbg(DBG_PRINT, "No dead process found yet. Waiting on p_wait\n");
+                                //dbg(DBG_PRINT, "No dead process found yet. Waiting on p_wait\n");
                                 sched_sleep_on(&curproc->p_wait);
                                 
                                 //test
@@ -563,7 +563,7 @@ do_waitpid(pid_t pid, int options, int *status)
                         dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
                         
                         KASSERT(NULL != p->p_pagedir);
-                        dbg(DBG_PRINT,"GRADING1A 2.b Process p has a page directory\n");
+                        dbg(DBG_PRINT,"GRADING1A 2.c Process p has a page directory\n");
                         
                         //we found the process with the given pid...
                         if(p->p_pid == pid){

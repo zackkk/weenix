@@ -25,7 +25,9 @@ static ktqueue_t kt_runq;
 static __attribute__((unused)) void
 sched_init(void)
 {
+        
         sched_queue_init(&kt_runq);
+
 }
 init_func(sched_init);
 
@@ -41,10 +43,12 @@ init_func(sched_init);
 static void
 ktqueue_enqueue(ktqueue_t *q, kthread_t *thr)
 {
-        KASSERT(!thr->kt_wchan);
+        KASSERT(!thr->kt_wchan);      
         list_insert_head(&q->tq_list, &thr->kt_qlink);
         thr->kt_wchan = q;
         q->tq_size++;
+        //dbg(DBG_PRINT, "kt_queue size is %d\n", q->tq_size);
+        
 }
 
 /**
@@ -143,15 +147,17 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 kthread_t *
 sched_wakeup_on(ktqueue_t *q)
 {
-        kthread_t * singleT;
+        kthread_t * thr;
 
         if(sched_queue_empty(q))
         {
              return NULL;
         }
         
-        singleT = ktqueue_dequeue(q);
-        sched_make_runnable(singleT);
+        thr = ktqueue_dequeue(q);
+        KASSERT((thr->kt-state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
+        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread")
+        sched_make_runnable(thr);
 
         return singleT;
         //NOT_YET_IMPLEMENTED("PROCS: sched_wakeup_on");
@@ -245,7 +251,7 @@ sched_switch(void)
         intr_setipl(IPL_HIGH);
 
         newThread = ktqueue_dequeue(&kt_runq);
-        context_switch(oldThread->kt_ctx, newThread->kt_ctx);
+        context_switch(&oldThread->kt_ctx, &newThread->kt_ctx);
         curthr = newThread;
         curproc = curthr->kt_proc;
 
@@ -269,16 +275,30 @@ sched_switch(void)
 void
 sched_make_runnable(kthread_t *thr)
 {
-        KASSERT(&kt_runq != thr->kt_wchan);
-dbg(DBG_PRINT,"gradeline 4.a , sched_make_runnabl");
+        
+        /*
+        if(kt_runq.tq_size == 0 && thr->kt_wchan == 0){
+               dbg(DBG_PRINT,"gradeline 4.a kt_runq and thr->kt_wchan are empty\n");
+                
+        }
+        else{
+                 KASSERT(&kt_runq != thr->kt_wchan);
+                dbg(DBG_PRINT,"gradeline 4.a , sched_make_runnable\n");
+        }
+        */
+        
+        KASSERT(&kt_runq != thr_kt_wchan);
+        dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on");
         uint8_t original;
 
         original = intr_getipl();
         intr_setipl(IPL_HIGH);
 
         thr->kt_state=KT_RUN;
-        ktqueue_enqueue(&kt_runq,thr);
+
+        
+        
+        ktqueue_enqueue(&kt_runq, thr);
 
         intr_setipl(original);
-        //NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
 }

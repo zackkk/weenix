@@ -169,7 +169,6 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
-		dbg(DBG_PRINT, "*****runs into bootstrap*****\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
@@ -177,15 +176,15 @@ bootstrap(int arg1, void *arg2)
         proc_t *proc = proc_create("idle_process");
         curproc = proc;
         KASSERT(NULL != curproc);
-        dbg(DBG_PRINT, "the idle process has been created successfully\n");
+        dbg(DBG_PRINT, "GRADING1A 1.a The current process (idle) is not NULL\n");
         KASSERT(PID_IDLE == curproc->p_pid);
-        dbg(DBG_PRINT, "what has been created is the idle process\n");
+        dbg(DBG_PRINT, "GRADING1A 1.a The current process is the idle process\n");
 
         /* context is created in kthread_create */
         kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
         curthr = thr;
         KASSERT(NULL != curthr);
-        dbg(DBG_PRINT, "the thread for the idle process has been created successfully\n");
+        dbg(DBG_PRINT, "GRADING1A 1.a The thread for the idle process has been created successfully\n");
 
         context_make_active(&(thr->kt_ctx));
 
@@ -208,7 +207,7 @@ bootstrap(int arg1, void *arg2)
 static void *
 idleproc_run(int arg1, void *arg2)
 {
-		dbg(DBG_PRINT, "*****runs into idleproc_run*****\n");
+	dbg(DBG_PRINT, "*****runs into idleproc_run*****\n");
         int status;
         pid_t child;
 
@@ -283,13 +282,12 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-		dbg(DBG_PRINT, "*****runs into initproc_create*****\n");
-        /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
+	      /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
 		proc_t *proc = proc_create("init_process");
 		KASSERT(NULL != proc);
-		dbg(DBG_PRINT, "the init process has been created successfully\n");
+		dbg(DBG_PRINT, "GRADING1A 1.b The pointer to the init process is not NULL\n");
 		KASSERT(PID_INIT == proc->p_pid);
-		dbg(DBG_PRINT, "what has been created is the init process\n");
+		dbg(DBG_PRINT, "GRADING1A 1.b The pid of the init process is PID_INIT\n");
 
 		/*curproc = proc;*/
 
@@ -298,7 +296,7 @@ initproc_create(void)
 		 * argument 1234 is used for test purpose */
 		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
 		KASSERT(NULL != thr);
-		dbg(DBG_PRINT, "the thread for the init process has been created successfully\n");
+		dbg(DBG_PRINT, "GRADING1A 1.b The pointer to the thread for the init process is not NULL\n");
 
         return thr;
 
