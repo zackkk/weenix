@@ -119,8 +119,7 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
 		thr->kt_kstack = alloc_stack();
 
-                
-                context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
+        context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 
 		thr->kt_retval = NULL;
 		thr->kt_errno = NULL;
@@ -132,7 +131,7 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		thr->kt_proc = p;
 		thr->kt_state = KT_RUN;
 
-		sched_make_runnable(thr);
+		//sched_make_runnable(thr);
 
 		/* each process only has one thread associated with it. */
 		list_insert_tail(&p->p_threads, &thr->kt_plink);
@@ -189,18 +188,22 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
-		KASSERT(curthr->kt_wchan != NULL); /* queue should be empty */
-		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue head is empty\n");
-		KASSERT(curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev); /* queue should be empty */
-		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue links are empty\n");
+	KASSERT(curthr->kt_qlink.l_next && curthr->kt_qlink.l_prev);
+	        list_remove(&curthr->kt_qlink);
+	        curthr->kt_wchan = NULL;
+
+		KASSERT(!curthr->kt_wchan);
+		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue is empty\n");
+		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev);
+		dbg(DBG_PRINT, "GRADING1A 3.c kthread's link on ktqueue is empty\n");
 		KASSERT(curthr->kt_proc == curproc);
-		dbg(DBG_PRINT, "GRADING1A 3.c curthr and curproc match successfully\n");
-        /* NOT_YET_IMPLEMENTED("PROCS: kthread_exit"); */
+		dbg(DBG_PRINT, "GRADING1A 3.c curthr and curproc match\n");
+
 		curthr->kt_retval = retval;
-		curthr->kt_state = KT_EXITED;
-		proc_thread_exited(retval);
+			curthr->kt_state = KT_EXITED;
+			proc_thread_exited(retval);
 		kthread_destroy(curthr);
-		dbg(DBG_THR, "kthread exit successfully!\n");
+			dbg(DBG_PRINT, "thread exited\n");
 }
 
 /*
