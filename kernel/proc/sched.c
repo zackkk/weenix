@@ -155,11 +155,11 @@ sched_wakeup_on(ktqueue_t *q)
         }
         
         thr = ktqueue_dequeue(q);
-        KASSERT((thr->kt-state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
-        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread")
+        KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
+        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread");
         sched_make_runnable(thr);
 
-        return singleT;
+        return thr;
         //NOT_YET_IMPLEMENTED("PROCS: sched_wakeup_on");
         
 }
@@ -287,14 +287,14 @@ sched_make_runnable(kthread_t *thr)
         }
         */
         
-        KASSERT(&kt_runq != thr_kt_wchan);
+        KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on");
         uint8_t original;
 
         original = intr_getipl();
         intr_setipl(IPL_HIGH);
 
-        thr->kt_state=KT_RUN;
+        thr->kt_state = KT_RUN;
 
         
         
