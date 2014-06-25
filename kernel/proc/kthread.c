@@ -29,12 +29,15 @@
 kthread_t *curthr; /* global */
 static slab_allocator_t *kthread_allocator = NULL;
 
+static ktqueue_t pointless_queue;
+
 #ifdef __MTP__
 /* Stuff for the reaper daemon, which cleans up dead detached threads */
 static proc_t *reapd = NULL;
 static kthread_t *reapd_thr = NULL;
 static ktqueue_t reapd_waitq;
 static list_t kthread_reapd_deadlist; /* Threads to be cleaned */
+                                        
 
 static void *kthread_reapd_run(int arg1, void *arg2);
 #endif
@@ -122,11 +125,14 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		thr->kt_retval = NULL;
 		thr->kt_errno = NULL;
 		thr->kt_cancelled = 0;
+                
+                //sched_queue_init(&pointless_queue);
 		thr->kt_wchan = NULL;
+                
 		thr->kt_proc = p;
 		thr->kt_state = KT_RUN;
 
-		//sched_make_runnable(thr);
+		sched_make_runnable(thr);
 
 		/* each process only has one thread associated with it. */
 		list_insert_tail(&p->p_threads, &thr->kt_plink);

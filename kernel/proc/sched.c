@@ -43,9 +43,13 @@ init_func(sched_init);
 static void
 ktqueue_enqueue(ktqueue_t *q, kthread_t *thr)
 {
-        KASSERT(!thr->kt_wchan);      
+        //dbg(DBG_PRINT, "Address pointed to by thr->kt_wchan: %p", thr->kt_wchan);
+        KASSERT(!thr->kt_wchan);
+        dbg(DBG_PRINT, "q->tq_list %p, thr %p\n", &q->tq_list, thr);
         list_insert_head(&q->tq_list, &thr->kt_qlink);
+        
         thr->kt_wchan = q;
+        
         q->tq_size++;
         //dbg(DBG_PRINT, "kt_queue size is %d\n", q->tq_size);
         
@@ -115,7 +119,8 @@ sched_queue_empty(ktqueue_t *q)
 void
 sched_sleep_on(ktqueue_t *q)
 {     
-        curthr->kt_state=KT_SLEEP;        
+        curthr->kt_state=KT_SLEEP;
+        //curthr->kt_wchan = q;
         ktqueue_enqueue(q,curthr);
         sched_switch();
         //NOT_YET_IMPLEMENTED("PROCS: sched_sleep_on");
@@ -242,20 +247,26 @@ sched_switch(void)
 
         original =intr_getipl();  
         oldThread = curthr;
+        
+        
 
         intr_setipl(IPL_LOW);
-        while(!sched_queue_empty(&kt_runq))
+        while(sched_queue_empty(&kt_runq))
         {            
              intr_wait();             
         }
+        dbg(DBG_PRINT, "We are in sched_switch 1\n");
         intr_setipl(IPL_HIGH);
 
         newThread = ktqueue_dequeue(&kt_runq);
         context_switch(&oldThread->kt_ctx, &newThread->kt_ctx);
         curthr = newThread;
         curproc = curthr->kt_proc;
-
+        dbg(DBG_PRINT, "We are in sched_switch 2\n");
+        //context_make_active(&(curthr->kt_ctx));
+        dbg(DBG_PRINT, "We are in sched_switch 3\n");
         intr_setipl(original);
+         
         //NOT_YET_IMPLEMENTED("PROCS: sched_switch");
 }
 
@@ -288,7 +299,7 @@ sched_make_runnable(kthread_t *thr)
         */
         
         KASSERT(&kt_runq != thr->kt_wchan);
-        dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on");
+        dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on kt_wchan\n");
         uint8_t original;
 
         original = intr_getipl();

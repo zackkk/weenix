@@ -235,8 +235,11 @@ idleproc_run(int arg1, void *arg2)
 
         /* Run initproc */
         sched_make_runnable(initthr);
+	
         /* Now wait for it */
+        dbg(DBG_PRINT, "Waiting for init process to die\n");
         child = do_waitpid(-1, 0, &status);
+	dbg(DBG_PRINT, "Init process exited\n");
         KASSERT(PID_INIT == child);
 
 #ifdef __MTP__
@@ -289,12 +292,13 @@ initproc_create(void)
 		KASSERT(PID_INIT == proc->p_pid);
 		dbg(DBG_PRINT, "GRADING1A 1.b The pid of the init process is PID_INIT\n");
 
-		/*curproc = proc;*/
+		//curproc = proc;
 
 		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
 		 * thread is contained in process in kthread_create;
 		 * argument 1234 is used for test purpose */
 		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
+		//curthr = thr;
 		KASSERT(NULL != thr);
 		dbg(DBG_PRINT, "GRADING1A 1.b The pointer to the thread for the init process is not NULL\n");
 
@@ -316,8 +320,11 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-		dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
+	int i = 0;
+	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
-		dbg(DBG_PRINT, "initproc_run argument should be 1234: %d\n", arg1);
+        //do_waitpid(-1, 0, &i);
+	
+	dbg(DBG_PRINT, "Reached end of init thread function	\n");
         return NULL;
 }

@@ -500,13 +500,10 @@ do_waitpid(pid_t pid, int options, int *status)
                         
                         //If we wrap around the list, we didnt found child
                         if(link == &(curproc->p_children)){
-                                //dbg(DBG_PRINT, "No dead process found yet. Waiting on p_wait\n");
+                                dbg(DBG_PRINT, "No dead child found for process %s yet. Waiting on p_wait\n", curproc->p_comm);
+                                
                                 sched_sleep_on(&curproc->p_wait);
                                 
-                                //test
-                                //dbg(DBG_PRINT, "did not find a dead children\n");
-                                //return -1;
-
                                 //if sleep_on blocks wait_pid()
                                 link = curproc->p_children.l_next;      //Start again from head of queue, looking for a dead child 
                         }
