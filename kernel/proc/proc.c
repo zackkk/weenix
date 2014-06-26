@@ -449,11 +449,9 @@ proc_kill_all()
 void
 proc_thread_exited(void *retval)
 {
-        
-        int *status = (int *)retval;            //CHECK
-        
-        /*Juse cleanup the current process, it will schedule the parent thread*/
-        proc_cleanup(*status);
+	int status = (int)retval;            //CHECK
+    /*Juse cleanup the current process, it will schedule the parent thread*/
+    proc_cleanup(status);
 }
 
 /* If pid is -1 dispose of one of the exited children of the current

@@ -188,10 +188,6 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
-	KASSERT(curthr->kt_qlink.l_next && curthr->kt_qlink.l_prev);
-	        list_remove(&curthr->kt_qlink);
-	        curthr->kt_wchan = NULL;
-
 		KASSERT(!curthr->kt_wchan);
 		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue is empty\n");
 		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev);
@@ -200,10 +196,9 @@ kthread_exit(void *retval)
 		dbg(DBG_PRINT, "GRADING1A 3.c curthr and curproc match\n");
 
 		curthr->kt_retval = retval;
-			curthr->kt_state = KT_EXITED;
-			proc_thread_exited(retval);
-		kthread_destroy(curthr);
-			dbg(DBG_PRINT, "thread exited\n");
+		curthr->kt_state = KT_EXITED;
+		proc_thread_exited(retval);
+		//kthread_destroy(curthr); // if called then page fault
 }
 
 /*

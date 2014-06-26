@@ -244,30 +244,26 @@ void
 sched_switch(void)
 {
 	//NOT_YET_IMPLEMENTED("PROCS: sched_switch");
-        uint8_t original;        
+	/*
+	 * from lecture slides 5.2
+	 */
+        uint8_t oldIPL;
         kthread_t * oldThread;
-        kthread_t * newThread;
+        oldIPL =intr_getipl();
 
-        original =intr_getipl();  
-        oldThread = curthr;
-
-        intr_setipl(IPL_LOW);
         while(sched_queue_empty(&kt_runq))
-        {            
-             intr_wait();             
+        {
+        	intr_setipl(0);
+        	intr_setipl(IPL_HIGH);
         }
         dbg(DBG_PRINT, "We are in sched_switch 1\n");
-        intr_setipl(IPL_HIGH);
 
-        newThread = ktqueue_dequeue(&kt_runq);
-        context_switch(&oldThread->kt_ctx, &newThread->kt_ctx);
-        curthr = newThread;
-        curproc = curthr->kt_proc;
-        dbg(DBG_PRINT, "We are in sched_switch 2\n");
-        //context_make_active(&(curthr->kt_ctx));
-        dbg(DBG_PRINT, "We are in sched_switch 3\n");
-        intr_setipl(original);
-         
+        oldThread = curthr;
+        curthr = ktqueue_dequeue(&kt_runq);
+        curproc = curthr->kt_proc;  // added on lecture slides
+        context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
+
+        intr_setipl(oldIPL);
 
 }
 
@@ -291,15 +287,16 @@ sched_make_runnable(kthread_t *thr)
 		/* make sure the thread is not blocked */
         KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on kt_runq\n");
+
+        uint8_t original;
+        original = intr_getipl();
+        intr_setipl(IPL_HIGH);
+
         if(thr->kt_wchan){
         	ktqueue_remove(thr->kt_wchan, thr);
         }
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
-
-        uint8_t original;
-        original = intr_getipl();
-        intr_setipl(IPL_HIGH);
 
         intr_setipl(original);
 }
