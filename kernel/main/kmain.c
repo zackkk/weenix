@@ -239,7 +239,7 @@ idleproc_run(int arg1, void *arg2)
         /* Now wait for it */
         dbg(DBG_PRINT, "Waiting for init process to die\n");
         child = do_waitpid(-1, 0, &status);
-	dbg(DBG_PRINT, "Init process exited\n");
+        dbg(DBG_PRINT, "Init process exited\n");
         KASSERT(PID_INIT == child);
 
 #ifdef __MTP__

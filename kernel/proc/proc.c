@@ -113,7 +113,7 @@ proc_create(char *name)
 {
         proc_t *new_process = NULL;
         
-        /*Create a slab, using the proce_allocator*/
+        /*Create a slab, using the proc_allocator*/
         new_process = (proc_t *)slab_obj_alloc(proc_allocator);
         
         /*Set process fields accordingly*/
@@ -151,14 +151,13 @@ proc_create(char *name)
         list_init(&new_process->p_threads);             
                                                          
         /*create thread, add it to the list of threads?*/
-                                                         
+
+        /*Set exit status to zero initially (may change)*/
+        new_process->p_status = 0;
+
         /*Set process status to running*/
         new_process->p_state = PROC_RUNNING;
                                                                                           
-        
-        /*Set exit status to zero initially (may change)*/
-        new_process->p_state = 0;
-        
         /*init wait queue*/
         sched_queue_init(&new_process->p_wait);
         
@@ -195,27 +194,6 @@ proc_create(char *name)
         new_process->p_list_link.l_next = NULL;
         new_process->p_list_link.l_prev = NULL;
         list_insert_tail(&_proc_list, &new_process->p_list_link);
-        /*
-        if(new_process->p_pproc != NULL){
-                dbg(DBG_PRINT,"Created process %s with pid %d with parent pid %d\n", new_process->p_comm, new_process->p_pid, new_process->p_pproc->p_pid);
-        }
-        else{
-                dbg(DBG_PRINT,"Created process %s with pid %d\n", new_process->p_comm, new_process->p_pid);
-        }
-        */
-        
-        /*Iterate through list to check we have a proper order of processes.*/
-        /*list_link_t *link = NULL;
-	proc_t *my_item = NULL;
-	for (link = _proc_list.l_next; link != &_proc_list; link = link->l_next){
-		my_item = list_item(link, proc_t, p_list_link);
-                if(my_item->p_pproc != NULL){
-                        dbg(DBG_PRINT, "Process %s, parent pid %d\n", my_item->p_comm, my_item->p_pproc->p_pid);
-                }
-                else{
-                        dbg(DBG_PRINT, "Process %s\n", my_item->p_comm);
-                }
-	}*/
         
         return new_process;
 }
@@ -324,9 +302,7 @@ proc_cleanup(int status)
         
         KASSERT(NULL != curproc->p_pproc); /* this process should have parent process */
         dbg(DBG_PRINT,"GRADING1A 2.b The current dead process has a parent\n");
-                                                             
-                                                        
-        
+
         return;
 }
 
@@ -488,7 +464,7 @@ do_waitpid(pid_t pid, int options, int *status)
         //If pid -1...
         if(pid == -1){
                 
-                //dbg(DBG_PRINT,"pid is -1\n");
+                dbg(DBG_PRINT,"pid is -1\n");
                 
                 //********************IMPL 2 blocking???************************
                 //look for a dead child
@@ -531,7 +507,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
                                 
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
-                                dbg(DBG_PRINT,"GRADING1A 2.c Dead process (pid %d) exited\n", p->p_pid);
+                                dbg(DBG_PRINT,"GRADING1A 2.c hr points to a thread to be destroied \n");
                                 
                                 
                                 slab_obj_free(proc_allocator, p);           //free memory used by process
@@ -590,7 +566,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         return_pid = p->p_pid;                      //copy return pid
                                         
                                         KASSERT(-1 == pid || p->p_pid == pid);
-                                        dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d... Needs to block\n", p->p_pid);
+                                        dbg(DBG_PRINT,"GRADING1A 2.c Found the process with pid %d... \n", p->p_pid);
                                         
                                         slab_obj_free(proc_allocator, p);           //free memory used by process
                                         

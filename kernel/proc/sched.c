@@ -111,14 +111,15 @@ sched_queue_empty(ktqueue_t *q)
 void
 sched_sleep_on(ktqueue_t *q)
 {     
-	//NOT_YET_IMPLEMENTED("PROCS: sched_sleep_on");
+		//NOT_YET_IMPLEMENTED("PROCS: sched_sleep_on");
         curthr->kt_state = KT_SLEEP;
         if(curthr->kt_wchan){
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
-        sched_switch();
 
+        /* switch context: make a runnable thread running */
+        sched_switch();
 }
 
 
@@ -132,7 +133,7 @@ sched_sleep_on(ktqueue_t *q)
 int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
-	//NOT_YET_IMPLEMENTED("PROCS: sched_cancellable_sleep_on");
+		//NOT_YET_IMPLEMENTED("PROCS: sched_cancellable_sleep_on");
         if(curthr->kt_cancelled)
         {
              return -EINTR;
@@ -143,6 +144,8 @@ sched_cancellable_sleep_on(ktqueue_t *q)
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
+
+        /* switch context: make a runnable thread running */
         sched_switch();
         
 
@@ -152,7 +155,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 kthread_t *
 sched_wakeup_on(ktqueue_t *q)
 {
-	//NOT_YET_IMPLEMENTED("PROCS: sched_wakeup_on");
+		//NOT_YET_IMPLEMENTED("PROCS: sched_wakeup_on");
         kthread_t * thr;
 
         if(sched_queue_empty(q))
@@ -160,11 +163,11 @@ sched_wakeup_on(ktqueue_t *q)
              return NULL;
         }
         
+        /* move a sleeping thread into runnable queue */
         thr = ktqueue_dequeue(q);
         KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
         dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread");
         sched_make_runnable(thr);
-
         return thr;
         
 }
@@ -172,12 +175,13 @@ sched_wakeup_on(ktqueue_t *q)
 void
 sched_broadcast_on(ktqueue_t *q)
 {
-	//NOT_YET_IMPLEMENTED("PROCS: sched_broadcast_on");
-        kthread_t * singleT;
+		//NOT_YET_IMPLEMENTED("PROCS: sched_broadcast_on");
+		/* move all threads into runnable queue */
+        kthread_t * singleThr;
         while(!sched_queue_empty(q))
         {
-            singleT = ktqueue_dequeue(q);
-            sched_make_runnable(singleT);
+            singleThr = ktqueue_dequeue(q);
+            sched_make_runnable(singleThr);
         }
 
 }
@@ -194,11 +198,13 @@ sched_broadcast_on(ktqueue_t *q)
 void
 sched_cancel(struct kthread *kthr)
 {
-	 //NOT_YET_IMPLEMENTED("PROCS: sched_cancel");
+	 	 //NOT_YET_IMPLEMENTED("PROCS: sched_cancel");
         kthr->kt_cancelled = 1;
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
-            ktqueue_remove(kthr->kt_wchan, kthr);
+        	if(kthr->kt_wchan){
+        		ktqueue_remove(kthr->kt_wchan, kthr);
+        	}
             sched_make_runnable(kthr);
         }
 
@@ -243,26 +249,32 @@ sched_cancel(struct kthread *kthr)
 void
 sched_switch(void)
 {
-	//NOT_YET_IMPLEMENTED("PROCS: sched_switch");
-	/*
-	 * from lecture slides 5.2
-	 */
+		//NOT_YET_IMPLEMENTED("PROCS: sched_switch");
+		/*
+		 * adopted from lecture slides 5.2
+		 */
+		/* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
         kthread_t * oldThread;
         oldIPL =intr_getipl();
 
+        /*
+         *  ????????????????? need more work here
+         */
         while(sched_queue_empty(&kt_runq))
         {
         	intr_setipl(0);
         	intr_setipl(IPL_HIGH);
         }
-        dbg(DBG_PRINT, "We are in sched_switch 1\n");
+        dbg(DBG_PRINT, "We are in sched_switch \n");
 
+        /* switch thread context, chapter 3.1 */
         oldThread = curthr;
         curthr = ktqueue_dequeue(&kt_runq);
         curproc = curthr->kt_proc;  // added on lecture slides
         context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
 
+        /* restore IPL */
         intr_setipl(oldIPL);
 
 }
@@ -283,20 +295,23 @@ sched_switch(void)
 void
 sched_make_runnable(kthread_t *thr)
 {
-	//NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
-		/* make sure the thread is not blocked */
+		//NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
+		/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on kt_runq\n");
 
-        uint8_t original;
-        original = intr_getipl();
+        /* set high IPL to prevent interrupts, and save old IPL */
+        uint8_t oldIPL;
+        oldIPL = intr_getipl();
         intr_setipl(IPL_HIGH);
 
+        /* dequeue from the current queue, and enqueue into the runnable queue */
         if(thr->kt_wchan){
         	ktqueue_remove(thr->kt_wchan, thr);
         }
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 
-        intr_setipl(original);
+        /* restore IPL */
+        intr_setipl(oldIPL);
 }
