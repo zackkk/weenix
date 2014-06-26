@@ -132,9 +132,8 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 		thr->kt_state = KT_RUN;
 
 		//sched_make_runnable(thr);
-
 		/* each process only has one thread associated with it. */
-		list_insert_tail(&p->p_threads, &thr->kt_plink);
+		list_insert_tail(&(p->p_threads), &(thr->kt_plink));
 
 		//dbg(DBG_PRINT, "kthread created successfully!\n");
         return thr;
