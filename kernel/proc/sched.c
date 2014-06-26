@@ -259,14 +259,15 @@ sched_switch(void)
         oldIPL =intr_getipl();
 
         /*
-         *  ????????????????? need more work here
+         *  if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
+         *  hardware interrupts, when not masked, can occur between any two code instructions
          */
         while(sched_queue_empty(&kt_runq))
         {
-        	intr_setipl(0);
+        	intr_setipl(IPL_LOW);
         	intr_setipl(IPL_HIGH);
         }
-        dbg(DBG_PRINT, "We are in sched_switch \n");
+        dbg(DBG_PRINT, "We are in sched_switch, kt_runq is not empty now \n");
 
         /* switch thread context, chapter 3.1 */
         oldThread = curthr;

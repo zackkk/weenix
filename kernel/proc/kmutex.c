@@ -67,6 +67,7 @@ kmutex_lock(kmutex_t *mtx)
 	if(mutexOwner != NULL) {
 		dbg(DBG_PRINT, "(GRADING1A 5.a) mutex already locked - put (non-cancellable) thread to sleep");
 		sched_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
+		/* sched_sleep_on will do context_switch */
 		dbg(DBG_PRINT, "(GRADING1A 5.a) (non-cancellable) thread woken up - mutex obtained");
 	}
 	/*mutex not held by anyone. take it, and continue execution*/
@@ -94,6 +95,7 @@ kmutex_lock_cancellable(kmutex_t *mtx)
 	if(mutexOwner != NULL) {
 		dbg(DBG_PRINT, "(GRADING1A 5.b) mutex already locked - put (cancellable) thread to sleep");
 		sched_cancellable_sleep_on(waitqPtr); /*put current thread in the mutex wait queue*/
+		/* sched_sleep_on will do context_switch */
 		dbg(DBG_PRINT, "(GRADING1A 5.b) (cancellable) thread woken up - mutex obtained");
 	}
 	/*mutex not held by anyone. take it, and continue execution*/

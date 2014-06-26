@@ -188,6 +188,10 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
+		curthr->kt_wchan = NULL;
+		curthr->kt_qlink.l_next = NULL;
+		curthr->kt_qlink.l_prev = NULL;
+
 		KASSERT(!curthr->kt_wchan);
 		dbg(DBG_PRINT, "GRADING1A 3.c kthread's blocked on queue is empty\n");
 		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev);
