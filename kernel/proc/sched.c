@@ -166,7 +166,7 @@ sched_wakeup_on(ktqueue_t *q)
         /* move a sleeping thread into runnable queue */
         thr = ktqueue_dequeue(q);
         KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
-        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread");
+        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread\n");
         sched_make_runnable(thr);
         return thr;
         
@@ -256,8 +256,8 @@ sched_switch(void)
 		/* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
         kthread_t * oldThread;
-        oldIPL =intr_getipl();
-
+        oldIPL = intr_getipl();
+        intr_setipl(IPL_HIGH);
         /*
          *  if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
          *  hardware interrupts, when not masked, can occur between any two code instructions

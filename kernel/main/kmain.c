@@ -306,6 +306,23 @@ initproc_create(void)
 
 }
 
+
+#ifdef __DRIVERS__
+
+int do_foo(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    dbg(DBG_PRINT, "(GRADING#X Y.Z): do_foo() is invoked, argc = %d, argv = 0x%08x\n",
+	    argc, (unsigned int)argv);
+    /*
+     * Shouldn't call a test function directly.
+     * It's best to invoke it in a separate kernel process.  
+     */
+    return 0;
+}
+
+#endif /* __DRIVERS__ */
+
 /**
  * The init thread's function changes depending on how far along your Weenix is
  * developed. Before VM/FI, you'll probably just want to have this run whatever
@@ -323,7 +340,18 @@ initproc_run(int arg1, void *arg2)
 	int i = 0;
 	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
-        //do_waitpid(-1, 0, &i);
+        //while(do_waitpid(-1, 0, &i) != -ECHILD);
+	
+#ifdef __DRIVERS__
+
+        kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
+
+        kshell_t *kshell = kshell_create(0);
+        if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+        while (kshell_execute_next(kshell));
+        kshell_destroy(kshell);
+
+#endif /* __DRIVERS__ */
 	
 	dbg(DBG_PRINT, "Reached end of init thread function	\n");
         return NULL;
