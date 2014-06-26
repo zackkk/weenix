@@ -268,7 +268,7 @@ proc_cleanup(int status)
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
                 
-                /* wake up parent process(move it to runnable queue) if waiting on waitpid()*/
+                /* wake up parent process(move it to runnable queue) */
                 parent_thread = sched_wakeup_on(&curproc->p_pproc->p_wait);
                                                                                         
                 //If it wasn't waiting
@@ -281,11 +281,17 @@ proc_cleanup(int status)
                                 sched_make_runnable(parent_thread);
                        }
                 }
+
+                /*
+                 * give up the CPU, and run a new thread.  not really sure....
+                 */
+                sched_switch();
         }
+        /*
+         * the current process is init
+         * p_children must point to itself, since we CAN'T do cleanup while it has children.
+         */
         else{
-                // We must be the the init process, and p_children must point to
-                //itself (since we have no children). We CAN'T do cleanup
-                //While we have children
                 KASSERT(curproc == proc_initproc && curproc->p_children.l_next == &(curproc->p_children));
 
                 /*DEAD process*/
@@ -293,6 +299,22 @@ proc_cleanup(int status)
         
                 /*set exit status*/
                 curproc->p_status = status;
+
+                /*
+                 * switch back to idle process
+                 */
+                dbg(DBG_PRINT, "Switching context: Old: process %d \n", curproc->p_pid);
+
+                kthread_t *oldThread = curthr;
+                curproc = curproc->p_pproc;
+                /* get kthread of the parent process, and set it as the current thread */
+                list_link_t *link;
+                link = curproc->p_threads.l_prev;
+                curthr = list_item(link, kthread_t, kt_plink);
+                list_remove(link);
+
+                dbg(DBG_PRINT, "Switching context: New: process %d \n", curproc->p_pid);
+                context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
         }
         
         KASSERT(NULL != curproc->p_pproc); /* this process should have parent process */

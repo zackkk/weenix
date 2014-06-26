@@ -267,12 +267,13 @@ sched_switch(void)
         	intr_setipl(IPL_LOW);
         	intr_setipl(IPL_HIGH);
         }
-        dbg(DBG_PRINT, "We are in sched_switch, kt_runq is not empty now \n");
 
         /* switch thread context, chapter 3.1 */
+        dbg(DBG_PRINT, "Old: process %d \n", curproc->p_pid);
         oldThread = curthr;
         curthr = ktqueue_dequeue(&kt_runq);
         curproc = curthr->kt_proc;  // added on lecture slides
+        dbg(DBG_PRINT, "New: process %d \n", curproc->p_pid);
         context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
 
         /* restore IPL */
@@ -310,6 +311,8 @@ sched_make_runnable(kthread_t *thr)
         if(thr->kt_wchan){
         	ktqueue_remove(thr->kt_wchan, thr);
         }
+
+        dbg(DBG_PRINT, "GRADING1A 4.b The thread for process: %s is now in kt_runq\n", thr->kt_proc->p_comm);
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 
