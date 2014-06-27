@@ -167,6 +167,7 @@ proc_create(char *name)
         list_link_init(&(new_process->p_child_link));      /* link on proc list of children */
                                                              
         if(pid != 0){
+                dbg(DBG_PRINT, "Inserted child with pid %d into parent (pid %d) children list\n", new_process->p_pid, curproc->p_pid);
                 /*new process is child of current process, excep for idle process*/
                 list_insert_tail(&(curproc->p_children), &(new_process->p_child_link));
         }
@@ -232,7 +233,7 @@ proc_cleanup(int status)
         dbg(DBG_PRINT,"GRADING1A 2.b This is not the idle process\n");
         
         KASSERT(NULL != curproc->p_pproc);
-        dbg(DBG_PRINT,"GRADING1A 2.b The current process has a parent\n");
+        dbg(DBG_PRINT,"GRADING1A 2.b The current process (pid %d) has a parent\n", curproc->p_pid);
         
         
         /*DEAD process*/
@@ -342,7 +343,7 @@ proc_kill(proc_t *p, int status)
 
         /*set exit status*/
         p->p_status = status;
-        
+
         /*reparent child process to init process*/
         list_link_t *link = NULL;
         proc_t *my_child_proc = NULL;
@@ -378,42 +379,59 @@ proc_kill_all()
 {
         /*Dont kill init nor idle*/
         /*kill using proc_kill*/
+        dbg(DBG_PRINT, "What!\n");
 
         proc_t *current_proc = NULL;
         list_link_t *list_item = NULL;
         
+        //If no dead children... exit
+        if(proc_initproc->p_children.l_next == &proc_initproc->p_children){
+                dbg(DBG_PRINT, "Init process has no children\n");
+                return;
+        }
         /*
          * This loop will exit when all children of init are dead.
          * Each time we kill a process, we reparent its children to init
          * Thus, when we exit the loop, all process except idle and init will be alive
          */
+        int alive_children = 0;
+        list_link_t *link = NULL;
         while(1){
                 
-                //We have pointer to first process in children list
-                //alive children are at the head of the queue
-                current_proc =  list_head(&proc_initproc->p_children, proc_t, p_child_link);
+                //Get head of queue of init process children list
+                //Get first children.
+                link = proc_initproc->p_children.l_next;
                 
-                if(proc_initproc->p_children.l_next == &proc_initproc->p_children){
-                        dbg(DBG_PRINT, "Init process has no children\n");
-                        break;
+                //Assume no alive children until one found
+                alive_children = 0;
+                
+                //Look for a children that's alive
+                while(link != &proc_initproc->p_children){
+                        current_proc =  list_item(link, proc_t, p_child_link);
+                        
+                        //dbg(DBG_PRINT,"current_proc name %s (pid %d) state: %d\n", current_proc->p_comm, current_proc->p_pid, current_proc->p_state);
+                        if(current_proc->p_state == PROC_RUNNING){
+                                alive_children = 1;
+                                break;
+                        }
+                        else{
+                                link = link->l_next;
+                        }
+                        
                 }
-                //if head is dead
-                if(current_proc->p_state == PROC_DEAD){
+                
+                //If we reached the head of the p_queue, w
+                if(!alive_children){
                         //List pointing to itself is empty, it means we have no more children.
                         break;
                 }
-                else{
-                        //Remove dead process from init's list
-                        list_remove(&current_proc->p_child_link);
-                
+                else{                
                         //Kill that process, reparenting children to init
                         proc_kill(current_proc, 0);
-                        
-                        //Add process to the END of the init process children
-                        //Waiting to be ripped apart by the init process
-                        list_insert_tail(&(proc_initproc->p_children), &(current_proc->p_child_link));
+
                 }
         }
+        sched_switch();         
         return;
 }
 
@@ -703,3 +721,5 @@ proc_list_info(const void *arg, char *buf, size_t osize)
         } list_iterate_end();
         return size;
 }
+
+

@@ -323,7 +323,7 @@ void *testproc(int arg1, void *arg2) {
     start_proc(&pt, "waitpid any test", waitpid_test, 23);
     wait_for_any();
 
-    dbg(DBG_PRINT, "waitpid test");
+    /*dbg(DBG_PRINT, "waitpid test");
     start_proc(&pt, "waitpid test", waitpid_test, 32);
     pid = do_waitpid(2323, 0, &rv);
     if ( pid != -ECHILD ) dbg(DBG_PRINT, "Allowed wait on non-existent pid\n");
@@ -351,7 +351,7 @@ void *testproc(int arg1, void *arg2) {
     dbg(DBG_PRINT, "wake me test");
     wake_me_len = 0;
     start_proc(&pt, "wake me test", wakeme_test, 0);
-    /* Make sure p has blocked */
+    // Make sure p has blocked
     stop_until_queued(1, &wake_me_len);
     sched_wakeup_on(&wake_me_q);
     wait_for_proc(pt.p);
@@ -361,7 +361,7 @@ void *testproc(int arg1, void *arg2) {
     for (i = 0; i < 10; i++ ) 
 	start_proc(NULL, "broadcast me test", wakeme_test, 0);
     stop_until_queued(10, &wake_me_len);
-    /* Make sure the processes have blocked */
+    // Make sure the processes have blocked 
     sched_broadcast_on(&wake_me_q);
     wait_for_all();
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
@@ -371,7 +371,7 @@ void *testproc(int arg1, void *arg2) {
     dbg(DBG_PRINT, "wake me uncancellable test");
     start_proc(&pt, "wake me uncancellable test", 
 	    wakeme_uncancellable_test, 0);
-    /* Make sure p has blocked */
+    // Make sure p has blocked 
     stop_until_queued(1, &wake_me_len);
     sched_wakeup_on(&wake_me_q);
     wait_for_proc(pt.p);
@@ -381,7 +381,7 @@ void *testproc(int arg1, void *arg2) {
     for (i = 0; i < 10; i++ ) 
 	start_proc(NULL, "broadcast me uncancellable test", 
 		wakeme_uncancellable_test, 0);
-    /* Make sure the processes have blocked */
+    // Make sure the processes have blocked 
     stop_until_queued(10, &wake_me_len);
     sched_broadcast_on(&wake_me_q);
     wait_for_all();
@@ -391,7 +391,7 @@ void *testproc(int arg1, void *arg2) {
 #if CS402TESTS > 4
     dbg(DBG_PRINT, "cancel me test");
     start_proc(&pt, "cancel me test", cancelme_test, 0);
-    /* Make sure p has blocked */
+    // Make sure p has blocked 
     stop_until_queued(1, &wake_me_len);
     sched_cancel(pt.t);
     wait_for_proc(pt.p);
@@ -399,7 +399,7 @@ void *testproc(int arg1, void *arg2) {
 
     dbg(DBG_PRINT, "prior cancel me test");
     start_proc(&pt, "prior cancel me test", cancelme_test, 0);
-    /*  Cancel before sleep */
+    //  Cancel before sleep
     sched_cancel(pt.t);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
@@ -483,7 +483,7 @@ void *testproc(int arg1, void *arg2) {
     dbg(DBG_PRINT, "proc kill all test");
     for ( i=0 ; i < 10; i++ )
 	start_proc(NULL, "proc kill all test", cancelme_test, 0);
-    stop_until_queued(10, &wake_me_len);
+    stop_until_queued(10, &wake_me_len);*/
     /*
      * If you don't run this test in a separate process,
      *   the kernel should shutdown and you would fail this test.

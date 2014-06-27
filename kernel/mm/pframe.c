@@ -644,6 +644,6 @@ pageoutd_run(int arg1, void *arg2)
                     "nfreepages_target=|%d| "
 					"nfreepages_min=|%d| "
 					"page_free_count=|%d|\n", nfreepages_target, nfreepages_min, page_free_count());
-        }
+	}
         return NULL;
 }

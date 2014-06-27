@@ -68,6 +68,9 @@ static void      *initproc_run(int arg1, void *arg2);
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
 
+//Tests..
+extern void *testproc(int arg1, void *arg2);
+
 
 /**
  * This is the first real C function ever called. It performs a lot of
@@ -308,7 +311,13 @@ initproc_create(void)
 
 #ifdef __DRIVERS__
 
-int do_foo(kshell_t *kshell, int argc, char **argv)
+static void *
+run_test(int arg1, void *arg2){
+	testproc(0,0);
+	return NULL;
+}
+
+int tests(kshell_t *kshell, int argc, char **argv)
 {
     KASSERT(kshell != NULL);
     dbg(DBG_PRINT, "(GRADING#X Y.Z): do_foo() is invoked, argc = %d, argv = 0x%08x\n",
@@ -317,6 +326,11 @@ int do_foo(kshell_t *kshell, int argc, char **argv)
      * Shouldn't call a test function directly.
      * It's best to invoke it in a separate kernel process.  
      */
+    
+    proc_t *p = proc_create("testproc");
+    kthread_t *thr = kthread_create(p, run_test, 566, NULL);
+    //now what?
+    sched_make_runnable(thr);
     return 0;
 }
 
@@ -338,6 +352,7 @@ static void *
 initproc_run(int arg1, void *arg2)
 {
 	int i = 0;
+	//testproc(0,0);
 	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
         //while(do_waitpid(-1, 0, &i) != -ECHILD);
@@ -345,7 +360,7 @@ initproc_run(int arg1, void *arg2)
 #ifdef __DRIVERS__
 
 	//Add commands to shell...
-        kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
+        kshell_add_command("tests", tests, "Invokes testproc()...");
 	/*kshell_add_command("help", kshell_help_us, "invoke help to print help information...");
 	kshell_add_command("echo", kshell_echo_us, "invoke help to print help information...");
 	kshell_add_command("exit", kshell_exit_us, "invoke help to print help information...");*/
@@ -360,3 +375,5 @@ initproc_run(int arg1, void *arg2)
 	dbg(DBG_PRINT, "Reached end of init thread function	\n");
         return NULL;
 }
+
+

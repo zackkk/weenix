@@ -113,30 +113,30 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 	 list_link_t     kt_plink;        link on proc thread list
 	*/
         /* NOT_YET_IMPLEMENTED("PROCS: kthread_create"); */
-		KASSERT(NULL != p);
-		dbg(DBG_PRINT, "GRADING1A 3.a the process:%s of the kthread is not empty\n", p->p_comm);
+        KASSERT(NULL != p);
+        dbg(DBG_PRINT, "GRADING1A 3.a the process:%s of the kthread is not empty\n", p->p_comm);
 
-		kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
-		thr->kt_kstack = alloc_stack();
+        kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
+        thr->kt_kstack = alloc_stack();
 
         context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 
-		thr->kt_retval = NULL;
-		thr->kt_errno = NULL;
-		thr->kt_cancelled = 0;
-                
-                //sched_queue_init(&pointless_queue);
-		thr->kt_wchan = NULL;
-                
-		thr->kt_proc = p;
-		thr->kt_state = KT_RUN;
+        thr->kt_retval = NULL;
+        thr->kt_errno = NULL;
+        thr->kt_cancelled = 0;
+        
+        //sched_queue_init(&pointless_queue);
+        thr->kt_wchan = NULL;
+        
+        thr->kt_proc = p;
+        thr->kt_state = KT_RUN;
 
-		//sched_make_runnable(thr);
-		/* each process only has one thread associated with it. */
-		list_insert_head(&(p->p_threads), &(thr->kt_plink));
-		//list_insert_head(&q->tq_list, &thr->kt_qlink);
+        //sched_make_runnable(thr);
+        /* each process only has one thread associated with it. */
+        list_insert_head(&(p->p_threads), &(thr->kt_plink));
+        //list_insert_head(&q->tq_list, &thr->kt_qlink);
 
-		//dbg(DBG_PRINT, "kthread created successfully!\n");
+        //dbg(DBG_PRINT, "kthread created successfully!\n");
         return thr;
 }
 
@@ -203,7 +203,7 @@ kthread_exit(void *retval)
 		curthr->kt_state = KT_EXITED;
 		proc_thread_exited(retval);
 		dbg(DBG_PRINT, "GRADING1A 3.c kthread_exit successfully\n");
-		return NULL;
+		return;
 		//kthread_destroy(curthr); // if called then page fault
 }
 
