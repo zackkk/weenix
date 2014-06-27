@@ -52,7 +52,6 @@
 #include "fs/vfs_syscall.h"
 #include "fs/fcntl.h"
 #include "fs/stat.h"
-
 #include "test/kshell/kshell.h"
 #include "errno.h"
 
@@ -321,6 +320,7 @@ int do_foo(kshell_t *kshell, int argc, char **argv)
     return 0;
 }
 
+
 #endif /* __DRIVERS__ */
 
 /**
@@ -344,7 +344,11 @@ initproc_run(int arg1, void *arg2)
 	
 #ifdef __DRIVERS__
 
+	//Add commands to shell...
         kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
+	/*kshell_add_command("help", kshell_help_us, "invoke help to print help information...");
+	kshell_add_command("echo", kshell_echo_us, "invoke help to print help information...");
+	kshell_add_command("exit", kshell_exit_us, "invoke help to print help information...");*/
 
         kshell_t *kshell = kshell_create(0);
         if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
