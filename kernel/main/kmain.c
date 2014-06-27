@@ -320,11 +320,20 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-	int i = 0;
+	/* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
 	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
-        /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
-        //do_waitpid(-1, 0, &i);
+
+	#ifdef __DRIVERS__
+
+        //kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
+
+        kshell_t *kshell = kshell_create(0);
+        if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+        while (kshell_execute_next(kshell));
+        kshell_destroy(kshell);
+
+    #endif /* __DRIVERS__ */
+
 	
-	dbg(DBG_PRINT, "Reached end of init thread function	\n");
-        return NULL;
+    return NULL;
 }
