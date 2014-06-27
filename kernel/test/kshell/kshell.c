@@ -393,6 +393,7 @@ int kshell_execute_next(kshell_t *ksh)
         kprintf(ksh, "%s ", kshell_prompt);
 
         if ((nbytes = kshell_read(ksh, buf, KSH_BUF_SIZE)) <= 0) {
+                //dbg(DBG_PRINT, "Kshell returned %d\n", nbytes);
                 return nbytes;
         }
         if (nbytes == 1) return 1;

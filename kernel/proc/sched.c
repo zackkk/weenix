@@ -149,7 +149,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
         sched_switch();
         
 
-        return 0;
+        //return -EINTR;
 }
 
 kthread_t *

@@ -361,9 +361,7 @@ initproc_run(int arg1, void *arg2)
 
 	//Add commands to shell...
         kshell_add_command("tests", tests, "Invokes testproc()...");
-	/*kshell_add_command("help", kshell_help_us, "invoke help to print help information...");
-	kshell_add_command("echo", kshell_echo_us, "invoke help to print help information...");
-	kshell_add_command("exit", kshell_exit_us, "invoke help to print help information...");*/
+
 
         kshell_t *kshell = kshell_create(0);
         if (NULL == kshell) panic("init: Couldn't create kernel shell\n");

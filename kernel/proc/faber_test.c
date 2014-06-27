@@ -323,7 +323,7 @@ void *testproc(int arg1, void *arg2) {
     start_proc(&pt, "waitpid any test", waitpid_test, 23);
     wait_for_any();
 
-    /*dbg(DBG_PRINT, "waitpid test");
+    dbg(DBG_PRINT, "waitpid test");
     start_proc(&pt, "waitpid test", waitpid_test, 32);
     pid = do_waitpid(2323, 0, &rv);
     if ( pid != -ECHILD ) dbg(DBG_PRINT, "Allowed wait on non-existent pid\n");
@@ -365,6 +365,7 @@ void *testproc(int arg1, void *arg2) {
     sched_broadcast_on(&wake_me_q);
     wait_for_all();
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
+ 
 #endif
 
 #if CS402TESTS > 3
@@ -376,7 +377,7 @@ void *testproc(int arg1, void *arg2) {
     sched_wakeup_on(&wake_me_q);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-
+  
     dbg(DBG_PRINT, "broadcast me uncancellable test");
     for (i = 0; i < 10; i++ ) 
 	start_proc(NULL, "broadcast me uncancellable test", 
@@ -386,6 +387,7 @@ void *testproc(int arg1, void *arg2) {
     sched_broadcast_on(&wake_me_q);
     wait_for_all();
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
+  
 #endif
 
 #if CS402TESTS > 4
@@ -396,7 +398,7 @@ void *testproc(int arg1, void *arg2) {
     sched_cancel(pt.t);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-
+   /*
     dbg(DBG_PRINT, "prior cancel me test");
     start_proc(&pt, "prior cancel me test", cancelme_test, 0);
     //  Cancel before sleep

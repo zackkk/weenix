@@ -159,6 +159,8 @@ kthread_cancel(kthread_t *kthr, void *retval)
 		dbg(DBG_PRINT, "GRADING1A 3.b the kthread is not empty\n");
 
 		if(kthr == curthr){
+                        
+                        //dbg(DBG_PRINT, "Ret value in kthread_cancel %d\n", *((int*)retval));
 			kthread_exit(retval);
 		}
 		else{
@@ -198,9 +200,11 @@ kthread_exit(void *retval)
 		dbg(DBG_PRINT, "GRADING1A 3.c kthread's link on ktqueue is empty\n");
 		KASSERT(curthr->kt_proc == curproc);
 		dbg(DBG_PRINT, "GRADING1A 3.c curthr and curproc match\n");
-
+                dbg(DBG_PRINT, "Current process is pid %d\n", curproc->p_pid);
 		curthr->kt_retval = retval;
 		curthr->kt_state = KT_EXITED;
+                
+                //dbg(DBG_PRINT, "Ret value in kthread_exit %d\n", *(int*)retval);
 		proc_thread_exited(retval);
 		dbg(DBG_PRINT, "GRADING1A 3.c kthread_exit successfully\n");
 		return;
