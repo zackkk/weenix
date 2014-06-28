@@ -134,8 +134,6 @@ int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
 		//NOT_YET_IMPLEMENTED("PROCS: sched_cancellable_sleep_on");
-                dbg(DBG_PRINT, "before canceled get. cancel thread is pid %d\n", curthr->kt_proc -> p_pid);
-        dbg(DBG_PRINT, "before cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
         if(curthr->kt_cancelled)
         {
              return -EINTR;
@@ -149,8 +147,6 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 
         /* switch context: make a runnable thread running */
         sched_switch();
-        dbg(DBG_PRINT, "after canceled get. cancel thread is pid %d\n", curthr->kt_proc -> p_pid);
-        dbg(DBG_PRINT, "after cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
         if(curthr->kt_cancelled)
         {
              return -EINTR;
@@ -172,7 +168,7 @@ sched_wakeup_on(ktqueue_t *q)
         /* move a sleeping thread into runnable queue */
         thr = ktqueue_dequeue(q);
         KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
-        dbg(DBG_PRINT, "GRADING1A 4.a The point to a corresponding thread\n");
+        dbg(DBG_PRINT, "(GRADING1A 4.a) The point to a corresponding thread\n");
         sched_make_runnable(thr);
         return thr;
         
@@ -206,8 +202,6 @@ sched_cancel(struct kthread *kthr)
 {
 	 	 //NOT_YET_IMPLEMENTED("PROCS: sched_cancel");
         kthr->kt_cancelled = 1;
-        dbg(DBG_PRINT, "canceled get. cancel thread is pid %d\n", kthr->kt_proc -> p_pid);
-        dbg(DBG_PRINT, "cancel test. cancel thread cancel flag is %d\n", kthr-> kt_cancelled);
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
         	if(kthr->kt_wchan){
@@ -272,6 +266,7 @@ sched_switch(void)
          */
         while(sched_queue_empty(&kt_runq) || )
         {
+                
         	intr_setipl(IPL_LOW);
         	intr_setipl(IPL_HIGH);
         }
@@ -308,7 +303,7 @@ sched_make_runnable(kthread_t *thr)
 		//NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
 		/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
-        dbg(DBG_PRINT, "GRADING1A 4.b The thread is not blocked on kt_runq\n");
+        dbg(DBG_PRINT, "(GRADING1A 4.b) The thread is not blocked on kt_runq\n");
 
         /* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
@@ -320,7 +315,7 @@ sched_make_runnable(kthread_t *thr)
         	ktqueue_remove(thr->kt_wchan, thr);
         }
 
-        dbg(DBG_PRINT, "GRADING1A 4.b The thread for process: %s is now in kt_runq\n", thr->kt_proc->p_comm);
+        dbg(DBG_PRINT, "(GRADING1A 4.b) The thread for process: %s is now in kt_runq\n", thr->kt_proc->p_comm);
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 

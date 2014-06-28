@@ -36,11 +36,8 @@
 void
 kmutex_init(kmutex_t *mtx)
 {
-	/*aliases*/
-	ktqueue_t *waitqPtr = &(mtx->km_waitq); /*mutex wait queue*/
-		
 	/*initialize km_waitq*/
-	sched_queue_init(waitqPtr);
+	sched_queue_init(&(mtx->km_waitq));
 	
 	/*initialize km_holder*/
 	mtx->km_holder = NULL;

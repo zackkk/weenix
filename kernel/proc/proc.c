@@ -133,10 +133,10 @@ proc_create(char *name)
         
         
         KASSERT(PID_IDLE != pid || list_empty(&_proc_list)); /* pid can only be PID_IDLE if this is the first process */
-        dbg(DBG_PRINT,"GRADING1A 2.a New process pid is %d and is %s process\n", new_process->p_pid, new_process->p_comm);
+        dbg(DBG_PRINT,"(GRADING1A 2.a) New process pid is %d and is %s process\n", new_process->p_pid, new_process->p_comm);
         
         KASSERT(PID_INIT != pid || PID_IDLE == curproc->p_pid); /* pid can only be PID_INIT when creating from idle process*/
-        dbg(DBG_PRINT,"GRADING1A 2.a New process pid is %d and is %s process\n", new_process->p_pid, new_process->p_comm);
+        dbg(DBG_PRINT,"(GRADING1A 2.a) New process pid is %d and is %s process\n", new_process->p_pid, new_process->p_comm);
         
         /*If this is the init process (pid = 1), the proc_initproc to point to it*/
         if(new_process->p_pid == 1){
@@ -228,13 +228,13 @@ proc_cleanup(int status)
         dbg(DBG_PRINT, "Current process being cleand up is pid %d\n", curproc->p_pid);
         
         KASSERT(NULL != proc_initproc); /* should have an "init" process */
-        dbg(DBG_PRINT,"GRADING1A 2.b We have an init process\n");
+        dbg(DBG_PRINT,"(GRADING1A 2.b) We have an init process\n");
         
         KASSERT(1 <= curproc->p_pid); /* this process should not be idle process */
-        dbg(DBG_PRINT,"GRADING1A 2.b This is not the idle process\n");
+        dbg(DBG_PRINT,"(GRADING1A 2.b) This is not the idle process\n");
         
         KASSERT(NULL != curproc->p_pproc);
-        dbg(DBG_PRINT,"GRADING1A 2.b The current process (pid %d) has a parent\n", curproc->p_pid);
+        dbg(DBG_PRINT,"(GRADING1A 2.b) The current process (pid %d) has a parent\n", curproc->p_pid);
         
         
         /*DEAD process*/
@@ -289,7 +289,7 @@ proc_cleanup(int status)
                 /*
                  * give up the CPU, and run a new thread.  not really sure....
                  */
-                sched_switch();
+               sched_switch();
         }
         /*
          * the current process is init
@@ -327,7 +327,7 @@ proc_cleanup(int status)
         }
         
         KASSERT(NULL != curproc->p_pproc); /* this process should have parent process */
-        dbg(DBG_PRINT,"GRADING1A 2.b The current dead process has a parent\n");
+        dbg(DBG_PRINT,"(GRADING1A 2.b) The current dead process has a parent\n");
 
         return;
 }
@@ -542,10 +542,10 @@ do_waitpid(pid_t pid, int options, int *status)
                         p = list_item(link, proc_t, p_child_link);
                         
                         KASSERT(NULL != p);
-                        dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
+                        dbg(DBG_PRINT,"(GRADING1A 2.c) Process p is not NULL\n");
                         
                         KASSERT(NULL != p->p_pagedir);
-                        dbg(DBG_PRINT,"GRADING1A 2.c Process p has a page directory\n");
+                        dbg(DBG_PRINT,"(GRADING1A 2.c) Process p has a page directory\n");
                         
                         //if next element is head of queue, we didn't find a dead child, sleep.
                         
@@ -558,12 +558,12 @@ do_waitpid(pid_t pid, int options, int *status)
                                 return_pid = p->p_pid;                      //copy return pid
                                 
                                 KASSERT(-1 == pid || p->p_pid == pid);
-                                dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d\n", p->p_pid);
+                                dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d\n", p->p_pid);
                                 
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
                                 
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
-                                dbg(DBG_PRINT,"GRADING1A 2.c thr points to a thread to be destroied \n");
+                                dbg(DBG_PRINT,"(GRADING1A 2.c) thr points to a thread to be destroied \n");
 
                                 slab_obj_free(proc_allocator, p);           //free memory used by process
                                 return return_pid;
@@ -580,10 +580,10 @@ do_waitpid(pid_t pid, int options, int *status)
                         p = list_item(link, proc_t, p_child_link);
                         
                         KASSERT(NULL != p);
-                        dbg(DBG_PRINT,"GRADING1A 2.c Process p is not NULL\n");
+                        dbg(DBG_PRINT,"(GRADING1A 2.c) Process p is not NULL\n");
                         
                         KASSERT(NULL != p->p_pagedir);
-                        dbg(DBG_PRINT,"GRADING1A 2.c Process p has a page directory\n");
+                        dbg(DBG_PRINT,"(GRADING1A 2.c) Process p has a page directory\n");
                         
                         dbg(DBG_PRINT,"Current child pid %d, requested pid is %d\n", p->p_pid, pid);
                         
@@ -597,7 +597,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         return_pid = p->p_pid;                      //copy return pid 
                                         
                                         KASSERT(-1 == pid || p->p_pid == pid);
-                                        dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
+                                        dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
                                         
                                         slab_obj_free(proc_allocator, p);           //free memory used by process
                                         
@@ -605,7 +605,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         
                                 }
                                 else{
-                                        dbg(DBG_PRINT,"GRADING1A 2.c Found child process with pid %d, but alive... waiting.\n", p->p_pid);
+                                        dbg(DBG_PRINT,"(GRADING1A 2.c) Found child process with pid %d, but alive... waiting.\n", p->p_pid);
                                         //waiting for the child to die to switching context in sched_sleep_on
                                         sched_sleep_on(&curproc->p_wait);
                                         
@@ -616,7 +616,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         return_pid = p->p_pid;                      //copy return pid
                                         
                                         KASSERT(-1 == pid || p->p_pid == pid);
-                                        dbg(DBG_PRINT,"GRADING1A 2.c Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
+                                        dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
                                         
                                         slab_obj_free(proc_allocator, p);           //free memory used by process
                                         
