@@ -324,7 +324,7 @@ void *testproc(int arg1, void *arg2) {
     int i = 0;
      sched_queue_init(&wake_me_q);
 
-/*#if CS402TESTS > 0
+#if CS402TESTS > 0
     dbg(DBG_PRINT, "waitpid any test");
     start_proc(&pt, "waitpid any test", waitpid_test, 23);
     wait_for_any();
@@ -432,13 +432,11 @@ void *testproc(int arg1, void *arg2) {
 
 
 #endif
-*/
+
 #if CS402TESTS > 5
-    dbg(DBG_PRINT, "Reparenting test\n\n\n\n\n\n");
+    dbg(DBG_PRINT, "Reparenting test\n");
     start_proc(NULL, "Reparenting test", reparent_test, 1);
     stop_until_queued(1, &wake_me_len);
-    
-     dbg(DBG_PRINT, "before wake up on!!!!!!!!!!\n\n\n\n\n\n");
     sched_wakeup_on(&wake_me_q);
     
    
@@ -509,10 +507,10 @@ void *testproc(int arg1, void *arg2) {
      *   although this function will not return, you should
      *   be able to get your kshell prompt back.
      */
-    proc_kill_all();
+    //proc_kill_all();
 
-    dbg(DBG_PRINT, "proc_kill_all() must not return\n\n");
-    KASSERT(0 && "Error in proc kill all test");
+    //dbg(DBG_PRINT, "proc_kill_all() must not return\n\n");
+    //KASSERT(0 && "Error in proc kill all test");
 #endif
 
     return NULL;

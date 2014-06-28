@@ -313,15 +313,15 @@ initproc_create(void)
 
 static void *
 run_test(int arg1, void *arg2){
-	 dbg(DBG_PRINT, "testproc\n\n");
+	dbg(DBG_PRINT, "testproc\n\n");
+	testproc(0,0);
 	return NULL;
 }
 
 int tests(kshell_t *kshell, int argc, char **argv)
 {
+
     KASSERT(kshell != NULL);
-    dbg(DBG_PRINT, "(GRADING#X Y.Z): do_foo() is invoked, argc = %d, argv = 0x%08x\n",
-	    argc, (unsigned int)argv);
     /*
      * Shouldn't call a test function directly.
      * It's best to invoke it in a separate kernel process.  
@@ -331,6 +331,7 @@ int tests(kshell_t *kshell, int argc, char **argv)
     kthread_t *thr = kthread_create(p, run_test, 566, NULL);
     //now what?
     sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait);
     return 0;
 }
 
@@ -352,6 +353,8 @@ static void *
 initproc_run(int arg1, void *arg2)
 {
 	int i = 0;
+
+	
 	//testproc(0,0);
 	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
         /* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
@@ -366,13 +369,8 @@ initproc_run(int arg1, void *arg2)
 
         kshell_t *kshell = kshell_create(0);
         if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-        dbg(DBG_PRINT,"Before while\n\n\n\n\n\n");
 
-	while ((n = kshell_execute_next(kshell))){
-		
-		dbg(DBG_PRINT,"Waiting for input (n = %d)\n\n\n\n\n\n", n);
-	}
-	dbg(DBG_PRINT,"After while \n\n\n\n\n\n");
+	while (kshell_execute_next(kshell));
 
         kshell_destroy(kshell);
 

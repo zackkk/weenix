@@ -289,7 +289,7 @@ proc_cleanup(int status)
                 /*
                  * give up the CPU, and run a new thread.  not really sure....
                  */
-                sched_switch();
+               sched_switch();
         }
         /*
          * the current process is init
