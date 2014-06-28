@@ -134,6 +134,8 @@ int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
 		//NOT_YET_IMPLEMENTED("PROCS: sched_cancellable_sleep_on");
+                dbg(DBG_PRINT, "before canceled get. cancel thread is pid %d\n", curthr->kt_proc -> p_pid);
+        dbg(DBG_PRINT, "before cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
         if(curthr->kt_cancelled)
         {
              return -EINTR;
@@ -147,8 +149,12 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 
         /* switch context: make a runnable thread running */
         sched_switch();
-        
-
+        dbg(DBG_PRINT, "after canceled get. cancel thread is pid %d\n", curthr->kt_proc -> p_pid);
+        dbg(DBG_PRINT, "after cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
+        if(curthr->kt_cancelled)
+        {
+             return -EINTR;
+        }
         return 0;
 }
 
@@ -200,6 +206,8 @@ sched_cancel(struct kthread *kthr)
 {
 	 	 //NOT_YET_IMPLEMENTED("PROCS: sched_cancel");
         kthr->kt_cancelled = 1;
+        dbg(DBG_PRINT, "canceled get. cancel thread is pid %d\n", kthr->kt_proc -> p_pid);
+        dbg(DBG_PRINT, "cancel test. cancel thread cancel flag is %d\n", kthr-> kt_cancelled);
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
         	if(kthr->kt_wchan){

@@ -392,9 +392,12 @@ int kshell_execute_next(kshell_t *ksh)
 
         kprintf(ksh, "%s ", kshell_prompt);
 
+        dbg(DBG_PRINT,"before kshell read\n\n\n\n\n\n");
         if ((nbytes = kshell_read(ksh, buf, KSH_BUF_SIZE)) <= 0) {
+                dbg(DBG_PRINT, "Kshell returned %d\n", nbytes);
                 return nbytes;
         }
+        dbg(DBG_PRINT,"after kshell read\n\n\n\n\n\n");
         if (nbytes == 1) return 1;
         if (buf[nbytes - 1] == '\n') {
                 /* Overwrite the newline with a null terminator */
