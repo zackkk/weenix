@@ -117,7 +117,7 @@ sched_sleep_on(ktqueue_t *q)
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
-
+        dbg(DBG_PRINT, "curproc is %d curthr pid is %d", curproc->p_pid, curthr->kt_proc->p_pid);
         /* switch context: make a runnable thread running */
         sched_switch();
 }
@@ -167,6 +167,7 @@ sched_wakeup_on(ktqueue_t *q)
         
         /* move a sleeping thread into runnable queue */
         thr = ktqueue_dequeue(q);
+        dbg(DBG_PRINT, "\n\n\ncurproc is %d  proc getting dq'ed is %d\n\n\n", curproc->p_pid, thr->kt_proc->p_pid);
         KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
         dbg(DBG_PRINT, "(GRADING1A 4.a) The point to a corresponding thread\n");
         sched_make_runnable(thr);
@@ -264,7 +265,7 @@ sched_switch(void)
          *  if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
          *  hardware interrupts, when not masked, can occur between any two code instructions
          */
-        while(sched_queue_empty(&kt_runq) || )
+        while(sched_queue_empty(&kt_runq))
         {
                 
         	intr_setipl(IPL_LOW);
@@ -319,6 +320,9 @@ sched_make_runnable(kthread_t *thr)
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 
+        if(thr->kt_proc->p_pid == 1){
+        	dbg(DBG_PRINT, "process: %d makes init process runnable \n", curproc->p_pid);
+        }
         /* restore IPL */
         intr_setipl(oldIPL);
 }

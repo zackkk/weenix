@@ -298,7 +298,7 @@ void *mutex_test_cancelme(int arg1, void *arg2) {
 }
 
 /*
- * A thread function to test reparenting.  Start a child wakeme_test process,
+ * A thread function to test reparenting.  Start a child  process,
  * and if arg1 is > 1, create a child process that will do the same (with arg1
  * decrementd.  Calling this with arg1 results in 2 * arg1 processes, half of
  * them waiting on wake_me_q.  None of them wait, so as they exit, they should
@@ -322,7 +322,7 @@ void *testproc(int arg1, void *arg2) {
     proc_t *p;
     int rv = 0;
     int i = 0;
-     sched_queue_init(&wake_me_q);
+     //sched_queue_init(&wake_me_q);
 
 #if CS402TESTS > 0
     dbg(DBG_PRINT, "waitpid any test");
@@ -434,6 +434,7 @@ void *testproc(int arg1, void *arg2) {
 #endif
 
 #if CS402TESTS > 5
+
     dbg(DBG_PRINT, "Reparenting test\n");
     start_proc(NULL, "Reparenting test", reparent_test, 1);
     stop_until_queued(1, &wake_me_len);
@@ -443,15 +444,18 @@ void *testproc(int arg1, void *arg2) {
     wait_for_all();
     stop_until_zero(&wake_me_len);
     
-  /* 
+
     dbg(DBG_PRINT, "Reparenting stress test");
     start_proc(NULL, "Reparenting stress test", reparent_test, 10);
     stop_until_queued(10, &wake_me_len);
     sched_broadcast_on(&wake_me_q);
+    dbg(DBG_PRINT, "\n\n\nbefore wait_for_all current process PID: %d\n\n\n", curproc->p_pid);
     wait_for_all();
+    dbg(DBG_PRINT, "\n\n\nafter_wait_for_all current process PID: %d\n\n\n", curproc->p_pid);
     stop_until_zero(&wake_me_len);
+    dbg(DBG_PRINT, "\n\n\nafter_stop_until_zero current process PID: %d\n\n\n", curproc->p_pid);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-    
+  /*  
 #endif
 
 #if CS402TESTS > 6

@@ -272,19 +272,11 @@ proc_cleanup(int status)
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
                 
+                dbg(DBG_PRINT, "curproc is %d", curproc->p_pid);
                 /* wake up parent process(move it to runnable queue) */
+                //if(curproc->p_pproc->p_pid != 1) 
                 parent_thread = sched_wakeup_on(&curproc->p_pproc->p_wait);
-                                                                                        
-                //If it wasn't waiting
-                if(parent_thread == NULL){
-                       //get parent thread 
-                       parent_thread = list_item(curproc->p_pproc->p_threads.l_next, kthread_t, kt_plink);
-                       
-                       //if sleeping, make it run
-                       if(parent_thread->kt_state == KT_SLEEP || parent_thread->kt_state == KT_SLEEP_CANCELLABLE){
-                                sched_make_runnable(parent_thread);
-                       }
-                }
+                
 
                 /*
                  * give up the CPU, and run a new thread.  not really sure....
