@@ -451,10 +451,10 @@ proc_thread_exited(void *retval)
 pid_t
 do_waitpid(pid_t pid, int options, int *status)
 {
-		KASSERT(pid == -1 || pid > 0);
-		dbg(DBG_PRINT,"pid is -1 or positive number\n");
-		KASSERT(options == 0);
-		dbg(DBG_PRINT,"options is not 0\n");
+        KASSERT(pid == -1 || pid > 0);
+        dbg(DBG_PRINT,"pid is -1 or positive number\n");
+        KASSERT(options == 0);
+        dbg(DBG_PRINT,"options is not 0\n");
 
         proc_t *p = NULL;
         kthread_t *thr = NULL;
@@ -511,7 +511,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
                                 
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
-                                dbg(DBG_PRINT,"GRADING1A 2.c hr points to a thread to be destroied \n");
+                                dbg(DBG_PRINT,"GRADING1A 2.c thr points to a thread to be destroied \n");
 
                                 slab_obj_free(proc_allocator, p);           //free memory used by process
                                 return return_pid;
