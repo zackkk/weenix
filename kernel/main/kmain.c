@@ -68,6 +68,10 @@ static void      *initproc_run(int arg1, void *arg2);
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
 
+//Tests..
+extern void *testproc(int arg1, void *arg2);
+extern void *sunghan_test(int arg1, void *arg2);
+
 
 /**
  * This is the first real C function ever called. It performs a lot of
@@ -175,15 +179,15 @@ bootstrap(int arg1, void *arg2)
         proc_t *proc = proc_create("idle_process");
         curproc = proc;
         KASSERT(NULL != curproc);
-        dbg(DBG_PRINT, "GRADING1A 1.a The current process (idle) is not NULL\n");
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current process (idle) is not NULL\n");
         KASSERT(PID_IDLE == curproc->p_pid);
-        dbg(DBG_PRINT, "GRADING1A 1.a The current process is the idle process\n");
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current process is the idle process\n");
 
         /* context is created in kthread_create */
         kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
         curthr = thr;
         KASSERT(NULL != curthr);
-        dbg(DBG_PRINT, "GRADING1A 1.a The thread for the idle process has been created successfully\n");
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The thread for the idle process has been created successfully\n");
 
         context_make_active(&(thr->kt_ctx));
 
@@ -287,9 +291,9 @@ initproc_create(void)
 	      /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
 		proc_t *proc = proc_create("init_process");
 		KASSERT(NULL != proc);
-		dbg(DBG_PRINT, "GRADING1A 1.b The pointer to the init process is not NULL\n");
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
 		KASSERT(PID_INIT == proc->p_pid);
-		dbg(DBG_PRINT, "GRADING1A 1.b The pid of the init process is PID_INIT\n");
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pid of the init process is PID_INIT\n");
 
 		//curproc = proc;
 
@@ -299,7 +303,7 @@ initproc_create(void)
 		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
 		//curthr = thr;
 		KASSERT(NULL != thr);
-		dbg(DBG_PRINT, "GRADING1A 1.b The pointer to the thread for the init process is not NULL\n");
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the thread for the init process is not NULL\n");
 
         return thr;
 
@@ -308,15 +312,51 @@ initproc_create(void)
 
 #ifdef __DRIVERS__
 
-int do_foo(kshell_t *kshell, int argc, char **argv)
+static void *
+faber_test(int arg1, void *arg2){
+	/* faber_test.c */
+	testproc(0,0);
+	return NULL;
+}
+static void *
+sunhan_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	sunghan_test(0,0);
+	return NULL;
+}
+static void *
+sunhan_deadlock_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	sunghan_deadlock_test(0,0);
+	return NULL;
+}
+
+
+int ftests(kshell_t *kshell, int argc, char **argv)
 {
     KASSERT(kshell != NULL);
-    dbg(DBG_PRINT, "(GRADING#X Y.Z): do_foo() is invoked, argc = %d, argv = 0x%08x\n",
-	    argc, (unsigned int)argv);
-    /*
-     * Shouldn't call a test function directly.
-     * It's best to invoke it in a separate kernel process.  
-     */
+    proc_t *p = proc_create("faber_test_proc");
+    kthread_t *thr = kthread_create(p, faber_test, 555, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+int stests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("sunhan_test_proc");
+    kthread_t *thr = kthread_create(p, sunhan_test, 666, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+int dtests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("sunhan_deadlock_test_proc");
+    kthread_t *thr = kthread_create(p, sunhan_deadlock_test, 777, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
     return 0;
 }
 
@@ -337,26 +377,25 @@ int do_foo(kshell_t *kshell, int argc, char **argv)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-	/* NOT_YET_IMPLEMENTED("PROCS: initproc_run"); */
-	dbg(DBG_PRINT, "*****runs into initproc_run*****\n");
+
+	
 
 #ifdef __DRIVERS__
 
-	//Add commands to shell...
-    kshell_add_command("foo", do_foo, "invoke do_foo() to print a message...");
-	/*kshell_add_command("help", kshell_help_us, "invoke help to print help information...");
-	kshell_add_command("echo", kshell_echo_us, "invoke help to print help information...");
-	kshell_add_command("exit", kshell_exit_us, "invoke help to print help information...");*/
-
+        kshell_add_command("ftest", ftests, "Invokes testproc()...");
+        kshell_add_command("stest", stests, "Invokes sunghan_test()...");
+        kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
         kshell_t *kshell = kshell_create(0);
         if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-        while (kshell_execute_next(kshell));
+        while (kshell_execute_next(kshell))
+        	;
+
         kshell_destroy(kshell);
-
-
 #endif /* __DRIVERS__ */
 
 
 	
     return NULL;
 }
+
+
