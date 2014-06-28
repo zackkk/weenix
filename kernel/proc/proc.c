@@ -266,6 +266,8 @@ proc_cleanup(int status)
                         
                         /*add child to list of init children...*/
                         list_insert_tail(&(proc_initproc->p_children), &(my_child_proc->p_child_link));
+                        
+                        dbg(DBG_PRINT, "Process %d reparented to process pid %d\n", my_child_proc->p_pid, my_child_proc->p_pproc->p_pid);
                 }
                 
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
@@ -440,13 +442,20 @@ proc_kill_all()
                         //List pointing to itself is empty, it means we have no more children.
                         break;
                 }
-                else{                
-                        //Kill that process, reparenting children to init
-                        proc_kill(current_proc, 0);
+                else{
+                        if(current_proc->p_pproc->p_pid != 0){
+                            //Kill that process, reparenting children to init
+                                proc_kill(current_proc, 0);
+                                dbg(DBG_PRINT, "returned from proc_kill()\n");
+                        }
+                        else{
+                                dbg(DBG_PRINT, "current_process has parent with pid %d\n", current_proc->p_pproc->p_pid);
+                        }
+                        
 
                 }
         }
-        //
+        dbg(DBG_PRINT, "switching processes\n");
         sched_switch();         
         return;
 }
@@ -640,7 +649,7 @@ do_exit(int status)
         /*TODO: cancel all of our threads*/
         /*but we just have one thread per process*/
         
-        dbg(DBG_PRINT, "Status: %d\n", status);
+        dbg(DBG_PRINT, "Process with pid %d called do_exit()\n", curproc->p_pid);
         /*Get current thread and cancel it and clean process*/
         /*current thread is the main thread of the process*/
 

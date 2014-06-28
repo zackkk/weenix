@@ -313,7 +313,7 @@ initproc_create(void)
 
 static void *
 run_test(int arg1, void *arg2){
-	testproc(0,0);
+	 dbg(DBG_PRINT, "testproc\n\n");
 	return NULL;
 }
 
@@ -362,10 +362,18 @@ initproc_run(int arg1, void *arg2)
 	//Add commands to shell...
         kshell_add_command("tests", tests, "Invokes testproc()...");
 
+	int n = 0;
 
         kshell_t *kshell = kshell_create(0);
         if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-        while (kshell_execute_next(kshell));
+        dbg(DBG_PRINT,"Before while\n\n\n\n\n\n");
+
+	while ((n = kshell_execute_next(kshell))){
+		
+		dbg(DBG_PRINT,"Waiting for input (n = %d)\n\n\n\n\n\n", n);
+	}
+	dbg(DBG_PRINT,"After while \n\n\n\n\n\n");
+
         kshell_destroy(kshell);
 
 #endif /* __DRIVERS__ */

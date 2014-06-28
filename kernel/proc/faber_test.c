@@ -63,6 +63,7 @@ static void start_proc(proc_thread_t *ppt, char *name, kthread_func_t f, int arg
     pt.t = kthread_create(pt.p, f, arg1, NULL);
     KASSERT(pt.p && pt.t && "Cannot create thread or process");
     sched_make_runnable(pt.t);
+    dbg(DBG_PRINT, "PRocess pid %d is executing\n", curthr->kt_proc->p_pid);
     if (ppt != NULL) {
         memcpy(ppt, &pt, sizeof(proc_thread_t));
     }
@@ -109,7 +110,9 @@ static void wait_for_all() {
  * nodes waiting for the kernel thread queue.
  */
 static void stop_until_queued(int tot, int *count) {
+    dbg(DBG_PRINT, "stop_until_queued made thread (pid %d) runnable\n", curthr->kt_proc->p_pid);
     while ( *count < tot) {
+	dbg(DBG_PRINT, "stop_until_queued made thread (pid %d) runnable\n", curthr->kt_proc->p_pid);	
 	sched_make_runnable(curthr);
 	sched_switch();
     }
@@ -176,6 +179,8 @@ void *wakeme_uncancellable_test(int arg1, void *arg2) {
  */
 void *cancelme_test(int arg1, void *arg2) {
     wake_me_len++;
+    dbg(DBG_PRINT, "cancel test. cancel thread is pid %d\n", curproc-> p_pid);
+    dbg(DBG_PRINT, "cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
     if (sched_cancellable_sleep_on(&wake_me_q) != -EINTR ) {
 	dbg(DBG_PRINT, "Wakeme returned?! pid (%d)\n", curproc->p_pid);
 	wake_me_len--;
@@ -317,8 +322,9 @@ void *testproc(int arg1, void *arg2) {
     proc_t *p;
     int rv = 0;
     int i = 0;
+     sched_queue_init(&wake_me_q);
 
-#if CS402TESTS > 0
+/*#if CS402TESTS > 0
     dbg(DBG_PRINT, "waitpid any test");
     start_proc(&pt, "waitpid any test", waitpid_test, 23);
     wait_for_any();
@@ -398,7 +404,7 @@ void *testproc(int arg1, void *arg2) {
     sched_cancel(pt.t);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-   /*
+   
     dbg(DBG_PRINT, "prior cancel me test");
     start_proc(&pt, "prior cancel me test", cancelme_test, 0);
     //  Cancel before sleep
@@ -423,15 +429,23 @@ void *testproc(int arg1, void *arg2) {
     sched_wakeup_on(&wake_me_q);
     wait_for_all();
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-#endif
 
+
+#endif
+*/
 #if CS402TESTS > 5
-    dbg(DBG_PRINT, "Reparenting test");
+    dbg(DBG_PRINT, "Reparenting test\n\n\n\n\n\n");
     start_proc(NULL, "Reparenting test", reparent_test, 1);
     stop_until_queued(1, &wake_me_len);
+    
+     dbg(DBG_PRINT, "before wake up on!!!!!!!!!!\n\n\n\n\n\n");
     sched_wakeup_on(&wake_me_q);
+    
+   
     wait_for_all();
     stop_until_zero(&wake_me_len);
+    
+  /* 
     dbg(DBG_PRINT, "Reparenting stress test");
     start_proc(NULL, "Reparenting stress test", reparent_test, 10);
     stop_until_queued(10, &wake_me_len);
@@ -439,6 +453,7 @@ void *testproc(int arg1, void *arg2) {
     wait_for_all();
     stop_until_zero(&wake_me_len);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
+    
 #endif
 
 #if CS402TESTS > 6
