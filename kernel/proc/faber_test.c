@@ -319,28 +319,28 @@ void *testproc(int arg1, void *arg2) {
     int i = 0;
 
 #if CS402TESTS > 0
-    dbg(DBG_PRINT, "waitpid any test");
+    dbg(DBG_PRINT, "waitpid any test\n");
     start_proc(&pt, "waitpid any test", waitpid_test, 23);
     wait_for_any();
 
-    dbg(DBG_PRINT, "waitpid test");
+    dbg(DBG_PRINT, "waitpid test\n");
     start_proc(&pt, "waitpid test", waitpid_test, 32);
     pid = do_waitpid(2323, 0, &rv);
     if ( pid != -ECHILD ) dbg(DBG_PRINT, "Allowed wait on non-existent pid\n");
     wait_for_proc(pt.p);
 
-    dbg(DBG_PRINT, "kthread exit test");
+    dbg(DBG_PRINT, "kthread exit test\n");
     start_proc(&pt, "kthread exit test", kthread_exit_test, 0);
     wait_for_proc(pt.p);
 
-    dbg(DBG_PRINT, "many test");
+    dbg(DBG_PRINT, "many test\n");
     for (i = 0; i < 10; i++)
 start_proc(NULL, "many test", waitpid_test, i);
     wait_for_all();
 #endif
 
 #if CS402TESTS > 1
-    dbg(DBG_PRINT, "Context switch test");
+    dbg(DBG_PRINT, "Context switch test\n");
     start_proc(&pt, "Context switch", racer_test, 0);
     wait_for_proc(pt.p);
 #endif
@@ -348,7 +348,7 @@ start_proc(NULL, "many test", waitpid_test, i);
 #if CS402TESTS > 2
     sched_queue_init(&wake_me_q);
 
-    dbg(DBG_PRINT, "wake me test");
+    dbg(DBG_PRINT, "wake me test\n");
     wake_me_len = 0;
     start_proc(&pt, "wake me test", wakeme_test, 0);
     /* Make sure p has blocked */
@@ -357,7 +357,7 @@ start_proc(NULL, "many test", waitpid_test, i);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
 
-    dbg(DBG_PRINT, "broadcast me test");
+    dbg(DBG_PRINT, "broadcast me test\n");
     for (i = 0; i < 10; i++ )
 start_proc(NULL, "broadcast me test", wakeme_test, 0);
     stop_until_queued(10, &wake_me_len);
@@ -368,7 +368,7 @@ start_proc(NULL, "broadcast me test", wakeme_test, 0);
 #endif
 
 #if CS402TESTS > 3
-    dbg(DBG_PRINT, "wake me uncancellable test");
+    dbg(DBG_PRINT, "wake me uncancellable test\n");
     start_proc(&pt, "wake me uncancellable test",
 wakeme_uncancellable_test, 0);
     /* Make sure p has blocked */
@@ -377,7 +377,7 @@ wakeme_uncancellable_test, 0);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
 
-    dbg(DBG_PRINT, "broadcast me uncancellable test");
+    dbg(DBG_PRINT, "broadcast me uncancellable test\n");
     for (i = 0; i < 10; i++ )
 start_proc(NULL, "broadcast me uncancellable test",
 wakeme_uncancellable_test, 0);
@@ -389,7 +389,7 @@ wakeme_uncancellable_test, 0);
 #endif
 
 #if CS402TESTS > 4
-    dbg(DBG_PRINT, "cancel me test");
+    dbg(DBG_PRINT, "cancel me test\n");
     start_proc(&pt, "cancel me test", cancelme_test, 0);
     /* Make sure p has blocked */
     stop_until_queued(1, &wake_me_len);
@@ -397,14 +397,14 @@ wakeme_uncancellable_test, 0);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
 
-    dbg(DBG_PRINT, "prior cancel me test");
+    dbg(DBG_PRINT, "prior cancel me test\n");
     start_proc(&pt, "prior cancel me test", cancelme_test, 0);
     /* Cancel before sleep */
     sched_cancel(pt.t);
     wait_for_proc(pt.p);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
 
-    dbg(DBG_PRINT, "cancel me head test");
+    dbg(DBG_PRINT, "cancel me head test\n");
     start_proc(&pt, "cancel me head test", cancelme_test, 0);
     start_proc(NULL, "cancel me head test", wakeme_test, 0);
     stop_until_queued(2, &wake_me_len);
@@ -413,7 +413,7 @@ wakeme_uncancellable_test, 0);
     wait_for_all();
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
     
-    dbg(DBG_PRINT, "cancel me tail test");
+    dbg(DBG_PRINT, "cancel me tail test\n");
     start_proc(NULL, "cancel me tail test", wakeme_test, 0);
     start_proc(&pt, "cancel me tail test", cancelme_test, 0);
     stop_until_queued(2, &wake_me_len);
@@ -424,13 +424,13 @@ wakeme_uncancellable_test, 0);
 #endif
 
 #if CS402TESTS > 5
-    dbg(DBG_PRINT, "Reparenting test");
+    dbg(DBG_PRINT, "Reparenting test\n");
     start_proc(NULL, "Reparenting test", reparent_test, 1);
     stop_until_queued(1, &wake_me_len);
     sched_wakeup_on(&wake_me_q);
     wait_for_all();
     stop_until_zero(&wake_me_len);
-    dbg(DBG_PRINT, "Reparenting stress test");
+    dbg(DBG_PRINT, "Reparenting stress test\n");
     start_proc(NULL, "Reparenting stress test", reparent_test, 10);
     stop_until_queued(10, &wake_me_len);
     sched_broadcast_on(&wake_me_q);
@@ -442,19 +442,19 @@ wakeme_uncancellable_test, 0);
 #if CS402TESTS > 6
     kmutex_init(&mutex);
 
-    dbg(DBG_PRINT, "show race test");
+    dbg(DBG_PRINT, "show race test\n");
     race = 0;
     for (i = 0; i < 10; i++ )
 start_proc(NULL, "show race test", racer_test, 0);
     wait_for_all();
 
-    dbg(DBG_PRINT, "fix race test");
+    dbg(DBG_PRINT, "fix race test\n");
     race = 0;
     for (i = 0; i < 10; i++ )
 start_proc(NULL, "fix race test", mutex_uncancellable_test, 0);
     wait_for_all();
 
-    dbg(DBG_PRINT, "fix race test w/cancel");
+    dbg(DBG_PRINT, "fix race test w/cancel\n");
     race = 0;
     for (i = 0; i < 10; i++ ) {
 if ( i % 2 == 0) {
@@ -468,7 +468,7 @@ sched_cancel(pt.t);
 #endif
 
 #if CS402TESTS > 7
-    dbg(DBG_PRINT, "kill child procs test");
+    dbg(DBG_PRINT, "kill child procs test\n");
     for ( i=0 ; i < 10; i++ )
 start_proc(NULL, "kill child procs test", cancelme_test, 0);
     stop_until_queued(10, &wake_me_len);
@@ -480,7 +480,7 @@ start_proc(NULL, "kill child procs test", cancelme_test, 0);
 #endif
 
 #if CS402TESTS > 8
-    dbg(DBG_PRINT, "proc kill all test");
+    dbg(DBG_PRINT, "proc kill all test\n");
     for ( i=0 ; i < 10; i++ )
 start_proc(NULL, "proc kill all test", cancelme_test, 0);
     stop_until_queued(10, &wake_me_len);
