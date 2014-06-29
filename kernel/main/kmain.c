@@ -71,6 +71,7 @@ static int gdb_wait = GDBWAIT;
 //Tests..
 extern void *testproc(int arg1, void *arg2);
 extern void *sunghan_test(int arg1, void *arg2);
+extern void *sunghan_deadlock_test(int arg1, void *arg2);
 
 
 /**
