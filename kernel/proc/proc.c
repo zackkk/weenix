@@ -337,15 +337,29 @@ proc_kill(proc_t *p, int status)
 {
        
         KASSERT(p != proc_initproc);            //We dont kill children of idle process aka init process
+        struct kthread *parent_thread = NULL;
+        
+        list_link_t *link2;
+                        link2 = p->p_threads.l_next;
+                        kthread_t *thr = list_item(link2, kthread_t, kt_plink);
+                        dbg(DBG_PRINT, "Current process being killed %d\n", p->p_pid);
+       
+        
+        
+        //sched_wakeup_on(&p->p_wait);
+        sched_cancel(thr);
+        sched_make_runnable(curthr);
+        sched_switch();
+        
         
         //Exit thread of process p
-        if(p->p_pid != 1){
+        /*if(p->p_pid != 1){
                 list_link_t *link2;
                 link2 = p->p_threads.l_next;
                 kthread_t *thr = list_item(link2, kthread_t, kt_plink);
                 dbg(DBG_PRINT, "Current process being killed %d\n", p->p_pid);
-                thr->kt_state = KT_EXITED;
-        }       
+                
+        }     **/  
         /*TODO cancel process*/
         
         p->p_state = PROC_DEAD;
@@ -372,8 +386,13 @@ proc_kill(proc_t *p, int status)
                 /*add ALIVE child to HEAD of list of init children...*/
                 list_insert_head(&(proc_initproc->p_children), &(my_child_proc->p_child_link));
         }
+        
+        //sched_wakeup_on(&p->p_wait);
+
 
         dbg(DBG_PRINT,"Process %s (pid %d) has been killed\n", p->p_comm, p->p_pid);
+        //sched_switch();
+
         return;
 }
 

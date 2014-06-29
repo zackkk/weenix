@@ -110,8 +110,12 @@ static void wait_for_all() {
  * nodes waiting for the kernel thread queue.
  */
 static void stop_until_queued(int tot, int *count) {
+	dbg(DBG_PRINT, "stop_until_queued: tot: %d, count: %d\n", tot, *count);
+	
     dbg(DBG_PRINT, "stop_until_queued made thread (pid %d) runnable\n", curthr->kt_proc->p_pid);
+    
     while ( *count < tot) {
+    	dbg(DBG_PRINT, "stop_until_queued: tot: %d, count: %d\n", tot, *count);
 	dbg(DBG_PRINT, "stop_until_queued made thread (pid %d) runnable\n", curthr->kt_proc->p_pid);	
 	sched_make_runnable(curthr);
 	sched_switch();
@@ -179,6 +183,7 @@ void *wakeme_uncancellable_test(int arg1, void *arg2) {
  */
 void *cancelme_test(int arg1, void *arg2) {
     wake_me_len++;
+    dbg(DBG_PRINT, "before: wake_me_len :  %d\n", wake_me_len);
     dbg(DBG_PRINT, "cancel test. cancel thread is pid %d\n", curproc-> p_pid);
     dbg(DBG_PRINT, "cancel test. cancel thread cancel flag is %d\n", curthr-> kt_cancelled);
     if (sched_cancellable_sleep_on(&wake_me_q) != -EINTR ) {
@@ -187,6 +192,7 @@ void *cancelme_test(int arg1, void *arg2) {
 	do_exit(-1);
     }
     wake_me_len--;
+    dbg(DBG_PRINT, "after: wake_me_len :  %d\n", wake_me_len);
     do_exit(arg1);
     return NULL;
 }
@@ -322,7 +328,7 @@ void *testproc(int arg1, void *arg2) {
     proc_t *p;
     int rv = 0;
     int i = 0;
-     //sched_queue_init(&wake_me_q);
+    sched_queue_init(&wake_me_q);
 
 #if CS402TESTS > 0
     dbg(DBG_PRINT, "waitpid any test");
@@ -455,7 +461,7 @@ void *testproc(int arg1, void *arg2) {
     stop_until_zero(&wake_me_len);
     dbg(DBG_PRINT, "\n\n\nafter_stop_until_zero current process PID: %d\n\n\n", curproc->p_pid);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
-  /*  
+
 #endif
 
 #if CS402TESTS > 6
@@ -484,17 +490,24 @@ void *testproc(int arg1, void *arg2) {
 	}
     }
     wait_for_all();
+  
 #endif
 
 #if CS402TESTS > 7
     dbg(DBG_PRINT, "kill child procs test");
     for ( i=0 ; i < 10; i++ )
 	start_proc(NULL, "kill child procs test", cancelme_test, 0);
+    
+    dbg(DBG_PRINT, "xxxxx %d", wake_me_len);
+    
     stop_until_queued(10, &wake_me_len);
+    
+    dbg(DBG_PRINT, "xxxxx %d", wake_me_len);
     list_iterate_begin(&curproc->p_children, p, proc_t, p_child_link) {
         proc_kill(p, -1);
     } list_iterate_end();
     wait_for_all();
+    dbg(DBG_PRINT, "wake_me_len  %d\n\n", wake_me_len);
     KASSERT(wake_me_len == 0 && "Error on wakeme bookkeeping");
 #endif
 
@@ -502,7 +515,7 @@ void *testproc(int arg1, void *arg2) {
     dbg(DBG_PRINT, "proc kill all test");
     for ( i=0 ; i < 10; i++ )
 	start_proc(NULL, "proc kill all test", cancelme_test, 0);
-    stop_until_queued(10, &wake_me_len);*/
+    stop_until_queued(10, &wake_me_len);
     /*
      * If you don't run this test in a separate process,
      *   the kernel should shutdown and you would fail this test.
@@ -511,10 +524,11 @@ void *testproc(int arg1, void *arg2) {
      *   although this function will not return, you should
      *   be able to get your kshell prompt back.
      */
-    //proc_kill_all();
 
-    //dbg(DBG_PRINT, "proc_kill_all() must not return\n\n");
-    //KASSERT(0 && "Error in proc kill all test");
+    proc_kill_all();
+
+    dbg(DBG_PRINT, "proc_kill_all() must not return\n\n");
+    KASSERT(0 && "Error in proc kill all test");
 #endif
 
     return NULL;

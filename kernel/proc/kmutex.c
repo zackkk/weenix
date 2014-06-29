@@ -137,7 +137,6 @@ kmutex_unlock(kmutex_t *mtx)
 	/*mutex queue not empty: give mutex to head of list, put head of list in run queue*/
 	else {
 		mtx->km_holder = sched_wakeup_on(&(mtx->km_waitq)); /*de-queue head of mutex wait list, set thread as mutex owner*/
-		sched_make_runnable(mtx->km_holder); /*add mutex owner to run queue*/
 		dbg(DBG_PRINT, "(GRADING1A 5.c) mutex unlocked - head of mutex wait queue woken up, made runnable\n");
 	}
 	
