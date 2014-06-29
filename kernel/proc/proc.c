@@ -111,7 +111,7 @@ failed:
 proc_t *
 proc_create(char *name)
 {
-		dbg(DBG_PRINT, "proc_code_path_check\n");
+	dbg(DBG_PRINT, "proc_code_path_check\n");
         proc_t *new_process = NULL;
         
         /*Create a slab, using the proc_allocator*/

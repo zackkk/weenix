@@ -1,0 +1,52 @@
+[0m[0mproc/faber_test.c:322 testproc(): waitpid any test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (4) exited: 23
+[0m[0mproc/faber_test.c:326 testproc(): waitpid test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): waitpid test (5) exited: 32
+[0m[0mproc/faber_test.c:332 testproc(): kthread exit test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): kthread exit test (6) exited: 0
+[0m[0mproc/faber_test.c:336 testproc(): many test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (7) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (8) exited: 1
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (9) exited: 2
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (10) exited: 3
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (11) exited: 4
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (12) exited: 5
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (13) exited: 6
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (14) exited: 7
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (15) exited: 8
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (16) exited: 9
+[0m[0mproc/faber_test.c:343 testproc(): Context switch test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): Context switch (17) exited: 1
+[0m[0mproc/faber_test.c:351 testproc(): wake me test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): wake me test (18) exited: 0
+[0m[0mproc/faber_test.c:360 testproc(): broadcast me test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (19) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (20) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (21) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (22) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (23) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (24) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (25) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (26) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (27) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (28) exited: 0
+[0m[0mproc/faber_test.c:371 testproc(): wake me uncancellable test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): wake me uncancellable test (29) exited: 0
+[0m[0mproc/faber_test.c:380 testproc(): broadcast me uncancellable test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (30) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (31) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (32) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (33) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (34) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (35) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (36) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (37) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (38) exited: 0
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (39) exited: 0
+[0m[0mproc/faber_test.c:392 testproc(): cancel me test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): cancel me test (40) exited: 0
+[0m[0mproc/faber_test.c:400 testproc(): prior cancel me test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:83 wait_for_proc(): prior cancel me test (41) exited: 0
+[0m[0mproc/faber_test.c:407 testproc(): cancel me head test[0m[0mproc/proc.c:114 proc_create(): proc_code_path_check
+[0m[0mproc/faber_test.c:95 wait_for_any(): child (42) exited: 0
+[0
