@@ -301,7 +301,6 @@ void
 sched_make_runnable(kthread_t *thr)
 {
 		dbg(DBG_PRINT, "sched_code_path_check\n");
-		//NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
 		/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "(GRADING1A 4.b) The thread is not blocked on kt_runq\n");

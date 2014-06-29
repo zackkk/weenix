@@ -126,7 +126,6 @@ kmutex_unlock(kmutex_t *mtx)
 {
 		dbg(DBG_PRINT, "kmutex_code_path_check\n");
         dbg(DBG_PRINT, "(GRADING1A 5.c) Current thread address: %p, mutex holder address: %p\n", curthr, mtx->km_holder);
-        
 
         KASSERT(curthr && (curthr == mtx->km_holder)); /*we know that the caller has mutex locked*/
         dbg(DBG_PRINT, "(GRADING1A 5.c) Current thread has the mutex\n");

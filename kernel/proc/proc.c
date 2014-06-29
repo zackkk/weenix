@@ -481,7 +481,7 @@ do_waitpid(pid_t pid, int options, int *status)
         list_link_t *link = NULL;
         int return_pid = -1;
 
-        /* case 3: If pid > 0 and current process has no children, return -ECHILD */
+        /* case 3: If current process has no children, return -ECHILD */
         if(pid >= -1  && curproc->p_children.l_next == &curproc->p_children){
                 return -ECHILD;
         }
