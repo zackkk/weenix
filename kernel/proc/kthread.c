@@ -99,20 +99,7 @@ kthread_destroy(kthread_t *t)
 kthread_t *
 kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 {
-	/*
-	 char           *kt_kstack;       the kernel stack
-	 context_t       kt_ctx;          this thread's context
-	 void           *kt_retval;       this thread's return value
-	 int             kt_errno;        error no. of most recent syscall
-	 struct proc    *kt_proc;         the thread's process
-
-	 int             kt_cancelled;    1 if this thread has been cancelled
-	 ktqueue_t      *kt_wchan;        The queue that this thread is blocked on
-	 int             kt_state;        this thread's state
-	 list_link_t     kt_qlink;        link on ktqueue
-	 list_link_t     kt_plink;        link on proc thread list
-	*/
-        /* NOT_YET_IMPLEMENTED("PROCS: kthread_create"); */
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
         KASSERT(NULL != p);
         dbg(DBG_PRINT, "(GRADING1A 3.a) the process:%s of the kthread is not empty\n", p->p_comm);
 
@@ -124,19 +111,10 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
         thr->kt_retval = NULL;
         thr->kt_errno = NULL;
         thr->kt_cancelled = 0;
-        
-        //sched_queue_init(&pointless_queue);
         thr->kt_wchan = NULL;
-        
         thr->kt_proc = p;
         thr->kt_state = KT_RUN;
-
-        //sched_make_runnable(thr);
-        /* each process only has one thread associated with it. */
         list_insert_head(&(p->p_threads), &(thr->kt_plink));
-        //list_insert_head(&q->tq_list, &thr->kt_qlink);
-
-        //dbg(DBG_PRINT, "kthread created successfully!\n");
         return thr;
 }
 
@@ -154,27 +132,20 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 void
 kthread_cancel(kthread_t *kthr, void *retval)
 {
-        /* NOT_YET_IMPLEMENTED("PROCS: kthread_cancel"); */
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
 		KASSERT(NULL != kthr);
 		dbg(DBG_PRINT, "(GRADING1A 3.b) the kthread is not empty (thread process pid %d)\n", kthr->kt_proc->p_pid);
 
 		if(kthr == curthr){
-                        
-                        //dbg(DBG_PRINT, "Ret value in kthread_cancel %d\n", *((int*)retval));
 			kthread_exit(retval);
 		}
 		else{
 			kthr->kt_cancelled = 1;
 			kthr->kt_retval = retval;
 			if(kthr->kt_state == KT_SLEEP_CANCELLABLE){
-				/*
-				 *  cancelling the thread should wake it up from sleep.
-				 *  to wake up a thread: move it into the run queue.
-				 */
 				sched_make_runnable(kthr);
 			}
 		}
-		//dbg(DBG_PRINT, "kthread has been cancelled successfully!\n");
 }
 
 /*
@@ -190,6 +161,7 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
 		curthr->kt_wchan = NULL;
 		curthr->kt_qlink.l_next = NULL;
 		curthr->kt_qlink.l_prev = NULL;
@@ -200,16 +172,13 @@ kthread_exit(void *retval)
 		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread's link on ktqueue is empty\n");
 		KASSERT(curthr->kt_proc == curproc);
 		dbg(DBG_PRINT, "(GRADING1A 3.c) curthr and curproc match\n");
-                dbg(DBG_PRINT, "Current process is pid %d\n", curproc->p_pid);
+
 		curthr->kt_retval = retval;
 		curthr->kt_state = KT_EXITED;
-                dbg(DBG_PRINT, "(GRADING1A 3.b) the kthread is not empty (thread process pid %d)\n", curthr->kt_proc->p_pid);
                 
-                //dbg(DBG_PRINT, "Ret value in kthread_exit %d\n", *(int*)retval);
 		proc_thread_exited(retval);
 		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread_exit successfully\n");
 		return;
-		//kthread_destroy(curthr); // if called then page fault
 }
 
 /*

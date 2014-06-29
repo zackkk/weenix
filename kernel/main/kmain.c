@@ -172,6 +172,7 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "kmain_code_path_check\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
@@ -187,7 +188,7 @@ bootstrap(int arg1, void *arg2)
         kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
         curthr = thr;
         KASSERT(NULL != curthr);
-        dbg(DBG_PRINT, "(GRADING1A 1.a) The thread for the idle process has been created successfully\n");
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current thread is for the idle process\n");
 
         context_make_active(&(thr->kt_ctx));
 
@@ -210,7 +211,6 @@ bootstrap(int arg1, void *arg2)
 static void *
 idleproc_run(int arg1, void *arg2)
 {
-	dbg(DBG_PRINT, "*****runs into idleproc_run*****\n");
         int status;
         pid_t child;
 
@@ -240,9 +240,7 @@ idleproc_run(int arg1, void *arg2)
         sched_make_runnable(initthr);
 	
         /* Now wait for it */
-        dbg(DBG_PRINT, "Waiting for init process to die\n");
         child = do_waitpid(-1, 0, &status);
-        dbg(DBG_PRINT, "Init process exited\n");
         KASSERT(PID_INIT == child);
 
 #ifdef __MTP__
@@ -288,7 +286,7 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-	      /* NOT_YET_IMPLEMENTED("PROCS: initproc_create"); */
+		dbg(DBG_PRINT, "kmain_code_path_check\n");
 		proc_t *proc = proc_create("init_process");
 		KASSERT(NULL != proc);
 		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
@@ -377,24 +375,21 @@ int dtests(kshell_t *kshell, int argc, char **argv)
 static void *
 initproc_run(int arg1, void *arg2)
 {
+	dbg(DBG_PRINT, "kmain_code_path_check\n");
 
+
+	#ifdef __DRIVERS__
 	
+			kshell_add_command("ftest", ftests, "Invokes testproc()...");
+			kshell_add_command("stest", stests, "Invokes sunghan_test()...");
+			kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
+			kshell_t *kshell = kshell_create(0);
+			if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+			while (kshell_execute_next(kshell))
+				;
 
-#ifdef __DRIVERS__
-
-        kshell_add_command("ftest", ftests, "Invokes testproc()...");
-        kshell_add_command("stest", stests, "Invokes sunghan_test()...");
-        kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
-        kshell_t *kshell = kshell_create(0);
-        if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-        while (kshell_execute_next(kshell))
-        	;
-
-        kshell_destroy(kshell);
-#endif /* __DRIVERS__ */
-
-
-	
+			kshell_destroy(kshell);
+	#endif /* __DRIVERS__ */
     return NULL;
 }
 

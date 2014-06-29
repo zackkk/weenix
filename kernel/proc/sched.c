@@ -111,13 +111,12 @@ sched_queue_empty(ktqueue_t *q)
 void
 sched_sleep_on(ktqueue_t *q)
 {     
-		//NOT_YET_IMPLEMENTED("PROCS: sched_sleep_on");
+		dbg(DBG_PRINT, "sched_code_path_check\n");
         curthr->kt_state = KT_SLEEP;
         if(curthr->kt_wchan){
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
-        dbg(DBG_PRINT, "curproc is %d curthr pid is %d", curproc->p_pid, curthr->kt_proc->p_pid);
         /* switch context: make a runnable thread running */
         sched_switch();
 }
@@ -133,7 +132,7 @@ sched_sleep_on(ktqueue_t *q)
 int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
-		//NOT_YET_IMPLEMENTED("PROCS: sched_cancellable_sleep_on");
+		dbg(DBG_PRINT, "sched_code_path_check\n");
         if(curthr->kt_cancelled)
         {
              return -EINTR;
@@ -157,7 +156,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 kthread_t *
 sched_wakeup_on(ktqueue_t *q)
 {
-		//NOT_YET_IMPLEMENTED("PROCS: sched_wakeup_on");
+		dbg(DBG_PRINT, "sched_code_path_check\n");
         kthread_t * thr;
 
         if(sched_queue_empty(q))
@@ -167,7 +166,6 @@ sched_wakeup_on(ktqueue_t *q)
         
         /* move a sleeping thread into runnable queue */
         thr = ktqueue_dequeue(q);
-        dbg(DBG_PRINT, "\n\n\ncurproc is %d  proc getting dq'ed is %d\n\n\n", curproc->p_pid, thr->kt_proc->p_pid);
         KASSERT((thr->kt_state == KT_SLEEP) || (thr->kt_state == KT_SLEEP_CANCELLABLE));
         dbg(DBG_PRINT, "(GRADING1A 4.a) The point to a corresponding thread\n");
         sched_make_runnable(thr);
@@ -178,7 +176,7 @@ sched_wakeup_on(ktqueue_t *q)
 void
 sched_broadcast_on(ktqueue_t *q)
 {
-		//NOT_YET_IMPLEMENTED("PROCS: sched_broadcast_on");
+		dbg(DBG_PRINT, "sched_code_path_check\n");
 		/* move all threads into runnable queue */
         kthread_t * singleThr;
         while(!sched_queue_empty(q))
@@ -201,7 +199,7 @@ sched_broadcast_on(ktqueue_t *q)
 void
 sched_cancel(struct kthread *kthr)
 {
-	 	 //NOT_YET_IMPLEMENTED("PROCS: sched_cancel");
+		dbg(DBG_PRINT, "sched_code_path_check\n");
         kthr->kt_cancelled = 1;
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
@@ -252,6 +250,7 @@ sched_cancel(struct kthread *kthr)
 void
 sched_switch(void)
 {
+		dbg(DBG_PRINT, "sched_code_path_check\n");
 		//NOT_YET_IMPLEMENTED("PROCS: sched_switch");
 		/*
 		 * adopted from lecture slides 5.2
@@ -301,6 +300,7 @@ sched_switch(void)
 void
 sched_make_runnable(kthread_t *thr)
 {
+		dbg(DBG_PRINT, "sched_code_path_check\n");
 		//NOT_YET_IMPLEMENTED("PROCS: sched_make_runnable");
 		/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
