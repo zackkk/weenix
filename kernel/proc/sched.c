@@ -41,7 +41,7 @@ init_func(sched_init);
 static void
 ktqueue_enqueue(ktqueue_t *q, kthread_t *thr)
 {
-        KASSERT(!thr->kt_wchan); // thr->kt_wchan is empty
+        KASSERT(!thr->kt_wchan); 
         list_insert_head(&q->tq_list, &thr->kt_qlink);
         thr->kt_wchan = q;
         q->tq_size++;
@@ -251,7 +251,6 @@ void
 sched_switch(void)
 {
 		dbg(DBG_PRINT, "sched_code_path_check\n");
-		//NOT_YET_IMPLEMENTED("PROCS: sched_switch");
 		/*
 		 * adopted from lecture slides 5.2
 		 */
@@ -275,7 +274,7 @@ sched_switch(void)
         dbg(DBG_PRINT, "Old: process %d \n", curproc->p_pid);
         oldThread = curthr;
         curthr = ktqueue_dequeue(&kt_runq);
-        curproc = curthr->kt_proc;  // added on lecture slides
+        curproc = curthr->kt_proc;  /* added on lecture slides*/
         dbg(DBG_PRINT, "New: process %d \n", curproc->p_pid);
         context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
 

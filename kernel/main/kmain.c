@@ -68,7 +68,6 @@ static void      *initproc_run(int arg1, void *arg2);
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
 
-//Tests..
 extern void *testproc(int arg1, void *arg2);
 extern void *sunghan_test(int arg1, void *arg2);
 extern void *sunghan_deadlock_test(int arg1, void *arg2);
@@ -294,13 +293,10 @@ initproc_create(void)
 		KASSERT(PID_INIT == proc->p_pid);
 		dbg(DBG_PRINT, "(GRADING1A 1.b) The pid of the init process is PID_INIT\n");
 
-		//curproc = proc;
-
 		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
 		 * thread is contained in process in kthread_create;
 		 * argument 1234 is used for test purpose */
 		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
-		//curthr = thr;
 		KASSERT(NULL != thr);
 		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the thread for the init process is not NULL\n");
 

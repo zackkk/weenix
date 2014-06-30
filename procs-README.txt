@@ -1,6 +1,15 @@
 Documentation for Kernel Assignment 1
 =====================================
 
++--------------+
+| TEAM MEMBERS |
++--------------+
+
+Zhe Xie
+Jonathan Tuse
+Linkun Li
+Eduardo Murillo 
+
 +-------------+
 | BUILD & RUN |
 +-------------+
@@ -35,6 +44,8 @@ Deadlock test:
 ./weenix -n | grep sunghan_test.c
 
 then type "dtest" in the weenix kshell
+
+To terminate cleanly, type "exit".
 
 
 +------+
@@ -101,7 +112,7 @@ Wrong file location in submission : no.
 Use dbg_print(...) instead of dbg(DBG_PRINT, ...) : no.
 Not properly indentify which dbg() printout is for which item in the grading guidelines : nope.
 Cannot compile : compiles correctly.
-Compiler warnings : none
+Compiler warnings : none.
 "make clean" : Yes.
 Useless KASSERT : none.
 Insufficient/Confusing dbg : no.
@@ -112,19 +123,19 @@ Cannot halt kernel cleanly : Halts cleanly.
 | BUGS |
 +------+
 
-Comments: ?
+Comments: None.
 
 +---------------------------+
 | CONTRIBUTION FROM MEMBERS |
 +---------------------------+
 
-If not equal-share contribution, please list percentages.
+Members of the team shared responsibilities equally (25%/25%/25%/25%).
 
 +-------+
 | OTHER |
 +-------+
 
-Special DBG setting in Config.mk for certain tests: ?
-Comments on deviation from spec (you will still lose points, but it's better to let the grader know): ?
-General comments on design decisions: ?
+Special DBG setting in Config.mk for certain tests: none
+Comments on deviation from spec (you will still lose points, but it's better to let the grader know): No deviation from spec.
+General comments on design decisions: We had to declare the test functions as extern in kmain, for the compiler to use them without warnings.
 
