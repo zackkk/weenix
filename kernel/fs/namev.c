@@ -36,8 +36,22 @@
 int
 lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
 {
-        NOT_YET_IMPLEMENTED("VFS: lookup");
-        return 0;
+        /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
+        int res = 0;
+        
+        /*If directory has no lookup function...*/
+        if(dir->vn_ops->lookup == NULL){
+                return -ENOTDIR;
+        }
+        
+        /*look up file/dir*/
+        /* . and .. are part of the directory entry?? CHECK*/
+        /*should return the vnode of name, that's in the current dir*/
+        res = dir->vn_ops->lookup(dir, name, len, result);      /*this should return refcount incremented*/
+                                                                 
+        dbg(DBG_PRINT, "Node reference count: %d\n", (*result)->vn_refcount);
+
+        return res;
 }
 
 
@@ -63,7 +77,113 @@ int
 dir_namev(const char *pathname, size_t *namelen, const char **name,
           vnode_t *base, vnode_t **res_vnode)
 {
-        NOT_YET_IMPLEMENTED("VFS: dir_namev");
+        char *slash_ptr = NULL;
+        char *path_ptr = NULL;
+        size_t i = 0;
+        char *next_slash = NULL;
+        int res =0;
+        int len = 0;
+        
+        vnode_t *current_dir = NULL;
+        vnode_t result;
+        
+        /*Buffer length... max 1024 chars*/
+        char current_name[1024];
+        const char *pathname_index = pathname;
+        const char *current_name_index = NULL;
+        
+        /*special case path has no slashes... */
+        if(strchr(pathname, '/') == NULL){
+                *name = pathname;
+                *namelen = 0;
+                res_vnode = &base;
+        }
+        
+        /*Otherwise...*/
+        if(pathname[0] == '/'){
+                /*start from root node*/
+                current_dir = vfs_root_vn;
+        }
+        else if(base == NULL){
+                current_dir = curproc->p_cwd;                
+                
+        }
+        else{
+                current_dir = base;
+        }
+        
+        dbg(DBG_PRINT, "Path %s\n", pathname);
+        
+        /*Start looking*/
+        while(1){
+                
+                /*get point to char after slash*/
+                if(pathname[0] != '/' && i == 0){
+                        current_name_index = pathname; 
+                }
+                else{
+                        slash_ptr = strchr(pathname_index, '/');
+                        current_name_index = slash_ptr + 1;
+                        /*dbg(DBG_PRINT, "first slash%c\n", *(slash_ptr+ 1));*/
+                }
+                
+                /*next slash*/
+                next_slash = strchr(current_name_index, '/');
+                
+                
+                if(next_slash == NULL){
+                        /*If we didn't find next slash, we are in the name
+                        part of the path name*/
+                        *name = current_name_index;     /*path name ends in null character...*/
+                        *namelen = i;
+                        
+                        dbg(DBG_PRINT, "namelen %u name %s\n", *namelen, *name);
+                        
+                        /*On previous iteration, we set res_vnode to the parent directory*/
+                        return 0;
+                        
+                }
+                else{
+                        pathname_index = next_slash;    /*Now we point to next slash to get next word on the following iteration*/
+                }
+                
+                /*length of the name*/
+                int len = next_slash - current_name_index;
+                
+                dbg(DBG_PRINT, "Path section length %d\n", len);
+                
+                /*copy name in local buffer*/
+                memset(current_name, 0, 1024);
+                
+                if(len < 1023){                 /*name 1023 (0-1022) char long, 1024 item MUST be 0*/
+                        /*copy name to buffer*/
+                        memcpy(current_name, current_name_index, len);
+                }
+                else{
+                        memcpy(current_name, current_name_index, 1024);
+                        current_name[1023] = 0;                      
+                }
+                
+                dbg(DBG_PRINT, "Path section name: %s\n", current_name);
+                
+                
+                /*Now get vnode...*/
+                /*Use res_vnode temporarely to navigate path*/
+                /*lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)*/
+                res = lookup(current_dir, current_name, strlen(current_name), res_vnode);
+                
+                if(res == 0){
+                        current_dir = *res_vnode;
+                }
+                else{
+                        /*do we need to decrement refcount on error??*/
+                        return res;    
+                }
+                i++;
+                
+        }
+                
+        
         return 0;
 }
 

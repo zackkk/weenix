@@ -373,6 +373,9 @@ static void *
 initproc_run(int arg1, void *arg2)
 {
 	dbg(DBG_PRINT, "kmain_code_path_check\n");
+	
+	/*test*/
+	/*do_open("/ed/ed", O_RDONLY);*/
 
 
 	#ifdef __DRIVERS__

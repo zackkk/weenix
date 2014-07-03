@@ -90,6 +90,19 @@ do_open(const char *filename, int oflags)
         file_t *my_file = NULL;
         int flags  = 0;
         
+        /*test only*/
+        /*char buffer[1024];
+        
+        const char *data = buffer;
+        size_t len = 0;
+        
+        vnode_t res_vnode;
+        
+        vnode_t *pe = &res_vnode;
+        
+        dir_namev("root/eduardo/ls", &len, &data, NULL, &pe);*/
+        /*end of test only*/
+        
         /*Get a file descriptor*/
         fd = get_empty_fd(curproc);
         
