@@ -36,10 +36,22 @@
 int
 lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
 {
+        
+        KASSERT(NULL != dir);
+        dbg(DBG_PRINT,"(GRADING2A 2.a) dir is not NULL.\n");
+        
+        KASSERT(NULL != name);
+        dbg(DBG_PRINT,"(GRADING2A 2.a) name is not NULL\n");
+        
+        KASSERT(NULL != result);
+        dbg(DBG_PRINT,"(GRADING2A 2.a) result is not NULL\n");
+        
+        
+        
         /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
         int res = 0;
         
-        /*If directory has no lookup function...*/
+        /*If we have lookup function, then we are not a directory...*/
         if(dir->vn_ops->lookup == NULL){
                 return -ENOTDIR;
         }
@@ -84,6 +96,21 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         int res =0;
         int len = 0;
         
+        
+        KASSERT(NULL != pathname);
+        dbg(DBG_PRINT,"(GRADING2A 2.b) pathname is not NULL.\n");
+        
+        KASSERT(NULL != namelen);
+        dbg(DBG_PRINT,"(GRADING2A 2.b) namelen is not NULL.\n");
+        
+        KASSERT(NULL != name);
+        dbg(DBG_PRINT,"(GRADING2A 2.b) name is not NULL.\n");
+        
+        KASSERT(NULL != res_vnode);
+        dbg(DBG_PRINT,"(GRADING2A 2.b) res_vode is not NULL.\n");
+        
+        
+        
         vnode_t *current_dir = NULL;
         vnode_t result;
         
@@ -112,7 +139,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 current_dir = base;
         }
         
-        dbg(DBG_PRINT, "Path %s\n", pathname);
+        dbg(DBG_PRINT, "Path to look-up: %s\n", pathname);
         
         /*Start looking*/
         while(1){
@@ -134,10 +161,13 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 if(next_slash == NULL){
                         /*If we didn't find next slash, we are in the name
                         part of the path name*/
+                        KASSERT(NULL != res_vnode);
+                        dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
+                        
                         *name = current_name_index;     /*path name ends in null character...*/
                         *namelen = i;
                         
-                        dbg(DBG_PRINT, "namelen %u name %s\n", *namelen, *name);
+                        dbg(DBG_PRINT, "namelen %u, name %s\n", *namelen, *name);
                         
                         /*On previous iteration, we set res_vnode to the parent directory*/
                         return 0;
@@ -173,10 +203,13 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 res = lookup(current_dir, current_name, strlen(current_name), res_vnode);
                 
                 if(res == 0){
+                        dbg(DBG_PRINT, "Found directory %s\n", current_name);
                         current_dir = *res_vnode;
                 }
                 else{
+                        /*we did no find the current path, return error!!*/
                         /*do we need to decrement refcount on error??*/
+                        dbg(DBG_PRINT, "Did not find directoy %s %d\n", current_name, res);
                         return res;    
                 }
                 i++;

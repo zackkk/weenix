@@ -100,7 +100,9 @@ do_open(const char *filename, int oflags)
         
         vnode_t *pe = &res_vnode;
         
-        dir_namev("root/eduardo/ls", &len, &data, NULL, &pe);*/
+        dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
+        
+        KASSERT(NULL != NULL);*/
         /*end of test only*/
         
         /*Get a file descriptor*/
