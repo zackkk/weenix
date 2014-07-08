@@ -224,7 +224,7 @@ idleproc_run(int arg1, void *arg2)
 #ifdef __VFS__
         /* Once you have VFS remember to set the current working directory
          * of the idle and init processes */
-        //NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        /* NOT_YET_IMPLEMENTED("VFS: idleproc_run"); */
 
         /*
          *  Get the processes
@@ -249,7 +249,7 @@ idleproc_run(int arg1, void *arg2)
         /* Here you need to make the null, zero, and tty devices using mknod */
         /* You can't do this until you have VFS, check the include/drivers/dev.h
          * file for macros with the device ID's you will need to pass to mknod */
-        //NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        /* NOT_YET_IMPLEMENTED("VFS: idleproc_run"); */
 
 
         /* vnode.h
