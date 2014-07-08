@@ -224,12 +224,60 @@ idleproc_run(int arg1, void *arg2)
 #ifdef __VFS__
         /* Once you have VFS remember to set the current working directory
          * of the idle and init processes */
-        NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        //NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+
+        /*
+         *  Get the processes
+         */
+        proc_t *idle_proc = proc_lookup(PID_IDLE);
+        proc_t *init_proc = proc_lookup(PID_INIT);
+        KASSERT(NULL != idle_proc);
+        KASSERT(NULL != init_proc);
+
+        /*
+         *  Set the current working directory
+         */
+        idle_proc->p_cwd = vfs_root_vn;
+        init_proc->p_cwd = vfs_root_vn;
+
+        /*
+         *  Increment the reference count of the provided vnode.
+         */
+        vref(vfs_root_vn);
+        vref(vfs_root_vn);
 
         /* Here you need to make the null, zero, and tty devices using mknod */
         /* You can't do this until you have VFS, check the include/drivers/dev.h
          * file for macros with the device ID's you will need to pass to mknod */
-        NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        //NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+
+
+        /* vnode.h
+         * int (*mknod)(struct vnode *dir, const char *name, size_t name_len,
+         *             int mode, devid_t devid);
+         */
+
+        /* vfs_syscall.h
+         * int do_mknod(const char *path, int mode, unsigned devid);
+         * int do_mkdir(const char *path);
+         *
+         * S_IFCHR: character special
+         */
+
+        int rc_null = do_mknod("/dev/null", S_IFCHR, MEM_NULL_DEVID);
+        int rc_zero = do_mknod("/dev/zero", S_IFCHR, MEM_ZERO_DEVID);
+        int i;
+        char tty_path[32];
+        /*
+         * ???????????????????????????????????????????????
+         * number of tty dev
+         */
+        for(i = 0; i < 32; i++){
+        	memset(tty_path, '\0', 32);
+        	sprintf(tty_path, "/dev/tty%d", i);
+        	int rc_tty_i = do_mknod(tty_path, S_IFCHR, MKDEVID(2,i));
+        }
+
 #endif
 
         /* Finally, enable interrupts (we want to make sure interrupts
