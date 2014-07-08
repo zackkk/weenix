@@ -218,8 +218,35 @@ do_rmdir(const char *path)
 int
 do_unlink(const char *path)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_unlink");
-        return -1;
+	int res;
+	/*check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
+	size_t nameSize;
+	const char **name;
+	vnode_t **resNode;
+	if(res = open_namev(path, 0, resNode, NULL) != 0) {
+		dbg(DBG_PRINT, "(GRADING2A 3.e) %d", res);
+		return res;
+	}
+		
+	/*check that the file name does not refer to a directory*/
+	if((*resNode)->vn_mode == S_ISDIR(m)) {
+		dbg(DBG_PRINT, "(GRADING2A 3.e) file name refers to directory");
+		return -EISDIR;
+	}
+	
+	/*get parent directory*/
+	size_t *namelen;
+	const char **name;
+	vnode_t **parent
+	if(res = dir_namev(path, &namelen, &name, NULL, parent) != 0) { /*sanity check*/
+		dbg(DBG_PRINT, "(GRADING2A 3.e) %d", res);
+		return res;
+	}
+			
+	vnode_t vnode = **resNode;
+	int (*unlink)(struct vnode *dir, const char *name, size_t name_len)
+	
+    return 0;
 }
 
 /* To link:
