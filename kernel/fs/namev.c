@@ -215,9 +215,9 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 i++;
                 
         }
-                
         
-        return 0;
+        dbg(DBG_PRINT, "Reached return out of while loop\n");        
+        return 0;       /*WE should NOT reach this return*/
 }
 
 /* This returns in res_vnode the vnode requested by the other parameters.
@@ -231,7 +231,51 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
 int
 open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
 {
-        NOT_YET_IMPLEMENTED("VFS: open_namev");
+        /*NOT_YET_IMPLEMENTED("VFS: open_namev");*/
+        int res = 0;
+        size_t namelen = 0;
+        const char **name = NULL;
+        
+        /*look for the path and file name...*/
+        res = dir_namev(pathname, &namelen, name, base, res_vnode);
+        
+        if(res == 0){
+                /*We found the directory path, name should hold the file name*/
+                /*Now use lookup to see if file exists...*/
+                /*
+                 *At this point, res_vnode should have the directory vnode
+                 *name sohould point to the file name
+                 **/
+                res = lookup(*res_vnode, *name, strlen(*name), res_vnode);
+                
+                if(res == 0){
+                        /*At this point res_vnode should point to the file vnode...*/
+                        return res;
+                }
+                else if(res == -ENOENT){
+                        
+                        /*If we didn't find the fila, create and if flag set to O_CREATE*/
+                        if(flag & O_CREAT){
+                                
+                               /*return the newly created vnode in res_vnode...*/
+                               /*At this point res_vnode is the parent directory*/
+                               /*Call the the create function in directory vnode*/
+                               /*return newly create file vnode in res_vnode*/
+                               res = (*res_vnode)->vn_ops->create(*res_vnode, *name, strlen(*name), res_vnode);     /*Create file on res_vnode (which should be the directory)*/
+                               return res;
+                               
+                        }
+                        else{
+                                /*Return file not found?*/
+                                return -ENOENT;                         /*Not sure...*/
+                        }
+                        
+                }
+        }
+        else{
+                return res;        /*We didn't find directory*/
+        }
+        
         return 0;
 }
 
