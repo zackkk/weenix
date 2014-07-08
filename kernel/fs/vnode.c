@@ -459,8 +459,16 @@ static int
 special_file_read(vnode_t *file, off_t offset, void *buf, size_t count)
 {
         //NOT_YET_IMPLEMENTED("VFS: special_file_read");
+		KASSERT(file);
+		dbg(DBG_PRINT,"(GRADING2A 1.a) vnode_t *file is not NULL.\n");
+		KASSERT(S_ISCHR(file->vn_mode) || S_ISBLK(file->vn_mode));
+		dbg(DBG_PRINT,"(GRADING2A 1.a) vnode_t *file is byte or block device.\n");
+
+
 		if (S_ISCHR(file->vn_mode)) {
 			// vnode_t->bytedev_t->bytedev_ops->int (*read)(bytedev_t *dev, int offset, void *buf, int count);
+			KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->read);
+			dbg(DBG_PRINT,"(GRADING2A 1.a) file->vn_cdev->cd_ops->read not NULL\n");
 			return file->vn_cdev->cd_ops->read(file->vn_cdev, offset, buf, count);
 	    }
 		else {
@@ -480,9 +488,16 @@ static int
 special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 {
         //NOT_YET_IMPLEMENTED("VFS: special_file_write");
+		KASSERT(file);
+		dbg(DBG_PRINT,"(GRADING2A 1.b) vnode_t *file is not NULL.\n");
+		KASSERT(S_ISCHR(file->vn_mode) || S_ISBLK(file->vn_mode));
+		dbg(DBG_PRINT,"(GRADING2A 1.b) vnode_t *file is byte or block device.\n");
+
 		if (S_ISBLK(file->vn_mode)) {
 			// vnode_t->blockdev_t->blockdev_ops->int (*write_block)(blockdev_t *bdev, const char *buf,blocknum_t loc, size_t count);
-			return file->vn_bdev->bd_ops->write_block(file->vn_bdev, buf, offset, count);
+			KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->write);
+			dbg(DBG_PRINT,"(GRADING2A 1.b) file->vn_cdev->cd_ops->write not NULL\n");
+			return file->vn_cdev->cd_ops->write(file->vn_cdev, offset, buf, count);
 		}
 		else {
 			KASSERT(S_ISBLK(file->vn_mode));

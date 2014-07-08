@@ -67,8 +67,7 @@ kmutex_lock(kmutex_t *mtx)
 	}
 	/*mutex not held by anyone. take it, and continue execution*/
 	else {
-		//mutexOwner = curthr; /*mutex is now locked by current thread, keep executing*/
-        mtx->km_holder = curthr;
+		mtx->km_holder = curthr;
 		dbg(DBG_PRINT, "(GRADING1A 5.a) mutex not locked, (non-cancellable) thread obtained it\n");
 	}
 }

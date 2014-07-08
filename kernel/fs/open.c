@@ -62,21 +62,21 @@ get_empty_fd(proc_t *p)
  * error.
  *
  * Error cases you must handle for this function at the VFS level:
- *      o EINVAL
+ *      o EINVAL        OK
  *        oflags is not valid.
- *      o EMFILE
+ *      o EMFILE        OK
  *        The process already has the maximum number of files open.
- *      o ENOMEM
+ *      o ENOMEM        OK
  *        Insufficient kernel memory was available.
- *      o ENAMETOOLONG
+ *      o ENAMETOOLONG  OK
  *        A component of filename was too long.
- *      o ENOENT
+ *      o ENOENT        OK
  *        O_CREAT is not set and the named file does not exist.  Or, a
  *        directory component in pathname does not exist.
- *      o EISDIR
+ *      o EISDIR        OK
  *        pathname refers to a directory and the access requested involved
  *        writing (that is, O_WRONLY or O_RDWR is set).
- *      o ENXIO
+ *      o ENXIO         OK
  *        pathname refers to a device special file and no corresponding device
  *        exists.
  */
@@ -84,6 +84,82 @@ get_empty_fd(proc_t *p)
 int
 do_open(const char *filename, int oflags)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_open");
-        return -1;
+        int fd = -1;
+        int i = 0;
+        int open_files = 0;
+        file_t *my_file = NULL;
+        int flags  = 0;
+        
+        /*test only*/
+        /*char buffer[1024];
+        
+        const char *data = buffer;
+        size_t len = 0;
+        
+        vnode_t res_vnode;
+        
+        vnode_t *pe = &res_vnode;
+        
+        dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
+        
+        KASSERT(NULL != NULL);*/
+        /*end of test only*/
+        
+        /*Get a file descriptor*/
+        fd = get_empty_fd(curproc);
+        
+        if(fd == EMFILE){
+                return EMFILE;
+        }
+
+        
+        /*Check flag is valid*/
+        /*Can O_APPEND be OR'd with O_RDONLY??*/
+        /*Set file modes depending on flags...*/
+        switch(oflags){
+                
+                case O_RDONLY:
+                        flags = FMODE_READ;
+                        break;
+                case O_WRONLY:
+                        flags = FMODE_WRITE;
+                        break;
+                case O_RDWR:
+                        flags = FMODE_WRITE | FMODE_READ;
+                        break;
+                case O_WRONLY | O_APPEND:
+                        flags = FMODE_APPEND;   /*do we need FMODE_WRITE too?*/
+                        break;
+                case O_RDWR | O_APPEND:
+                        flags = FMODE_READ | FMODE_APPEND;      /*do we need FMODE_APPEND??*/
+                        break;
+                default:
+                        return -EINVAL;
+        }
+        
+        
+        /*Get new file object*/
+        my_file = fget(fd);     /*also increments reference count*/
+        
+        /*we could not allocate memory for file...*/
+        if(my_file == NULL){
+                return ENOMEM;
+        }
+        
+        /*Set field, ref count and vnode*/
+        my_file->f_mode = flags;
+        my_file->f_pos = 0;
+        
+        /*get vnode, return error*/
+        int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
+        
+        if(res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO){
+                fput(my_file);                  /*free file memory since this is an error*/
+                return res;
+        }
+        
+        /*Assign file to process*/
+        curproc->p_files[fd] = my_file;
+        
+        return fd;
 }
