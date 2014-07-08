@@ -458,7 +458,15 @@ special_file_stat(vnode_t *vnode, struct stat *ss)
 static int
 special_file_read(vnode_t *file, off_t offset, void *buf, size_t count)
 {
-        NOT_YET_IMPLEMENTED("VFS: special_file_read");
+        //NOT_YET_IMPLEMENTED("VFS: special_file_read");
+		if (S_ISCHR(file->vn_mode)) {
+			// vnode_t->bytedev_t->bytedev_ops->int (*read)(bytedev_t *dev, int offset, void *buf, int count);
+			return file->vn_cdev->cd_ops->read(file->vn_cdev, offset, buf, count);
+	    }
+		else {
+	        KASSERT(S_ISBLK(file->vn_mode));
+	        return -ENOTSUP;
+	    }
         return 0;
 }
 
@@ -471,7 +479,15 @@ special_file_read(vnode_t *file, off_t offset, void *buf, size_t count)
 static int
 special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 {
-        NOT_YET_IMPLEMENTED("VFS: special_file_write");
+        //NOT_YET_IMPLEMENTED("VFS: special_file_write");
+		if (S_ISBLK(file->vn_mode)) {
+			// vnode_t->blockdev_t->blockdev_ops->int (*write_block)(blockdev_t *bdev, const char *buf,blocknum_t loc, size_t count);
+			return file->vn_bdev->bd_ops->write_block(file->vn_bdev, buf, offset, count);
+		}
+		else {
+			KASSERT(S_ISBLK(file->vn_mode));
+		    return -ENOTSUP;
+		}
         return 0;
 }
 
