@@ -205,6 +205,9 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 if(res == 0){
                         dbg(DBG_PRINT, "Found directory %s\n", current_name);
                         current_dir = *res_vnode;
+                        
+                        /*TEST...*/
+                        vput(current_dir);
                 }
                 else{
                         /*we did no find the current path, return error!!*/
@@ -246,10 +249,15 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                  *At this point, res_vnode should have the directory vnode
                  *name sohould point to the file name
                  **/
+                
+                /*TEST... Decrement parent directory vnode*/
+                vput(*res_vnode);
+                
                 res = lookup(*res_vnode, *name, strlen(*name), res_vnode);
                 
                 if(res == 0){
                         /*At this point res_vnode should point to the file vnode...*/
+                        dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
                         return res;
                 }
                 else if(res == -ENOENT){
