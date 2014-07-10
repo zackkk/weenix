@@ -46,8 +46,6 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         KASSERT(NULL != result);
         dbg(DBG_PRINT,"(GRADING2A 2.a) result is not NULL\n");
         
-        
-        
         /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
         int res = 0;
         
@@ -114,8 +112,8 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         vnode_t *current_dir = NULL;
         vnode_t result;
         
-        /*Buffer length... max 1024 chars*/
-        char current_name[1024];
+        /*Buffer length... max 28 chars*/
+        char current_name[NAME_LEN+1];            /*NAME_LEN is 28 + 1 for null char*/
         const char *pathname_index = pathname;
         const char *current_name_index = NULL;
         
@@ -180,18 +178,23 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 /*length of the name*/
                 int len = next_slash - current_name_index;
                 
+                if(len > NAME_LEN){
+                        dbg(DBG_PRINT, "File/directory name too long (%d characters), max is 28 characters\n", len);
+                        return ENAMETOOLONG;
+                }
+                
                 dbg(DBG_PRINT, "Path section length %d\n", len);
                 
                 /*copy name in local buffer*/
-                memset(current_name, 0, 1024);
+                memset(current_name, 0, NAME_LEN+1);    /*reset 0 chars*/
                 
-                if(len < 1023){                 /*name 1023 (0-1022) char long, 1024 item MUST be 0*/
+                if(len < NAME_LEN){                 /*name 28 (0-27) char long, 29 item MUST be 0*/
                         /*copy name to buffer*/
                         memcpy(current_name, current_name_index, len);
                 }
                 else{
-                        memcpy(current_name, current_name_index, 1024);
-                        current_name[1023] = 0;                      
+                        memcpy(current_name, current_name_index, NAME_LEN);
+                        current_name[NAME_LEN] = 0;                      
                 }
                 
                 dbg(DBG_PRINT, "Path section name: %s\n", current_name);
@@ -205,6 +208,9 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 if(res == 0){
                         dbg(DBG_PRINT, "Found directory %s\n", current_name);
                         current_dir = *res_vnode;
+                        
+                        /*TEST...*/
+                        vput(current_dir);
                 }
                 else{
                         /*we did no find the current path, return error!!*/
@@ -246,15 +252,20 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                  *At this point, res_vnode should have the directory vnode
                  *name sohould point to the file name
                  **/
+                
+                /*TEST... Decrement parent directory vnode*/
+                vput(*res_vnode);
+                
                 res = lookup(*res_vnode, *name, strlen(*name), res_vnode);
                 
                 if(res == 0){
                         /*At this point res_vnode should point to the file vnode...*/
+                        dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
                         return res;
                 }
                 else if(res == -ENOENT){
                         
-                        /*If we didn't find the fila, create and if flag set to O_CREATE*/
+                        /*If we didn't find the file, create and if flag set to O_CREATE*/
                         if(flag & O_CREAT){
                                 
                                /*return the newly created vnode in res_vnode...*/

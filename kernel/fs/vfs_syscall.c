@@ -1,3 +1,4 @@
+
 /******************************************************************************/
 /* Important CSCI 402 usage information:                                      */
 /*                                                                            */
@@ -52,8 +53,34 @@
 int
 do_read(int fd, void *buf, size_t nbytes)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_read");
-        return -1;
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
+             return -EBADF;
+        }
+        file_t *f;
+        if((f = fget(fd)) == NULL) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_read\n");
+             return -EBADF;
+        }        
+        if(f->f_mode !=FMODE_READ)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) file mode is not READ do_read\n");
+             fput(f);
+             return -EBADF;
+        }  
+        if (S_ISDIR(f->f_vnode->vn_mode)) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) vnode mode is not dir do_read\n");
+             fput(f);
+             return -EISDIR;
+        }
+        int returnVal = f->f_vnode->vn_ops->read(f->f_vnode, f->f_pos, buf, nbytes);
+        f -> f_pos += returnVal;
+
+        fput(f);
+        return returnVal;
 }
 
 /* Very similar to do_read.  Check f_mode to be sure the file is writable.  If
@@ -67,8 +94,42 @@ do_read(int fd, void *buf, size_t nbytes)
 int
 do_write(int fd, const void *buf, size_t nbytes)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_write");
-        return -1;
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_write\n");
+             return -EBADF;
+        }
+        file_t *f;
+        if((f = fget(fd)) == NULL) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_write\n");
+             return -EBADF;
+        } 
+        if(f->f_mode & FMODE_APPEND)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) file mode is FMODE_APPEND do_write\n");
+             do_lseek(fd,f->f_pos,SEEK_END);
+             int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
+             f -> f_pos += returnVal;
+
+             fput(f);
+             return returnVal;
+        }     
+        if(f->f_mode !=FMODE_WRITE)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) file mode is not FMODE_WRITE do_write\n");
+             fput(f);
+             return -EBADF;
+        }  
+        int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
+        f -> f_pos += returnVal;
+        if(returnVal>0)
+        {
+             KASSERT((S_ISCHR(f->f_vnode->vn_mode)) || (S_ISBLK(f->f_vnode->vn_mode)) || ((S_ISREG(f->f_vnode->vn_mode)) && (f->f_pos <= f->f_vnode->vn_len)));
+             dbg(DBG_PRINT, "(GRADING2A 3.a) successful write kassert\n");
+        }
+        fput(f);
+        return returnVal;
 }
 
 /*
@@ -81,8 +142,20 @@ do_write(int fd, const void *buf, size_t nbytes)
 int
 do_close(int fd)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_close");
-        return -1;
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_close\n");
+             return -EBADF;
+        }
+        file_t *f;
+        if((f = fget(fd)) == NULL) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_close\n");
+             return -EBADF;
+        } 
+        curproc->p_files[fd] = 0;
+        fput(f);
+        return 0;
 }
 
 /* To dup a file:
@@ -104,8 +177,29 @@ do_close(int fd)
 int
 do_dup(int fd)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_dup");
-        return -1;
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_dup\n");
+             return -EBADF;
+        }
+        file_t *f;
+        if((f = fget(fd)) == NULL) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_dup\n");
+             return -EBADF;
+        } 
+        
+        int dfd = get_empty_fd(curproc);
+        if(dfd == -EMFILE)
+        {
+             dbg(DBG_PRINT, "(GRADING2C)  maximum number of fd open do_dup\n");
+             fput(f);
+             return -EMFILE;
+        }
+
+        curproc->p_files[dfd]=f;
+        fput(f);
+        return dfd;
 }
 
 /* Same as do_dup, but insted of using get_empty_fd() to get the new fd,
@@ -120,8 +214,35 @@ do_dup(int fd)
 int
 do_dup2(int ofd, int nfd)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_dup2");
-        return -1;
+        if(ofd<0 || ofd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid ofd num do_dup2\n");
+             return -EBADF;
+        }
+        if(nfd<0 || nfd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid nfd num do_dup2\n");
+             return -EBADF;
+        }
+        file_t *f;
+        if((f = fget(ofd)) == NULL) 
+        {
+             dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_dup2\n");
+             return -EBADF;
+        } 
+        if(ofd != nfd)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) give f=fget(ofd) to nfd do_dup2\n");
+             if(curproc->p_files[nfd] !=NULL)
+             {
+                  dbg(DBG_PRINT, "(GRADING2C) close nfd which is in use do_dup2\n");
+                  do_close(nfd);
+             }
+             curproc->p_files[nfd]=f;
+        }
+        
+        fput(f);
+        return nfd;
 }
 
 /*
@@ -152,8 +273,50 @@ do_dup2(int ofd, int nfd)
 int
 do_mknod(const char *path, int mode, unsigned devid)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_mknod");
-        return -1;
+        if(!(S_ISCHR (mode) || S_ISBLK(mode)))
+        {
+              dbg(DBG_PRINT, "(GRADING2C) mode is not S_IFCHR or S_IFBLK do_mknod\n");
+              return -EINVAL;
+        }
+        size_t namelen = 0;
+        const char *name;
+        vnode_t *res_vnode;
+        if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mknod\n");
+             return -ENOENT;
+        }
+        /*if(res_vnode ==NULL)
+        {
+             return -ENOENT;
+        }*/
+        if (namelen >= NAME_LEN)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) name is too long do_mknod\n");
+             vput(res_vnode);
+             return -ENAMETOOLONG;
+        }
+        if(!S_ISDIR(res_vnode->vn_mode))
+        {
+             dbg(DBG_PRINT, "(GRADING2C) vnode mode is not S_IFDIR do_mknod\n");
+             vput(res_vnode);
+             return -ENOTDIR;
+        }
+
+        vnode_t *result;
+        if(!lookup(res_vnode, name, namelen, &result))
+        {
+              dbg(DBG_PRINT, "(GRADING2C) path already exists do_mknod\n");
+              vput(res_vnode);
+              vput(result);
+              return -EEXIST;
+        }
+        KASSERT(NULL != res_vnode->vn_ops->mknod);
+        dbg(DBG_PRINT, "(GRADING2A 3.b) mknod operation is not NULL\n");
+        vput(res_vnode);
+       
+        return res_vnode->vn_ops->mknod(res_vnode,name,namelen,mode,devid);
+        
 }
 
 /* Use dir_namev() to find the vnode of the dir we want to make the new
@@ -173,8 +336,43 @@ do_mknod(const char *path, int mode, unsigned devid)
 int
 do_mkdir(const char *path)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_mkdir");
-        return -1;
+        size_t namelen = 0;
+        const char *name;
+        vnode_t *res_vnode;
+        if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mkdir\n");
+             return -ENOENT;
+        }
+        /*if(res_vnode ==NULL)
+        {
+             return -ENOENT;
+        }*/
+        if (namelen >= NAME_LEN)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) name is too long do_mkdir\n");
+             vput(res_vnode);
+             return -ENAMETOOLONG;
+        }
+        if(!S_ISDIR(res_vnode->vn_mode))
+        {
+             dbg(DBG_PRINT, "(GRADING2C) vnode mode is not S_IFDIR do_mkdir\n");
+             vput(res_vnode);
+             return -ENOTDIR;
+        }
+
+        vnode_t *result;
+        if(!lookup(res_vnode, name, namelen, &result))
+        {
+              dbg(DBG_PRINT, "(GRADING2C) path already exists do_mkdir\n");
+              vput(res_vnode);
+              vput(result);
+              return -EEXIST;
+        }
+        KASSERT(NULL != res_vnode->vn_ops->mkdir);
+        dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");
+        vput(res_vnode);
+        return res_vnode->vn_ops->mkdir(res_vnode,name,namelen);
 }
 
 /* Use dir_namev() to find the vnode of the directory containing the dir to be
@@ -198,8 +396,46 @@ do_mkdir(const char *path)
 int
 do_rmdir(const char *path)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_rmdir");
-        return -1;
+        size_t namelen = 0;
+        const char *name;
+        vnode_t *res_vnode;
+        if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_rmdir\n");
+             return -ENOENT;
+        }
+        /*if(res_vnode ==NULL)
+        {
+             return -ENOENT;
+        }*/
+        if (namelen >= NAME_LEN)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) name is too long do_rmdir\n");
+             vput(res_vnode);
+             return -ENAMETOOLONG;
+        }
+        if(!S_ISDIR(res_vnode->vn_mode))
+        {
+             dbg(DBG_PRINT, "(GRADING2C) vnode mode is not S_IFDIR do_rmdir\n");
+             vput(res_vnode);
+             return -ENOTDIR;
+        }
+        if(name_match(".", name, namelen))
+        {
+             dbg(DBG_PRINT, "(GRADING2C) path has \".\" as its final component do_rmdir\n");
+             vput(res_vnode);
+             return -EINVAL;
+        }
+        if(name_match("..", name, namelen))
+        {
+             dbg(DBG_PRINT, "(GRADING2C) path has \"..\" as its final component do_rmdir\n");
+             vput(res_vnode);
+             return -ENOTEMPTY;
+        }
+        KASSERT(NULL != res_vnode->vn_ops->rmdir);
+        dbg(DBG_PRINT, "(GRADING2A 3.d) rmdir operation is not NULL\n");
+        vput(res_vnode);
+        return res_vnode->vn_ops->rmdir(res_vnode,name,namelen);
 }
 
 /*
@@ -496,6 +732,7 @@ do_chdir(const char *path)
 int
 do_getdent(int fd, struct dirent *dirp)
 {
+<<<<<<< HEAD
 	/*get the file and check a valid fd was passed in*/
 	struct file *currFile = fget(fd);
 	if(currFile == NULL)
@@ -526,6 +763,44 @@ do_getdent(int fd, struct dirent *dirp)
 	
 	/*return the number of bytes read into the dirent*/
 	return offset;
+=======
+        /* NOT_YET_IMPLEMENTED("VFS: do_getdent"); */
+		/*
+		 * check ramfs.c: int ramfs_mount(struct fs *fs) for tutorial purpose
+		 * file.h: struct file *fget(int fd);
+		 */
+		file_t *tmp_file = fget(fd);
+		int ret_readdir = 0;
+
+		dbg(DBG_PRINT,"file reference count for fd:%d  is %d.\n",fd, tmp_file->f_refcount);
+
+		/* fd is not an open file descriptor. */
+		if(NULL == tmp_file){
+			return EBADF;
+		}
+
+		/* File descriptor does not refer to a directory. */
+		if(!S_ISDIR(tmp_file->f_vnode->vn_mode)){
+			return ENOTDIR;
+		}
+
+		/* If the end of the file as been reached (offset == file->vn_len),
+		   no directory entry will be read and 0 will be returned. */
+		if(tmp_file->f_pos == tmp_file->f_vnode->vn_len){
+			return 0;
+		}
+		/* vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d); */
+		ret_readdir = tmp_file->f_vnode->vn_ops->readdir(tmp_file->f_vnode, tmp_file->f_pos, dirp);
+		if(ret_readdir > 0){
+			tmp_file->f_pos += ret_readdir;
+			return 0;
+		}
+		else{
+			return -errno;
+		}
+
+        return -1;
+>>>>>>> remotes/origin/kernel2_all
 }
 
 /*
@@ -541,16 +816,35 @@ do_getdent(int fd, struct dirent *dirp)
 int
 do_lseek(int fd, int offset, int whence)
 {
-	/*get the file and check a valid fd was passed in*/
-	struct file *currFile = fget(fd);
-	if(currFile == NULL)
-		return -EBADF;
-	
-	/*check whether whence == one of the three valid start points in the file*/
-	int currPos = currFile->f_pos;
-	/*currFile->f_vnode->*/
-	
-	return 0;
+        /* NOT_YET_IMPLEMENTED("VFS: do_lseek"); */
+		/*
+		 * file.h struct file *fget(int fd);
+		 */
+		file_t *tmp_file = fget(fd);
+
+		/* fd is not an open file descriptor. */
+		if(NULL == tmp_file){
+			return EBADF;
+		}
+		/* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
+		switch(whence){
+			case SEEK_SET:
+				tmp_file->f_pos = offset;
+				break;
+			case SEEK_CUR:
+				tmp_file->f_pos += offset;
+				break;
+			case SEEK_END:
+				tmp_file->f_pos = tmp_file->f_vnode->vn_len + offset;
+				break;
+			default:
+				return EINVAL;
+		}
+		/* the resulting file offset would be negative. */
+		if(tmp_file->f_pos < 0){
+			return EINVAL;
+		}
+        return -1;
 }
 
 /*
@@ -567,8 +861,38 @@ do_lseek(int fd, int offset, int whence)
 int
 do_stat(const char *path, struct stat *buf)
 {
-	/*KASSERT(pointer to corresponding vnode ->vn_ops->stat);*/
-	return -1;
+        /* NOT_YET_IMPLEMENTED("VFS: do_stat");
+         * modified by Zack
+         */
+		int res_open_namev = 0;
+		int res_stat = 0;
+		int res = 0;
+		vnode_t *tmp_vnode = NULL; /* initialize ??? */
+
+		/*
+		 * namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
+		 * fchtl.h: #define O_CREAT 0x100    Create file if non-existent.
+		 */
+		res_open_namev = open_namev(path, O_CREAT, &tmp_vnode, NULL);
+
+		/*ERROR CHECKING*/
+			vnode_t *newNode = (vnode_t*) kmalloc(sizeof(vnode_t));
+			vnode_t **newNodePtr = &newNode;
+			/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
+			if((res = open_namev(path, 0, newNodePtr, NULL)) != 0) {
+				dbg(DBG_PRINT, "open_namev error: %d", res);
+				return res;
+			}
+			/*newNodePtr should now point to the vnode of the directory given by 'path'*/
+
+		/*
+		 * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
+		 */
+		KASSERT(tmp_vnode->vn_ops->stat);
+		dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
+		res_stat = tmp_vnode->vn_ops->stat(tmp_vnode, buf);
+        return -1;
+
 }
 
 #ifdef __MOUNTING__
