@@ -547,6 +547,7 @@ do_lseek(int fd, int offset, int whence)
 		return -EBADF;
 	
 	/*check whether whence == one of the three valid start points in the file*/
+	int currPos = currFile->f_pos;
 	/*currFile->f_vnode->*/
 	
 	return 0;
