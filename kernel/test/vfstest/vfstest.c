@@ -1,1 +1,1 @@
-../../../user/usr/bin/tests/vfstest.c
+#include "../../../user/usr/bin/tests/vfstest.c"

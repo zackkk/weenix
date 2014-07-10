@@ -29,12 +29,15 @@
 kthread_t *curthr; /* global */
 static slab_allocator_t *kthread_allocator = NULL;
 
+static ktqueue_t pointless_queue;
+
 #ifdef __MTP__
 /* Stuff for the reaper daemon, which cleans up dead detached threads */
 static proc_t *reapd = NULL;
 static kthread_t *reapd_thr = NULL;
 static ktqueue_t reapd_waitq;
 static list_t kthread_reapd_deadlist; /* Threads to be cleaned */
+                                        
 
 static void *kthread_reapd_run(int arg1, void *arg2);
 #endif
@@ -96,8 +99,23 @@ kthread_destroy(kthread_t *t)
 kthread_t *
 kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kthread_create");
-        return NULL;
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
+        KASSERT(NULL != p);
+        dbg(DBG_PRINT, "(GRADING1A 3.a) the process:%s of the kthread is not empty\n", p->p_comm);
+
+        kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
+        thr->kt_kstack = alloc_stack();
+
+        context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
+
+        thr->kt_retval = NULL;
+        thr->kt_errno = NULL;
+        thr->kt_cancelled = 0;
+        thr->kt_wchan = NULL;
+        thr->kt_proc = p;
+        thr->kt_state = KT_RUN;
+        list_insert_head(&(p->p_threads), &(thr->kt_plink));
+        return thr;
 }
 
 /*
@@ -114,7 +132,20 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 void
 kthread_cancel(kthread_t *kthr, void *retval)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kthread_cancel");
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
+		KASSERT(NULL != kthr);
+		dbg(DBG_PRINT, "(GRADING1A 3.b) the kthread is not empty (thread process pid %d)\n", kthr->kt_proc->p_pid);
+
+		if(kthr == curthr){
+			kthread_exit(retval);
+		}
+		else{
+			kthr->kt_cancelled = 1;
+			kthr->kt_retval = retval;
+			if(kthr->kt_state == KT_SLEEP_CANCELLABLE){
+				sched_make_runnable(kthr);
+			}
+		}
 }
 
 /*
@@ -130,7 +161,24 @@ kthread_cancel(kthread_t *kthr, void *retval)
 void
 kthread_exit(void *retval)
 {
-        NOT_YET_IMPLEMENTED("PROCS: kthread_exit");
+		dbg(DBG_PRINT, "kthread_code_path_check\n");
+		curthr->kt_wchan = NULL;
+		curthr->kt_qlink.l_next = NULL;
+		curthr->kt_qlink.l_prev = NULL;
+
+		KASSERT(!curthr->kt_wchan);
+		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread's blocked on queue is empty\n");
+		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev);
+		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread's link on ktqueue is empty\n");
+		KASSERT(curthr->kt_proc == curproc);
+		dbg(DBG_PRINT, "(GRADING1A 3.c) curthr and curproc match\n");
+
+		curthr->kt_retval = retval;
+		curthr->kt_state = KT_EXITED;
+                
+		proc_thread_exited(retval);
+		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread_exit successfully\n");
+		return;
 }
 
 /*

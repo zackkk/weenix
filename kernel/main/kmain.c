@@ -52,7 +52,6 @@
 #include "fs/vfs_syscall.h"
 #include "fs/fcntl.h"
 #include "fs/stat.h"
-
 #include "test/kshell/kshell.h"
 #include "errno.h"
 
@@ -68,6 +67,11 @@ static void      *initproc_run(int arg1, void *arg2);
 
 static context_t bootstrap_context;
 static int gdb_wait = GDBWAIT;
+
+extern void *testproc(int arg1, void *arg2);
+extern void *sunghan_test(int arg1, void *arg2);
+extern void *sunghan_deadlock_test(int arg1, void *arg2);
+
 
 /**
  * This is the first real C function ever called. It performs a lot of
@@ -93,7 +97,7 @@ kmain()
 
         acpi_init();
         apic_init();
-	      pci_init();
+	    pci_init();
         intr_init();
 
         gdt_init();
@@ -168,10 +172,25 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
+		dbg(DBG_PRINT, "kmain_code_path_check\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
-        NOT_YET_IMPLEMENTED("PROCS: bootstrap");
+        /* NOT_YET_IMPLEMENTED("PROCS: bootstrap"); */
+        proc_t *proc = proc_create("idle_process");
+        curproc = proc;
+        KASSERT(NULL != curproc);
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current process (idle) is not NULL\n");
+        KASSERT(PID_IDLE == curproc->p_pid);
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current process is the idle process\n");
+
+        /* context is created in kthread_create */
+        kthread_t *thr = kthread_create(curproc, idleproc_run, 0, NULL);
+        curthr = thr;
+        KASSERT(NULL != curthr);
+        dbg(DBG_PRINT, "(GRADING1A 1.a) The current thread is for the idle process\n");
+
+        context_make_active(&(thr->kt_ctx));
 
         panic("weenix returned to bootstrap()!!! BAD!!!\n");
         return NULL;
@@ -205,12 +224,60 @@ idleproc_run(int arg1, void *arg2)
 #ifdef __VFS__
         /* Once you have VFS remember to set the current working directory
          * of the idle and init processes */
-        NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        /* NOT_YET_IMPLEMENTED("VFS: idleproc_run"); */
+
+        /*
+         *  Get the processes
+         */
+        proc_t *idle_proc = proc_lookup(PID_IDLE);
+        proc_t *init_proc = proc_lookup(PID_INIT);
+        KASSERT(NULL != idle_proc);
+        KASSERT(NULL != init_proc);
+
+        /*
+         *  Set the current working directory
+         */
+        idle_proc->p_cwd = vfs_root_vn;
+        init_proc->p_cwd = vfs_root_vn;
+
+        /*
+         *  Increment the reference count of the provided vnode.
+         */
+        vref(vfs_root_vn);
+        vref(vfs_root_vn);
 
         /* Here you need to make the null, zero, and tty devices using mknod */
         /* You can't do this until you have VFS, check the include/drivers/dev.h
          * file for macros with the device ID's you will need to pass to mknod */
-        NOT_YET_IMPLEMENTED("VFS: idleproc_run");
+        /* NOT_YET_IMPLEMENTED("VFS: idleproc_run"); */
+
+
+        /* vnode.h
+         * int (*mknod)(struct vnode *dir, const char *name, size_t name_len,
+         *             int mode, devid_t devid);
+         */
+
+        /* vfs_syscall.h
+         * int do_mknod(const char *path, int mode, unsigned devid);
+         * int do_mkdir(const char *path);
+         *
+         * S_IFCHR: character special
+         */
+
+        int rc_null = do_mknod("/dev/null", S_IFCHR, MEM_NULL_DEVID);
+        int rc_zero = do_mknod("/dev/zero", S_IFCHR, MEM_ZERO_DEVID);
+        int i;
+        char tty_path[32];
+        /*
+         * ???????????????????????????????????????????????
+         * number of tty dev
+         */
+        for(i = 0; i < 32; i++){
+        	memset(tty_path, '\0', 32);
+        	sprintf(tty_path, "/dev/tty%d", i);
+        	int rc_tty_i = do_mknod(tty_path, S_IFCHR, MKDEVID(2,i));
+        }
+
 #endif
 
         /* Finally, enable interrupts (we want to make sure interrupts
@@ -219,6 +286,7 @@ idleproc_run(int arg1, void *arg2)
 
         /* Run initproc */
         sched_make_runnable(initthr);
+	
         /* Now wait for it */
         child = do_waitpid(-1, 0, &status);
         KASSERT(PID_INIT == child);
@@ -266,9 +334,77 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_create");
-        return NULL;
+		dbg(DBG_PRINT, "kmain_code_path_check\n");
+		proc_t *proc = proc_create("init_process");
+		KASSERT(NULL != proc);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
+		KASSERT(PID_INIT == proc->p_pid);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pid of the init process is PID_INIT\n");
+
+		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
+		 * thread is contained in process in kthread_create;
+		 * argument 1234 is used for test purpose */
+		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
+		KASSERT(NULL != thr);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the thread for the init process is not NULL\n");
+
+        return thr;
+
 }
+
+
+#ifdef __DRIVERS__
+
+static void *
+faber_test(int arg1, void *arg2){
+	/* faber_test.c */
+	testproc(0,0);
+	return NULL;
+}
+static void *
+sunhan_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	sunghan_test(0,0);
+	return NULL;
+}
+static void *
+sunhan_deadlock_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	sunghan_deadlock_test(0,0);
+	return NULL;
+}
+
+
+int ftests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("faber_test_proc");
+    kthread_t *thr = kthread_create(p, faber_test, 555, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+int stests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("sunhan_test_proc");
+    kthread_t *thr = kthread_create(p, sunhan_test, 666, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+int dtests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("sunhan_deadlock_test_proc");
+    kthread_t *thr = kthread_create(p, sunhan_deadlock_test, 777, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
+
+#endif /* __DRIVERS__ */
 
 /**
  * The init thread's function changes depending on how far along your Weenix is
@@ -284,7 +420,25 @@ initproc_create(void)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-        NOT_YET_IMPLEMENTED("PROCS: initproc_run");
+	dbg(DBG_PRINT, "kmain_code_path_check\n");
+	
+	/*test*/
+	/*do_open("/ed/ed2/what", O_RDONLY);*/
 
-        return NULL;
+
+	#ifdef __DRIVERS__
+	
+			kshell_add_command("ftest", ftests, "Invokes testproc()...");
+			kshell_add_command("stest", stests, "Invokes sunghan_test()...");
+			kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
+			kshell_t *kshell = kshell_create(0);
+			if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+			while (kshell_execute_next(kshell))
+				;
+
+			kshell_destroy(kshell);
+	#endif /* __DRIVERS__ */
+    return NULL;
 }
+
+

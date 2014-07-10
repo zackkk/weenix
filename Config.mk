@@ -10,8 +10,8 @@
 # Setting any of these variables will control which parts of the source tree
 # are built. To enable something set it to 1, otherwise set it to 0.
 #
-     DRIVERS=0
-         VFS=0
+     DRIVERS=1
+         VFS=1
         S5FS=0
           VM=0
      DYNAMIC=0
