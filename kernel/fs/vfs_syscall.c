@@ -309,18 +309,33 @@ do_getdent(int fd, struct dirent *dirp)
 		file_t *tmp_file = fget(fd);
 		int ret_readdir = 0;
 
+		dbg(DBG_PRINT,"file reference count for fd:%d  is %d.\n",fd, tmp_file->f_refcount);
+
 		/* fd is not an open file descriptor. */
 		if(NULL == tmp_file){
 			return EBADF;
 		}
 
-		dirp->d_ino =
-		/*
-		 * vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d);
-		 */
-		ret_readdir = tmp_file->f_vnode->readdir(tmp_file->f_vnode, );
-		KASSERT(ret_readdir > 0);
-		tmp_file->f_pos += ret_readdir;
+		/* File descriptor does not refer to a directory. */
+		if(!S_ISDIR(tmp_file->f_vnode->vn_mode)){
+			return ENOTDIR;
+		}
+
+		/* If the end of the file as been reached (offset == file->vn_len),
+		   no directory entry will be read and 0 will be returned. */
+		if(tmp_file->f_pos == tmp_file->f_vnode->vn_len){
+			return 0;
+		}
+		/* vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d); */
+		ret_readdir = tmp_file->f_vnode->vn_ops->readdir(tmp_file->f_vnode, tmp_file->f_pos, dirp);
+		if(ret_readdir > 0){
+			tmp_file->f_pos += ret_readdir;
+			return 0;
+		}
+		else{
+			return -errno;
+		}
+
         return -1;
 }
 
