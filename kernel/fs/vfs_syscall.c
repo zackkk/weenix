@@ -458,60 +458,51 @@ do_unlink(const char *path)
 	int res;
 	
 	size_t nameSize;
-	vnode_t *resNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **resNodePtr = &resNode;
+	vnode_t *resNodePtr = NULL;
 	/*check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-	if((res = open_namev(path, 0, resNodePtr, NULL)) != 0) {
+	if((res = open_namev(path, 0, &resNodePtr, NULL)) != 0) {
 		dbg(DBG_PRINT, "open_namev error: %d", res);
 		return res;
 	}
 		
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "unlink: open_namev called, refcount for %s: %d", path, (*resNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "unlink: open_namev called, refcount for %s: %d", path, resNodePtr->vn_refcount);
 	
 	/*check that the file name does not refer to a directory*/
-	if(S_ISDIR((*resNodePtr)->vn_mode)) {
+	if(S_ISDIR(resNodePtr->vn_mode)) {
 		dbg(DBG_PRINT, "file name refers to directory");
 		return -EISDIR;
 	}
 	
 	size_t *namelen = (size_t*) kmalloc(sizeof(size_t));
-	const char* name;
-	const char **namePtr = &name; /*last element in path name stored here*/
-	vnode_t *parent = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **parentPtr = &parent;
+	const char *namePtr = NULL; /*last element in path name stored here*/
+	vnode_t *parentPtr = NULL;
 	/*get parent directory - need for first arg of unlink*/
-	if((res = dir_namev(path, namelen, namePtr, NULL, parentPtr)) != 0) { /*sanity check*/
+	if((res = dir_namev(path, namelen, &namePtr, NULL, &parentPtr)) != 0) { /*sanity check*/
 		dbg(DBG_PRINT, "dir_namev error: %d", res);
 		return res;
 	}
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "unlink: dir_namev called, refcount for %s: %d", path, (*resNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "unlink: dir_namev called, refcount for %s: %d", path, resNodePtr->vn_refcount);
 		
 	/*call unlink from vnode*/
-	KASSERT(NULL != parent->vn_ops->unlink);
+	KASSERT(NULL != parentPtr->vn_ops->unlink);
 	dbg(DBG_PRINT, "(GRADING2A 3.e) KASSERT passed - vnode->vn_ops->unlink not NULL");
-	(*parentPtr)->vn_ops->unlink(((struct vnode *) (*parentPtr)), *namePtr, *namelen); 
+	parentPtr->vn_ops->unlink(((struct vnode *) parentPtr), namePtr, *namelen); 
 	
 	/*decrement reference counts for both the file and parent directory*/
 	/*unlink does not decrement ref count, so decrement ref count of resNodePtr again, twice total*/
-	vput(*resNodePtr);
+	vput(resNodePtr);
 	
-	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, (*resNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, resNodePtr->vn_refcount);
 	
-	vput(*resNodePtr);
-	vput(*parentPtr);
+	vput(resNodePtr);
+	vput(parentPtr);
 	
 
-	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, (*resNodePtr)->vn_refcount);
-	dbg(DBG_PRINT, "unlink: vput() called (parDir), refcount for %s: %d", path, (*parentPtr)->vn_refcount);
-	
-	
-	/*free alloc'ed memory*/
-	kfree(resNode);
-	kfree(namelen);
-	kfree(parent);
+	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, resNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: vput() called (parDir), refcount for %s: %d", path, parentPtr->vn_refcount);
 	
     return 0;
 }
@@ -546,49 +537,40 @@ do_link(const char *from, const char *to)
 	int res;
 	
 	size_t nameSize;
-	vnode_t *fromNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **fromNodePtr = &fromNode;
+	vnode_t *fromNodePtr = NULL;
 	/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-	if((res = open_namev(from, 0, fromNodePtr, NULL)) != 0) {
+	if((res = open_namev(from, 0, &fromNodePtr, NULL)) != 0) {
 		dbg(DBG_PRINT, "open_namev error: %d", res);
 		return res;
 	}
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "link: open_namev called, refcount for %s: %d", from, (*fromNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "link: open_namev called, refcount for %s: %d", from, fromNodePtr->vn_refcount);
 	
 	size_t *namelen = (size_t*) kmalloc(sizeof(size_t));
-	const char* name;
-	const char **namePtr = &name; /*last element in path name stored here*/
-	vnode_t *toNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **toNodePtr = &toNode;
+	const char *namePtr = NULL; /*last element in path name stored here*/
+	vnode_t *toNodePtr = NULL;
 	/*get 'to' vnode (directory) and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-	if((res = dir_namev(to, namelen, namePtr, NULL, toNodePtr)) != 0) { /*sanity check*/
+	if((res = dir_namev(to, namelen, &namePtr, NULL, &toNodePtr)) != 0) { /*sanity check*/
 		dbg(DBG_PRINT, "dir_namev error: %d", res);
 		return res;
 	}
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "link: dir_namev called, refcount for %s: %d", to, (*toNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "link: dir_namev called, refcount for %s: %d", to, toNodePtr->vn_refcount);
 	
 	/*call link function from 'to' vnode*/
-	int result = (*toNodePtr)->vn_ops->link((struct vnode*) (*fromNodePtr), (struct vnode*) (*toNodePtr), *namePtr, *namelen);
+	int result = toNodePtr->vn_ops->link((struct vnode*) fromNodePtr, (struct vnode*) toNodePtr, namePtr, *namelen);
 	
 	/* decrement reference count for only the parent directory ('to')
 	 * the ref count for the vnode linked into that directory 
 	 * was already incremented by calling open_namev, and we need to keep this
 	 * increased ref count now that the file is referenced by the directory
 	 */
-	vput(*toNodePtr);
+	vput(toNodePtr);
 	
 
-	dbg(DBG_PRINT, "link: vput called (parDir), refcount for %s: %d", to, (*toNodePtr)->vn_refcount);
-	
-	
-	/*free alloc'ed memory*/
-	kfree(fromNode);
-	kfree(toNode);
-	kfree(namelen);
+	dbg(DBG_PRINT, "link: vput called (parDir), refcount for %s: %d", to, toNodePtr->vn_refcount);
 	
 	return result;
 }
@@ -610,24 +592,21 @@ do_rename(const char *oldname, const char *newname)
 	int res;
 	
 	size_t nameSize;
-	vnode_t *oldNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **oldNodePtr = &oldNode;
+	vnode_t *oldNodePtr = NULL;
 	/*get 'oldname' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-	if((res = open_namev(oldname, O_CREAT, oldNodePtr, NULL)) != 0) {
+	if((res = open_namev(oldname, O_CREAT, &oldNodePtr, NULL)) != 0) {
 		dbg(DBG_PRINT, "open_namev error: %d", res);
 		return res;
 	}
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "rename: open_namev called, refcount for %s: %d", oldname, (*oldNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "rename: open_namev called, refcount for %s: %d", oldname, oldNodePtr->vn_refcount);
 	
 	size_t *namelen = (size_t*) kmalloc(sizeof(size_t));
-	const char* name;
-	const char **namePtr = &name; /*last element in path name stored here*/
-	vnode_t *dirNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **dirNodePtr = &dirNode;
+	const char *namePtr = NULL; /*last element in path name stored here*/
+	vnode_t *dirNodePtr = NULL;
 	/*get 'oldname' vnode (parent directory) which is needed for link*/
-	if((res = dir_namev(oldname, namelen, namePtr, NULL, dirNodePtr)) != 0) { /*sanity check*/
+	if((res = dir_namev(oldname, namelen, &namePtr, NULL, &dirNodePtr)) != 0) { /*sanity check*/
 		dbg(DBG_PRINT, "dir_namev error: %d", res);
 		return res;
 	}
@@ -637,14 +616,14 @@ do_rename(const char *oldname, const char *newname)
 	 */
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "rename: dir_namev called, refcount for %s: %d", oldname, (*dirNodePtr)->vn_refcount);
+	dbg(DBG_PRINT, "rename: dir_namev called, refcount for %s: %d", oldname, dirNodePtr->vn_refcount);
 	
 	/*call link function from 'oldname' parent directory, specifying new name*/
 	int namelength = strlen(newname);
-	(*dirNodePtr)->vn_ops->link((struct vnode*) (*oldNodePtr), (struct vnode*) (*dirNodePtr), newname, namelength);
+	dirNodePtr->vn_ops->link((struct vnode*) oldNodePtr, (struct vnode*) dirNodePtr, newname, namelength);
 	
 	/*unlink 'oldname' vnode, which is now also linked through 'newname' - just deletes one of two link to the vnode?*/
-	int result = (*dirNodePtr)->vn_ops->unlink(((struct vnode *) (*dirNodePtr)), *namePtr, *namelen); 
+	int result = dirNodePtr->vn_ops->unlink(((struct vnode *) dirNodePtr), namePtr, *namelen); 
 	
 	/*
 	 * the two above operations (link and unlink) really just linked and unlinked the same node
@@ -652,20 +631,13 @@ do_rename(const char *oldname, const char *newname)
 	 */
 	
 	/*decrement reference counts for both the file and parent directory*/
-	vput(*oldNodePtr);
-	vput(*dirNodePtr);
+	vput(oldNodePtr);
+	vput(dirNodePtr);
 	
 
 	
-	dbg(DBG_PRINT, "rename: vput called (file), refcount for %s: %d", oldname, (*oldNodePtr)->vn_refcount);
-	dbg(DBG_PRINT, "rename: vput called (parDir), refcount for parent %s: %d", oldname, (*dirNodePtr)->vn_refcount);
-	
-	
-	
-	/*free alloc'ed memory*/
-	kfree(oldNode);
-	kfree(dirNode);
-	kfree(namelen);
+	dbg(DBG_PRINT, "rename: vput called (file), refcount for %s: %d", oldname, oldNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "rename: vput called (parDir), refcount for parent %s: %d", oldname, dirNodePtr->vn_refcount);
 	
 	return result;
 }
@@ -693,10 +665,9 @@ do_chdir(const char *path)
 	*/
 	 
 	/*ERROR CHECKING*/
-	vnode_t *newNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-	vnode_t **newNodePtr = &newNode;
+	vnode_t *newNodePtr = NULL;
 	/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-	if((res = open_namev(path, 0, newNodePtr, NULL)) != 0) {
+	if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
 		dbg(DBG_PRINT, "open_namev error: %d", res);
 		return res;
 	}
@@ -706,7 +677,7 @@ do_chdir(const char *path)
 	vnode_t *oldNode = curproc->p_cwd;
 	
 	/*set curproc p_cwd = new vnode. ref count for vnode should already be incremented from call to open_namev*/
-	curproc->p_cwd = *newNodePtr;
+	curproc->p_cwd = newNodePtr;
 	
 	/*decrement ref count for previous curproc p_cwd vnode*/
 	vput(oldNode);
@@ -732,38 +703,6 @@ do_chdir(const char *path)
 int
 do_getdent(int fd, struct dirent *dirp)
 {
-<<<<<<< HEAD
-	/*get the file and check a valid fd was passed in*/
-	struct file *currFile = fget(fd);
-	if(currFile == NULL)
-		return -EBADF;
-	
-	/*get the vnode corresponding to the file, check that it's a directory*/
-	struct vnode *currNode = currFile->f_vnode;
-	if(!S_ISDIR(currNode->vn_mode))
-		return -ENOTDIR;
-	
-	/*now we have the vnode and it refers to a directory*/
-	
-	/*check that the virtual function exists before calling it*/
-	KASSERT(NULL != currNode->vn_ops->readdir);
-	
-	off_t offset = 0;
-	/*read the first directory entry into dirp*/
-	int i = currNode->vn_ops->readdir(currNode, offset, dirp);
-	
-	/*increase the directory's f_pos*/
-	offset += i;
-	
-	/*read all subsequent entries, increasing f_pos with each call*/
-	while(offset != 0) {
-		i = currNode->vn_ops->readdir(currNode, offset, dirp);
-		offset += i;
-	}
-	
-	/*return the number of bytes read into the dirent*/
-	return offset;
-=======
         /* NOT_YET_IMPLEMENTED("VFS: do_getdent"); */
 		/*
 		 * check ramfs.c: int ramfs_mount(struct fs *fs) for tutorial purpose
@@ -796,11 +735,11 @@ do_getdent(int fd, struct dirent *dirp)
 			return 0;
 		}
 		else{
-			return -errno;
+			return ret_readdir;
 		}
 
         return -1;
->>>>>>> remotes/origin/kernel2_all
+
 }
 
 /*
@@ -867,19 +806,16 @@ do_stat(const char *path, struct stat *buf)
 		int res_open_namev = 0;
 		int res_stat = 0;
 		int res = 0;
-		vnode_t *tmp_vnode = NULL; /* initialize ??? */
 
 		/*
 		 * namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
 		 * fchtl.h: #define O_CREAT 0x100    Create file if non-existent.
 		 */
-		res_open_namev = open_namev(path, O_CREAT, &tmp_vnode, NULL);
 
 		/*ERROR CHECKING*/
-			vnode_t *newNode = (vnode_t*) kmalloc(sizeof(vnode_t));
-			vnode_t **newNodePtr = &newNode;
+			vnode_t *newNodePtr = NULL;
 			/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-			if((res = open_namev(path, 0, newNodePtr, NULL)) != 0) {
+			if((res = open_namev(path, O_CREAT, &newNodePtr, NULL)) != 0) {
 				dbg(DBG_PRINT, "open_namev error: %d", res);
 				return res;
 			}
@@ -888,10 +824,10 @@ do_stat(const char *path, struct stat *buf)
 		/*
 		 * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
 		 */
-		KASSERT(tmp_vnode->vn_ops->stat);
+		KASSERT(newNodePtr->vn_ops->stat);
 		dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
-		res_stat = tmp_vnode->vn_ops->stat(tmp_vnode, buf);
-        return -1;
+		res_stat = newNodePtr->vn_ops->stat(newNodePtr, buf);
+        return res_stat;
 
 }
 
