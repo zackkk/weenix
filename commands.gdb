@@ -1,10 +1,10 @@
-source /home/eduardo/weenix/kernel/main/gdt.gdb
-source /home/eduardo/weenix/kernel/mm/pagetable.gdb
-source /home/eduardo/weenix/kernel/proc/kthread.gdb
-source /home/eduardo/weenix/kernel/vm/vmmap.gdb
-source /home/eduardo/weenix/kernel/mm/memcheck.py
-source /home/eduardo/weenix/kernel/mm/page.py
-source /home/eduardo/weenix/kernel/mm/slab.py
-source /home/eduardo/weenix/kernel/proc/proc.py
-source /home/eduardo/weenix/kernel/util/debug.py
-source /home/eduardo/weenix/kernel/util/list.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/main/gdt.gdb
+source /home/tuse/kernel assignments/weenix/weenix/kernel/mm/pagetable.gdb
+source /home/tuse/kernel assignments/weenix/weenix/kernel/proc/kthread.gdb
+source /home/tuse/kernel assignments/weenix/weenix/kernel/vm/vmmap.gdb
+source /home/tuse/kernel assignments/weenix/weenix/kernel/mm/memcheck.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/mm/page.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/mm/slab.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/proc/proc.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/util/debug.py
+source /home/tuse/kernel assignments/weenix/weenix/kernel/util/list.py

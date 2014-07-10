@@ -264,7 +264,9 @@ idleproc_run(int arg1, void *arg2)
          * S_IFCHR: character special
          */
 
+        do_mkdir("/dev");
         int rc_null = do_mknod("/dev/null", S_IFCHR, MEM_NULL_DEVID);
+        KASSERT(NULL != NULL);
         int rc_zero = do_mknod("/dev/zero", S_IFCHR, MEM_ZERO_DEVID);
         int i;
         char tty_path[32];
