@@ -163,7 +163,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
                         
                         *name = current_name_index;     /*path name ends in null character...*/
-                        *namelen = i;
+                        *namelen = strlen(*name);
                         
                         dbg(DBG_PRINT, "namelen %u, name %s\n", *namelen, *name);
                         
