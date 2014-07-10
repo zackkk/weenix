@@ -833,6 +833,7 @@ do_stat(const char *path, struct stat *buf)
          */
 		int res_open_namev = 0;
 		int res_stat = 0;
+		int res = 0;
 		vnode_t *tmp_vnode = NULL; /* initialize ??? */
 
 		/*
@@ -841,11 +842,15 @@ do_stat(const char *path, struct stat *buf)
 		 */
 		res_open_namev = open_namev(path, O_CREAT, &tmp_vnode, NULL);
 
-		/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-			if((res = open_namev(from, 0, fromNodePtr, NULL)) != 0) {
+		/*ERROR CHECKING*/
+			vnode_t *newNode = (vnode_t*) kmalloc(sizeof(vnode_t));
+			vnode_t **newNodePtr = &newNode;
+			/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
+			if((res = open_namev(path, 0, newNodePtr, NULL)) != 0) {
 				dbg(DBG_PRINT, "open_namev error: %d", res);
 				return res;
 			}
+			/*newNodePtr should now point to the vnode of the directory given by 'path'*/
 
 		/*
 		 * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
