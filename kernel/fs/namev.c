@@ -46,8 +46,6 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         KASSERT(NULL != result);
         dbg(DBG_PRINT,"(GRADING2A 2.a) result is not NULL\n");
         
-        
-        
         /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
         int res = 0;
         
@@ -254,7 +252,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 }
                 else if(res == -ENOENT){
                         
-                        /*If we didn't find the fila, create and if flag set to O_CREATE*/
+                        /*If we didn't find the file, create and if flag set to O_CREATE*/
                         if(flag & O_CREAT){
                                 
                                /*return the newly created vnode in res_vnode...*/

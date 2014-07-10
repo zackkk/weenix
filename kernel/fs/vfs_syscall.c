@@ -301,7 +301,26 @@ do_chdir(const char *path)
 int
 do_getdent(int fd, struct dirent *dirp)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_getdent");
+        /* NOT_YET_IMPLEMENTED("VFS: do_getdent"); */
+		/*
+		 * check ramfs.c: int ramfs_mount(struct fs *fs) for tutorial purpose
+		 * file.h: struct file *fget(int fd);
+		 */
+		file_t *tmp_file = fget(fd);
+		int ret_readdir = 0;
+
+		/* fd is not an open file descriptor. */
+		if(NULL == tmp_file){
+			return EBADF;
+		}
+
+		dirp->d_ino =
+		/*
+		 * vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d);
+		 */
+		ret_readdir = tmp_file->f_vnode->readdir(tmp_file->f_vnode, );
+		KASSERT(ret_readdir > 0);
+		tmp_file->f_pos += ret_readdir;
         return -1;
 }
 
@@ -318,7 +337,34 @@ do_getdent(int fd, struct dirent *dirp)
 int
 do_lseek(int fd, int offset, int whence)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_lseek");
+        /* NOT_YET_IMPLEMENTED("VFS: do_lseek"); */
+		/*
+		 * file.h struct file *fget(int fd);
+		 */
+		file_t *tmp_file = fget(fd);
+
+		/* fd is not an open file descriptor. */
+		if(NULL == tmp_file){
+			return EBADF;
+		}
+		/* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
+		switch(whence){
+			case SEEK_SET:
+				tmp_file->f_pos = offset;
+				break;
+			case SEEK_CUR:
+				tmp_file->f_pos += offset;
+				break;
+			case SEEK_END:
+				tmp_file->f_pos = tmp_file->f_vnode->vn_len + offset;
+				break;
+			default:
+				return EINVAL;
+		}
+		/* the resulting file offset would be negative. */
+		if(tmp_file->f_pos < 0){
+			return EINVAL;
+		}
         return -1;
 }
 
@@ -336,7 +382,32 @@ do_lseek(int fd, int offset, int whence)
 int
 do_stat(const char *path, struct stat *buf)
 {
-        NOT_YET_IMPLEMENTED("VFS: do_stat");
+        /* NOT_YET_IMPLEMENTED("VFS: do_stat");
+         * modified by Zack
+         */
+		int res_open_namev = 0;
+		int res_stat = 0;
+		vnode_t *tmp_vnode = NULL; /* initialize ??? */
+
+		/*
+		 * namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
+		 * fchtl.h: #define O_CREAT 0x100    Create file if non-existent.
+		 */
+		res_open_namev = open_namev(path, O_CREAT, &tmp_vnode, NULL);
+
+		/*
+		 * ???????????????????????????????????????
+		 * error messages are duplicates as the following function calls:
+		 * 	do_mknod, do_mkdir, do_rmdir, do_unlink, do_link, ...
+		 */
+
+
+		/*
+		 * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
+		 */
+		KASSERT(tmp_vnode->vn_ops->stat);
+		dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
+		res_stat = tmp_vnode->vn_ops->stat(tmp_vnode, buf);
         return -1;
 }
 
