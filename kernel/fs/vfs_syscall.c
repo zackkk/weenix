@@ -513,15 +513,15 @@ do_getdent(int fd, struct dirent *dirp)
 	
 	off_t offset = 0;
 	/*read the first directory entry into dirp*/
-	currNode->vn_ops->readdir(currNode, offset, dirp);
+	int i = currNode->vn_ops->readdir(currNode, offset, dirp);
 	
 	/*increase the directory's f_pos*/
-	currFile->f_pos += offset;
+	offset += i;
 	
 	/*read all subsequent entries, increasing f_pos with each call*/
 	while(offset != 0) {
-		currNode->vn_ops->readdir(currNode, offset, dirp);
-		currFile->f_pos += offset;
+		i = currNode->vn_ops->readdir(currNode, offset, dirp);
+		offset += i;
 	}
 	
 	/*return the number of bytes read into the dirent*/
