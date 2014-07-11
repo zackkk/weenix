@@ -604,10 +604,13 @@ ramfs_read(vnode_t *file, off_t offset, void *buf, size_t count)
 static int
 ramfs_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 {
+	 dbg(DBG_PRINT, "before: count:%d, offset:%d \n", count, offset);
         int ret;
         ramfs_inode_t *inode = VNODE_TO_RAMFSINODE(file);
 
         KASSERT(!S_ISDIR(file->vn_mode));
+
+        dbg(DBG_PRINT, "count:%d, offset:%d \n", count, offset);
 
         ret = MIN((off_t)count, (off_t)PAGE_SIZE - offset);
         memcpy(inode->rf_mem + offset, buf, ret);

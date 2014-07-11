@@ -69,7 +69,7 @@ do_read(int fd, void *buf, size_t nbytes)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_read\n");
              return -EBADF;
         }        
-        if(f->f_mode !=FMODE_READ)
+        if(!(f->f_mode & FMODE_READ))
         {
              dbg(DBG_PRINT, "(GRADING2C) file mode is not READ do_read\n");
              fput(f);
@@ -118,6 +118,7 @@ do_write(int fd, const void *buf, size_t nbytes)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_write\n");
              return -EBADF;
         } 
+        dbg(DBG_PRINT, "22\n");
         if(f->f_mode & FMODE_APPEND)
         {
              dbg(DBG_PRINT, "(GRADING2C) file mode is FMODE_APPEND do_write\n");
@@ -128,19 +129,28 @@ do_write(int fd, const void *buf, size_t nbytes)
              fput(f);
              return returnVal;
         }     
-        if(f->f_mode !=FMODE_WRITE)
+        dbg(DBG_PRINT, "33\n");
+        if(!(f->f_mode & FMODE_WRITE))
         {                                                                               /*Need to check modes using bitwise ops...*/
              dbg(DBG_PRINT, "(GRADING2C) file mode is not FMODE_WRITE do_write\n");
              fput(f);
              return -EBADF;
         }  
+        dbg(DBG_PRINT, "44\n");
+
+        dbg(DBG_PRINT, "f_pos: %d\n", f->f_pos);
+        dbg(DBG_PRINT, "f_mode: %d\n", f->f_vnode->vn_mode);
+        dbg(DBG_PRINT, "nbytes: %d\n", nbytes);
         int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
-        f -> f_pos += returnVal;
+
+        dbg(DBG_PRINT, "f pos:%d, return val:%d\n", f->f_pos, returnVal);
         if(returnVal>0)
         {
+        	f -> f_pos += returnVal;
              KASSERT((S_ISCHR(f->f_vnode->vn_mode)) || (S_ISBLK(f->f_vnode->vn_mode)) || ((S_ISREG(f->f_vnode->vn_mode)) && (f->f_pos <= f->f_vnode->vn_len)));
              dbg(DBG_PRINT, "(GRADING2A 3.a) successful write kassert\n");
         }
+        dbg(DBG_PRINT, "55\n");
         fput(f);
         return returnVal;
 }

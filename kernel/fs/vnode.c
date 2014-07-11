@@ -493,7 +493,7 @@ special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 		KASSERT(S_ISCHR(file->vn_mode) || S_ISBLK(file->vn_mode));
 		dbg(DBG_PRINT,"(GRADING2A 1.b) vnode_t *file is byte or block device.\n");
 
-		if (S_ISBLK(file->vn_mode)) {
+		if (S_ISCHR(file->vn_mode)) {
 			/* vnode_t->bytedev_t->bytedev_ops->int (*write)(bytedev_t *dev, int offset, const void *buf, int count); */
 			KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->write);
 			dbg(DBG_PRINT,"(GRADING2A 1.b) file->vn_cdev->cd_ops->write not NULL\n");

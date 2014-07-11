@@ -126,13 +126,15 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         if(pathname[0] == '/'){
                 /*start from root node*/
                 current_dir = vfs_root_vn;
+                vref(current_dir);
         }
         else if(base == NULL){
                 current_dir = curproc->p_cwd;                
-                
+                vref(current_dir);
         }
         else{
                 current_dir = base;
+                vref(current_dir);
         }
         
         dbg(DBG_PRINT, "Path to look-up: %s\n", pathname);
@@ -185,6 +187,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 res = lookup(current_dir, current_name, strlen(current_name), res_vnode);
                 if(res == 0){
+                		vput(current_dir);
                         dbg(DBG_PRINT, "Found directory %s\n", current_name);
                         current_dir = *res_vnode;
                 }
