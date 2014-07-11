@@ -150,17 +150,20 @@ do_open(const char *filename, int oflags)
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
         	dbg(DBG_PRINT, "7\n");
-                return ENOMEM;
+                return -ENOMEM;
         }
         
         /*Set field, ref count and vnode*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
-        dbg(DBG_PRINT, "7\n");
+        dbg(DBG_PRINT, "8\n");
         /*get vnode, return error*/
         int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
+          
+        dbg(DBG_PRINT, "9\n");                                                                               
         
-        if(res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO){
+        
+        if(/*res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO*/ res < 0){  /*Error*/
                 fput(my_file);                  /*free file memory since this is an error*/
                 return res;
         }

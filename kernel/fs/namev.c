@@ -189,7 +189,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 if(len > NAME_LEN){
                         dbg(DBG_PRINT, "File/directory name too long (%d characters), max is 28 characters\n", len);
-                        return ENAMETOOLONG;
+                        return -ENAMETOOLONG;
                 }
                 
                 dbg(DBG_PRINT, "Path section length %d\n", len);
