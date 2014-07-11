@@ -58,7 +58,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /*look up file '/dir', use argument 'dir' to get the file system in ramfs.c lookup*/
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
-        res = dir->vn_ops->lookup(dir, name, len, result);      /*this should return refcount incremented*/
+        res = dir->vn_ops->lookup(dir, name, len, result);      /*this will increase result refcount */
         if(res == 0){
         	dbg(DBG_PRINT, "After: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
         }
@@ -164,6 +164,9 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         		dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);
                         }
                         /*On previous iteration, we set res_vnode to the parent directory*/
+                        dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);
+                        dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
+
                         return 0;
                 }
                 else{
@@ -185,13 +188,16 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         current_name[NAME_LEN] = 0;                      
                 }
                 
-                res = lookup(current_dir, current_name, strlen(current_name), res_vnode);
+                res = lookup(current_dir, current_name, strlen(current_name), res_vnode); /* increase res_vnode refccount */
                 if(res == 0){
                 		vput(current_dir);
-                        dbg(DBG_PRINT, "Found directory %s\n", current_name);
+                        dbg(DBG_PRINT, "Found directory:%s\n", current_name);
+                        dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);
+                        dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
                         current_dir = *res_vnode;
                 }
                 else{
+                		vput(current_dir);
                         /*we did no find the current path, return error!!*/
                         /*do we need to decrement refcount on error??*/
                         dbg(DBG_PRINT, "Did not find directoy %s %d\n", current_name, res);
@@ -224,9 +230,10 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
         
         /*look for the path and file name...*/
         
+
+
         res = dir_namev(pathname, &namelen, &name, base, res_vnode);
-        dbg(DBG_PRINT, "bbbb\n");
-        
+
         if(res == 0){
                 /*We found the directory path, name should hold the file name*/
                 /*Now use lookup to see if file exists...*/

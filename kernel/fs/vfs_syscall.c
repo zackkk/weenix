@@ -176,7 +176,10 @@ do_close(int fd)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_close\n");
              return -EBADF;
         } 
+        /* vput(f->f_vnode);*/
+
         curproc->p_files[fd] = 0;
+        fput(f);
         fput(f);
         return 0;
 }
@@ -336,11 +339,8 @@ do_mknod(const char *path, int mode, unsigned devid)
         }
         KASSERT(NULL != res_vnode->vn_ops->mknod);
         dbg(DBG_PRINT, "(GRADING2A 3.b) mknod operation is not NULL\n");
-        
         dbg(DBG_PRINT, "refcount = %d, respages = %d\n", res_vnode->vn_refcount, res_vnode->vn_nrespages);
-        
-        /* vput(res_vnode); */
-       
+        vput(res_vnode);
         return res_vnode->vn_ops->mknod(res_vnode,name,namelen,mode,devid);
         
 }
@@ -397,8 +397,8 @@ do_mkdir(const char *path)
         }
         KASSERT(NULL != res_vnode->vn_ops->mkdir);
         dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");
-        /* vput(res_vnode); */
-        return res_vnode->vn_ops->mkdir(res_vnode,name,namelen);
+        vput(res_vnode);
+        return res_vnode->vn_ops->mkdir(res_vnode,name,namelen); /* hasn't increased refcount */
 }
 
 /* Use dir_namev() to find the vnode of the directory containing the dir to be
