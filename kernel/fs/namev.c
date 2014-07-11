@@ -98,20 +98,14 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         int len = 0;
         int count = 0;
         
-        
         KASSERT(NULL != pathname);
         dbg(DBG_PRINT,"(GRADING2A 2.b) pathname is not NULL.\n");
-        
         KASSERT(NULL != namelen);
         dbg(DBG_PRINT,"(GRADING2A 2.b) namelen is not NULL.\n");
-        
         KASSERT(NULL != name);
         dbg(DBG_PRINT,"(GRADING2A 2.b) name is not NULL.\n");
-        
         KASSERT(NULL != res_vnode);
         dbg(DBG_PRINT,"(GRADING2A 2.b) res_vode is not NULL.\n");
-        
-        
         
         vnode_t *current_dir = NULL;
         vnode_t result;
@@ -124,7 +118,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         /*special case path has no slashes... */
         if(strchr(pathname, '/') == NULL){
                 *name = pathname;
-                *namelen = 0;
+                *namelen = strlen(*name);
                 res_vnode = &base;
         }
         
@@ -153,33 +147,22 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 else{
                         slash_ptr = strchr(pathname_index, '/');
                         current_name_index = slash_ptr + 1;
-                        /*dbg(DBG_PRINT, "first slash%c\n", *(slash_ptr+ 1));*/
                 }
                 
                 /*next slash*/
                 next_slash = strchr(current_name_index, '/');
-                
-                
                 if(next_slash == NULL){
-                        /*If we didn't find next slash, we are in the name
-                        part of the path name*/
+                        /*If we didn't find next slash, we are in the name part of the path name*/
                         KASSERT(NULL != res_vnode);
                         dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
-                        
                         *name = current_name_index;     /*path name ends in null character...*/
                         *namelen = strlen(*name);
-                        
                         if(count == 0) {
-                        	*res_vnode = current_dir;
-                        	dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);
+                        		*res_vnode = current_dir;
+                        		dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);
                         }
-                        /* vref(*res_vnode); */
-                        
-                        dbg(DBG_PRINT, "namelen %u, name %s\n", *namelen, *name);
-                        
                         /*On previous iteration, we set res_vnode to the parent directory*/
                         return 0;
-                        
                 }
                 else{
                         pathname_index = next_slash;    /*Now we point to next slash to get next word on the following iteration*/
@@ -187,34 +170,20 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 /*length of the name*/
                 int len = next_slash - current_name_index;
-                
                 if(len > NAME_LEN){
-                        dbg(DBG_PRINT, "File/directory name too long (%d characters), max is 28 characters\n", len);
                         return -ENAMETOOLONG;
                 }
-                
-                dbg(DBG_PRINT, "Path section length %d\n", len);
-                
                 /*copy name in local buffer*/
                 memset(current_name, 0, NAME_LEN+1);    /*reset 0 chars*/
-                
                 if(len < NAME_LEN){                 /*name 28 (0-27) char long, 29 item MUST be 0*/
-                        /*copy name to buffer*/
-                        memcpy(current_name, current_name_index, len);
+                        memcpy(current_name, current_name_index, len); /*copy name to buffer*/
                 }
                 else{
                         memcpy(current_name, current_name_index, NAME_LEN);
                         current_name[NAME_LEN] = 0;                      
                 }
                 
-                dbg(DBG_PRINT, "Path section name: %s\n", current_name);
-                
-                
-                /*Now get vnode...*/
-                /*Use res_vnode temporarely to navigate path*/
-                /*lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)*/
                 res = lookup(current_dir, current_name, strlen(current_name), res_vnode);
-                
                 if(res == 0){
                         dbg(DBG_PRINT, "Found directory %s\n", current_name);
                         current_dir = *res_vnode;

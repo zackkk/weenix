@@ -317,7 +317,7 @@ do_mknod(const char *path, int mode, unsigned devid)
         }
 
         vnode_t *result;
-        if(!lookup(res_vnode, name, namelen, &result))
+        if(lookup(res_vnode, name, namelen, &result) == 0)
         {
               dbg(DBG_PRINT, "(GRADING2C) path already exists do_mknod\n");
               vput(res_vnode);
