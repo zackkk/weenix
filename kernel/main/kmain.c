@@ -72,6 +72,15 @@ extern void *testproc(int arg1, void *arg2);
 extern void *sunghan_test(int arg1, void *arg2);
 extern void *sunghan_deadlock_test(int arg1, void *arg2);
 
+extern void *vfstest_main(int, void*);
+
+/* not used */
+extern int faber_sparse_test(kshell_t *ksh, int argc, char **argv);
+extern int faber_space_test(kshell_t *ksh, int argc, char **argv);
+extern int faber_thread_test(kshell_t *ksh, int argc, char **argv);
+extern int faber_directory_test(kshell_t *ksh, int argc, char **argv);
+extern int faber_cleardir(kshell_t *ksh, int argc, char **argv);
+
 
 /**
  * This is the first real C function ever called. It performs a lot of
@@ -408,6 +417,28 @@ int dtests(kshell_t *kshell, int argc, char **argv)
 
 #endif /* __DRIVERS__ */
 
+
+#ifdef __VFS__
+
+static void *
+vfs_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	vfstest_main(0,0);
+	return NULL;
+}
+
+int vtests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("vfs_test");
+    kthread_t *thr = kthread_create(p, vfs_test, 1, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
+#endif /* __VFS__ */
+
 /**
  * The init thread's function changes depending on how far along your Weenix is
  * developed. Before VM/FI, you'll probably just want to have this run whatever
@@ -433,16 +464,29 @@ initproc_run(int arg1, void *arg2)
 			kshell_add_command("ftest", ftests, "Invokes testproc()...");
 			kshell_add_command("stest", stests, "Invokes sunghan_test()...");
 			kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
-
-			dbg(DBG_PRINT, "0\n");
-			kshell_t *kshell = kshell_create(0);
-			if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-			while (kshell_execute_next(kshell))
-				;
-
-			kshell_destroy(kshell);
-			vput(curproc->p_cwd);
 	#endif /* __DRIVERS__ */
+
+	#ifdef __VFS__
+
+			kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
+
+	#endif /* __VFS__ */
+
+	dbg(DBG_PRINT, "0\n");
+	kshell_t *kshell = kshell_create(0);
+	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+	while (kshell_execute_next(kshell))
+		;
+
+	kshell_destroy(kshell);
+	vput(curproc->p_cwd);
+
+
+
+
+
+
+
     return NULL;
 }
 

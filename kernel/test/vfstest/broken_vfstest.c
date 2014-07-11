@@ -1,0 +1,1 @@
+#include "../../../user/usr/bin/tests/vfstest.c"
