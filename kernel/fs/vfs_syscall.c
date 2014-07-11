@@ -116,7 +116,7 @@ do_write(int fd, const void *buf, size_t nbytes)
              return returnVal;
         }     
         if(f->f_mode !=FMODE_WRITE)
-        {
+        {                                                                               /*Need to check modes using bitwise ops...*/
              dbg(DBG_PRINT, "(GRADING2C) file mode is not FMODE_WRITE do_write\n");
              fput(f);
              return -EBADF;
