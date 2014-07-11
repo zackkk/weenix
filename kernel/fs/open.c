@@ -120,23 +120,18 @@ do_open(const char *filename, int oflags)
         switch(oflags){
                 
                 case O_RDONLY:
-                	dbg(DBG_PRINT, "2\n");
                         flags = FMODE_READ;
                         break;
                 case O_WRONLY:
-                	dbg(DBG_PRINT, "3\n");
                         flags = FMODE_WRITE;
                         break;
                 case O_RDWR:
-                	dbg(DBG_PRINT, "4\n");
                         flags = FMODE_WRITE | FMODE_READ;
                         break;
                 case O_WRONLY | O_APPEND:
-                dbg(DBG_PRINT, "5\n");
                         flags = FMODE_APPEND;   /*do we need FMODE_WRITE too?*/
                         break;
                 case O_RDWR | O_APPEND:
-                dbg(DBG_PRINT, "6\n");
                         flags = FMODE_READ | FMODE_APPEND;      /*do we need FMODE_APPEND??*/
                         break;
                 default:
@@ -145,22 +140,24 @@ do_open(const char *filename, int oflags)
         
         
         /*Get new file object*/
-        my_file = fget(fd);     /*also increments reference count*/
+        my_file = fget(-1);     /*also increments reference count. Call with -1 to get a fresh file...*/
+        dbg(DBG_PRINT, "fd number is %d\n",fd);
+
         
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
-        	dbg(DBG_PRINT, "7\n");
+        	dbg(DBG_PRINT, "my_file is NULL\n");
                 return -ENOMEM;
         }
         
         /*Set field, ref count and vnode*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
-        dbg(DBG_PRINT, "8\n");
+        
         /*get vnode, return error*/
-        int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
-          
-        dbg(DBG_PRINT, "9\n");                                                                               
+                  
+        dbg(DBG_PRINT, "filename %s\n", filename);                                                                               
+        int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/                                                                               
         
         
         if(/*res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO*/ res < 0){  /*Error*/

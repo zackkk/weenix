@@ -259,11 +259,11 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
         /*NOT_YET_IMPLEMENTED("VFS: open_namev");*/
         int res = 0;
         size_t namelen = 0;
-        const char **name = NULL;
+        const char *name = NULL;
         
         /*look for the path and file name...*/
-        dbg(DBG_PRINT, "aaa\n");
-        res = dir_namev(pathname, &namelen, name, base, res_vnode);
+        
+        res = dir_namev(pathname, &namelen, &name, base, res_vnode);
         dbg(DBG_PRINT, "bbbb\n");
         
         if(res == 0){
@@ -277,12 +277,11 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 /*TEST... Decrement parent directory vnode*/
                 vput(*res_vnode);
                 
-                res = lookup(*res_vnode, *name, strlen(*name), res_vnode);
+                res = lookup(*res_vnode, name, strlen(name), res_vnode);
                 
                 if(res == 0){
                         /*At this point res_vnode should point to the file vnode...*/
                         dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
-                        dbg(DBG_PRINT, "8\n");
                         return res;
                 }
                 else if(res == -ENOENT){
@@ -294,7 +293,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                                /*At this point res_vnode is the parent directory*/
                                /*Call the the create function in directory vnode*/
                                /*return newly create file vnode in res_vnode*/
-                               res = (*res_vnode)->vn_ops->create(*res_vnode, *name, strlen(*name), res_vnode);     /*Create file on res_vnode (which should be the directory)*/
+                               res = (*res_vnode)->vn_ops->create(*res_vnode, name, strlen(name), res_vnode);     /*Create file on res_vnode (which should be the directory)*/
                                dbg(DBG_PRINT, "9\n");
                                return res;
                                
@@ -308,10 +307,8 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 }
         }
         else{
-        	dbg(DBG_PRINT, "11\n");
                 return res;        /*We didn't find directory*/
         }
-        dbg(DBG_PRINT, "12\n");
         return 0;
 }
 
