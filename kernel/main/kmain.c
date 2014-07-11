@@ -246,9 +246,10 @@ idleproc_run(int arg1, void *arg2)
         /*
          *  Set the current working directory
          */
+        /*
         idle_proc->p_cwd = vfs_root_vn;
         init_proc->p_cwd = vfs_root_vn;
-
+		*/
         /*
          *  Increment the reference count of the provided vnode.
          */
@@ -423,7 +424,8 @@ int dtests(kshell_t *kshell, int argc, char **argv)
 static void *
 vfs_test(int arg1, void *arg2){
 	/* sunhan_test.c */
-	vfstest_main(0,0);
+
+	vfstest_main(1,0);
 	return NULL;
 }
 
@@ -431,7 +433,7 @@ int vtests(kshell_t *kshell, int argc, char **argv)
 {
     KASSERT(kshell != NULL);
     proc_t *p = proc_create("vfs_test");
-    kthread_t *thr = kthread_create(p, vfs_test, 1, NULL);
+    kthread_t *thr = kthread_create(p, vfs_test, 888, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
     return 0;
@@ -480,12 +482,6 @@ initproc_run(int arg1, void *arg2)
 
 	kshell_destroy(kshell);
 	vput(curproc->p_cwd);
-
-
-
-
-
-
 
     return NULL;
 }

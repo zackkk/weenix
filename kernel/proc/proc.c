@@ -180,7 +180,7 @@ proc_create(char *name)
         }
         
         /*TODO: current working directory*/
-        new_process->p_cwd = NULL;           
+        new_process->p_cwd = vfs_root_vn;
         
         /* VM */
         new_process->p_brk = NULL;           /* process break; see brk(2) */

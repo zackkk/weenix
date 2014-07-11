@@ -362,9 +362,12 @@ do_mknod(const char *path, int mode, unsigned devid)
 int
 do_mkdir(const char *path)
 {
+	dbg(DBG_PRINT, "path %s\n", path);
+
         size_t namelen = 0;
         const char *name = NULL;
         vnode_t *res_vnode = NULL;
+
         if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
         {
              dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mkdir\n");
@@ -374,19 +377,26 @@ do_mkdir(const char *path)
         {
              return -ENOENT;
         }*/
+        dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
+        dbg(DBG_PRINT, "2\n");
         if (namelen >= NAME_LEN)
         {
              dbg(DBG_PRINT, "(GRADING2C) name is too long do_mkdir\n");
              vput(res_vnode);
              return -ENAMETOOLONG;
         }
+        dbg(DBG_PRINT, "3\n");
+
+        KASSERT(res_vnode);
+        dbg(DBG_PRINT,"res_vnode is not null\n");
+
         if(!S_ISDIR(res_vnode->vn_mode))
         {
              dbg(DBG_PRINT, "(GRADING2C) vnode mode is not S_IFDIR do_mkdir\n");
              vput(res_vnode);
              return -ENOTDIR;
         }
-
+        dbg(DBG_PRINT, "4\n");
         vnode_t *result = NULL;
         if(!lookup(res_vnode, name, namelen, &result))
         {

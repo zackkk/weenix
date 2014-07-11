@@ -123,15 +123,18 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         }
         
         /*Otherwise...*/
-        if(pathname[0] == '/'){
+        if(pathname[0] == '/' || base == NULL){
                 /*start from root node*/
                 current_dir = vfs_root_vn;
                 vref(current_dir);
-        }
+        }/*
         else if(base == NULL){
+
+        	 	 KASSERT(curproc->p_cwd);
+        	 	dbg(DBG_PRINT,"cur proc number: %d, not null\n", curproc->p_pid);
                 current_dir = curproc->p_cwd;                
                 vref(current_dir);
-        }
+        }*/
         else{
                 current_dir = base;
                 vref(current_dir);
@@ -159,14 +162,24 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
                         *name = current_name_index;     /*path name ends in null character...*/
                         *namelen = strlen(*name);
-                        if(count == 0) {
-                        		*res_vnode = current_dir;
-                        		dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);
-                        }
-                        /*On previous iteration, we set res_vnode to the parent directory*/
-                        dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);
-                        dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
 
+                        KASSERT(NULL != current_dir);
+                        dbg(DBG_PRINT,"current_dir is not null, count:%d\n", count);
+
+                        dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
+                        dbg(DBG_PRINT,"*res_node:%p\n", *res_vnode);
+                        dbg(DBG_PRINT," vfs_root_vn:%p\n",  vfs_root_vn);
+
+                        if(count == 0) {
+                        	dbg(DBG_PRINT," current_dir %p\n",  current_dir);
+                        		*res_vnode = current_dir;
+                        		/* dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);*/
+                        }
+                        dbg(DBG_PRINT,"*res_node:%p\n", *res_vnode);
+                        /*On previous iteration, we set res_vnode to the parent directory*/
+                        /* dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);*/
+                        /*dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);*/
+                        dbg(DBG_PRINT,"right before return.\n");
                         return 0;
                 }
                 else{

@@ -901,15 +901,24 @@ int main(int argc, char **argv)
 int vfstest_main(int argc, char **argv)
 #endif
 {
+	dbg(DBG_PRINT, "vfs test entered\n");
+
         if (argc != 1) {
                 fprintf(stderr, "USAGE: vfstest\n");
                 return 1;
         }
 
+        dbg(DBG_PRINT, "vfs test stage 1\n");
         test_init();
+        dbg(DBG_PRINT, "vfs test stage 2\n");
+
+
         vfstest_start();
 
+
+        dbg(DBG_PRINT, "vfs test stage 3\n");
         syscall_success(chdir(root_dir));
+        dbg(DBG_PRINT, "vfs test stage 4\n");
 
         vfstest_stat();
         vfstest_chdir();
