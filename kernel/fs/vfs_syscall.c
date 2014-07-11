@@ -313,6 +313,9 @@ do_mknod(const char *path, int mode, unsigned devid)
         }
         KASSERT(NULL != res_vnode->vn_ops->mknod);
         dbg(DBG_PRINT, "(GRADING2A 3.b) mknod operation is not NULL\n");
+        
+        dbg(DBG_PRINT, "refcount = %d, respages = %d\n", res_vnode->vn_refcount, res_vnode->vn_nrespages);
+        
         vput(res_vnode);
        
         return res_vnode->vn_ops->mknod(res_vnode,name,namelen,mode,devid);
@@ -337,8 +340,8 @@ int
 do_mkdir(const char *path)
 {
         size_t namelen = 0;
-        const char *name;
-        vnode_t *res_vnode;
+        const char *name = NULL;
+        vnode_t *res_vnode = NULL;
         if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
         {
              dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mkdir\n");
@@ -361,7 +364,7 @@ do_mkdir(const char *path)
              return -ENOTDIR;
         }
 
-        vnode_t *result;
+        vnode_t *result = NULL;
         if(!lookup(res_vnode, name, namelen, &result))
         {
               dbg(DBG_PRINT, "(GRADING2C) path already exists do_mkdir\n");
@@ -369,6 +372,7 @@ do_mkdir(const char *path)
               vput(result);
               return -EEXIST;
         }
+        dbg(DBG_PRINT, "4\n");
         KASSERT(NULL != res_vnode->vn_ops->mkdir);
         dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");
         vput(res_vnode);

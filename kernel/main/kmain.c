@@ -265,8 +265,8 @@ idleproc_run(int arg1, void *arg2)
          */
 
         do_mkdir("/dev");
+        dbg(DBG_PRINT, "ID: %d, refcount: %d\n", vfs_root_vn->vn_vno, vfs_root_vn->vn_refcount);
         int rc_null = do_mknod("/dev/null", S_IFCHR, MEM_NULL_DEVID);
-        KASSERT(NULL != NULL);
         int rc_zero = do_mknod("/dev/zero", S_IFCHR, MEM_ZERO_DEVID);
         int i;
         char tty_path[32];
@@ -274,7 +274,7 @@ idleproc_run(int arg1, void *arg2)
          * ???????????????????????????????????????????????
          * number of tty dev
          */
-        for(i = 0; i < 32; i++){
+        for(i = 0; i < 5; i++){
         	memset(tty_path, '\0', 32);
         	sprintf(tty_path, "/dev/tty%d", i);
         	int rc_tty_i = do_mknod(tty_path, S_IFCHR, MKDEVID(2,i));
