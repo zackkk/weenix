@@ -53,13 +53,18 @@
 int
 do_read(int fd, void *buf, size_t nbytes)
 {
+	dbg(DBG_PRINT, "do read called, fd:%d, size_t:%d\n", fd, nbytes);
+
         if(fd<0 || fd >= NFILES)
         {
              dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
              return -EBADF;
         }
-        file_t *f;
-        if((f = fget(fd)) == NULL) 
+
+        file_t *f = fget(fd);
+        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
+
+        if(NULL == f)
         {
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_read\n");
              return -EBADF;
@@ -77,6 +82,9 @@ do_read(int fd, void *buf, size_t nbytes)
              return -EISDIR;
         }
         int returnVal = f->f_vnode->vn_ops->read(f->f_vnode, f->f_pos, buf, nbytes);
+
+        dbg(DBG_PRINT, "returnVal:%d\n", returnVal);
+
         f -> f_pos += returnVal;
 
         fput(f);
@@ -94,13 +102,18 @@ do_read(int fd, void *buf, size_t nbytes)
 int
 do_write(int fd, const void *buf, size_t nbytes)
 {
+	dbg(DBG_PRINT, "do write called, fd:%d, size_t:%d\n", fd, nbytes);
+
         if(fd<0 || fd >= NFILES)
         {
              dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_write\n");
              return -EBADF;
         }
-        file_t *f;
-        if((f = fget(fd)) == NULL) 
+
+
+        file_t *f = fget(fd);
+        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
+        if(f == NULL)
         {
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_write\n");
              return -EBADF;
@@ -316,7 +329,7 @@ do_mknod(const char *path, int mode, unsigned devid)
         
         dbg(DBG_PRINT, "refcount = %d, respages = %d\n", res_vnode->vn_refcount, res_vnode->vn_nrespages);
         
-        vput(res_vnode);
+        /* vput(res_vnode); */
        
         return res_vnode->vn_ops->mknod(res_vnode,name,namelen,mode,devid);
         
@@ -372,10 +385,9 @@ do_mkdir(const char *path)
               vput(result);
               return -EEXIST;
         }
-        dbg(DBG_PRINT, "4\n");
         KASSERT(NULL != res_vnode->vn_ops->mkdir);
         dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");
-        vput(res_vnode);
+        /* vput(res_vnode); */
         return res_vnode->vn_ops->mkdir(res_vnode,name,namelen);
 }
 

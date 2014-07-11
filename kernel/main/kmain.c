@@ -274,7 +274,7 @@ idleproc_run(int arg1, void *arg2)
          * ???????????????????????????????????????????????
          * number of tty dev
          */
-        for(i = 0; i < 5; i++){
+        for(i = 0; i < 1; i++){
         	memset(tty_path, '\0', 32);
         	sprintf(tty_path, "/dev/tty%d", i);
         	int rc_tty_i = do_mknod(tty_path, S_IFCHR, MKDEVID(2,i));
@@ -433,6 +433,8 @@ initproc_run(int arg1, void *arg2)
 			kshell_add_command("ftest", ftests, "Invokes testproc()...");
 			kshell_add_command("stest", stests, "Invokes sunghan_test()...");
 			kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
+
+			dbg(DBG_PRINT, "0\n");
 			kshell_t *kshell = kshell_create(0);
 			if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
 			while (kshell_execute_next(kshell))

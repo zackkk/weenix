@@ -54,14 +54,15 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
                 return -ENOTDIR;
         }
         
-        /*look up file/dir*/
+        dbg(DBG_PRINT, "before: Name:%s, Len:%d, node reference count: , \n", name, len);
+        /*look up file '/dir', use argument 'dir' to get the file system in ramfs.c lookup*/
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, name, len, result);      /*this should return refcount incremented*/
         if(res == 0){
-        	dbg(DBG_PRINT, "Node name = %d, node reference count: %d\n", (*result)->vn_vno, (*result)->vn_refcount);
+        	dbg(DBG_PRINT, "After: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
         }
-                                                                 
+        dbg(DBG_PRINT, "look up return value: %d\n", res);
 
         return res;
 }
@@ -172,7 +173,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         	*res_vnode = current_dir;
                         	dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);
                         }
-                        vref(*res_vnode);
+                        /* vref(*res_vnode); */
                         
                         dbg(DBG_PRINT, "namelen %u, name %s\n", *namelen, *name);
                         
@@ -216,19 +217,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 if(res == 0){
                         dbg(DBG_PRINT, "Found directory %s\n", current_name);
-                        /*TEST...*/
-                        
-                        
-                        
-                        
-                        /*vput(current_dir);*/
-                        
-                        
-                        
-                        
-                        
                         current_dir = *res_vnode;
-                 
                 }
                 else{
                         /*we did no find the current path, return error!!*/

@@ -372,6 +372,7 @@ error:
 
 int kshell_execute_next(kshell_t *ksh)
 {
+	dbg(DBG_PRINT, "enter Kshell execute next \n");
         static const char *kshell_prompt = "kshell$";
 
         int nbytes, retval;
