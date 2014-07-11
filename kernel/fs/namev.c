@@ -98,6 +98,8 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         int len = 0;
         int count = 0;
         
+        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
+        
         KASSERT(NULL != pathname);
         dbg(DBG_PRINT,"(GRADING2A 2.b) pathname is not NULL.\n");
         KASSERT(NULL != namelen);
@@ -116,17 +118,20 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         const char *current_name_index = NULL;
         
         /*special case path has no slashes... */
-        if(strchr(pathname, '/') == NULL){
+        /*if(strchr(pathname, '/') == NULL){
                 *name = pathname;
                 *namelen = strlen(*name);
                 res_vnode = &base;
-        }
+        }*/
+        
+        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
         
         /*Otherwise...*/
         if(pathname[0] == '/' || base == NULL){
                 /*start from root node*/
                 current_dir = vfs_root_vn;
                 vref(current_dir);
+                dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
         }/*
         else if(base == NULL){
 
@@ -138,6 +143,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         else{
                 current_dir = base;
                 vref(current_dir);
+                dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
         }
         
         dbg(DBG_PRINT, "Path to look-up: %s\n", pathname);
@@ -147,11 +153,13 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 /*get point to char after slash*/
                 if(pathname[0] != '/' && i == 0){
-                        current_name_index = pathname; 
+                        current_name_index = pathname;
+                        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
                 }
                 else{
                         slash_ptr = strchr(pathname_index, '/');
                         current_name_index = slash_ptr + 1;
+                        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
                 }
                 
                 /*next slash*/
@@ -166,16 +174,16 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         KASSERT(NULL != current_dir);
                         dbg(DBG_PRINT,"current_dir is not null, count:%d\n", count);
 
-                        dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
-                        dbg(DBG_PRINT,"*res_node:%p\n", *res_vnode);
-                        dbg(DBG_PRINT," vfs_root_vn:%p\n",  vfs_root_vn);
+                        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
+                        /*dbg(DBG_PRINT,"*res_node:%p\n", *res_vnode);
+                        dbg(DBG_PRINT," vfs_root_vn:%p\n",  vfs_root_vn);*/
 
                         if(count == 0) {
                         	dbg(DBG_PRINT," current_dir %p\n",  current_dir);
                         		*res_vnode = current_dir;
-                        		/* dbg(DBG_PRINT, "resvnode init %d\n",(*res_vnode)->vn_mode);*/
+                        		dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
                         }
-                        dbg(DBG_PRINT,"*res_node:%p\n", *res_vnode);
+                        dbg(DBG_PRINT,"**res_node address:%p\n", res_vnode);
                         /*On previous iteration, we set res_vnode to the parent directory*/
                         /* dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);*/
                         /*dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);*/

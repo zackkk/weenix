@@ -367,8 +367,10 @@ do_mkdir(const char *path)
         size_t namelen = 0;
         const char *name = NULL;
         vnode_t *res_vnode = NULL;
+        
+        dbg(DBG_PRINT,"res_node address:%p\n", &res_vnode);
 
-        if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!=0)
+        if(dir_namev(path, &namelen, &name, NULL, &res_vnode)!= 0)
         {
              dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mkdir\n");
              return -ENOENT;
@@ -377,8 +379,12 @@ do_mkdir(const char *path)
         {
              return -ENOENT;
         }*/
+        
         dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
+        dbg(DBG_PRINT,"res_node address:%p\n", &res_vnode);
         dbg(DBG_PRINT, "2\n");
+        
+
         if (namelen >= NAME_LEN)
         {
              dbg(DBG_PRINT, "(GRADING2C) name is too long do_mkdir\n");
