@@ -179,7 +179,7 @@ do_close(int fd)
         /* vput(f->f_vnode);*/
 
         curproc->p_files[fd] = 0;
-        fput(f);
+        fput(f);        /*fput does vput*/
         fput(f);
         return 0;
 }

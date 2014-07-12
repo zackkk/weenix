@@ -223,6 +223,8 @@ idleproc_run(int arg1, void *arg2)
         int status;
         pid_t child;
 
+	
+	dbg(DBG_PRINT, "vn_root_node not NULL\n");
         /* create init proc */
         kthread_t *initthr = initproc_create();
         init_call_all();
@@ -246,10 +248,10 @@ idleproc_run(int arg1, void *arg2)
         /*
          *  Set the current working directory
          */
-        /*
+        
         idle_proc->p_cwd = vfs_root_vn;
         init_proc->p_cwd = vfs_root_vn;
-		*/
+		
         /*
          *  Increment the reference count of the provided vnode.
          */
@@ -456,10 +458,6 @@ static void *
 initproc_run(int arg1, void *arg2)
 {
 	dbg(DBG_PRINT, "kmain_code_path_check\n");
-	
-	/*test*/
-	/*do_open("/ed/ed2/what", O_RDONLY);*/
-
 
 	#ifdef __DRIVERS__
 	
@@ -474,13 +472,13 @@ initproc_run(int arg1, void *arg2)
 
 	#endif /* __VFS__ */
 
-	dbg(DBG_PRINT, "0\n");
 	kshell_t *kshell = kshell_create(0);
 	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
 	while (kshell_execute_next(kshell))
 		;
-
 	kshell_destroy(kshell);
+
+
 	vput(curproc->p_cwd);
 
     return NULL;
