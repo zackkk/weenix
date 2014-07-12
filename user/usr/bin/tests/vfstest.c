@@ -273,8 +273,6 @@ vfstest_mkdir(void)
         syscall_success(mkdir("dir", 0777));
         syscall_fail(mkdir("dir", 0777), EEXIST);
         
-                       
-
         /* mkdir an invalid path */
         syscall_fail(mkdir(LONGNAME, 0777), ENAMETOOLONG);
         syscall_fail(mkdir("file/dir", 0777), ENOTDIR);
@@ -289,28 +287,19 @@ vfstest_mkdir(void)
         syscall_fail(rmdir("noent/."), ENOENT);
         syscall_fail(rmdir("noent/.."), ENOENT);
         
-
-
         /* unlink and rmdir the inappropriate types */
         syscall_fail(rmdir("file"), ENOTDIR);
         syscall_fail(unlink("dir"), EISDIR);
         
-  
-
         /* remove non-empty directory */
         create_file("dir/file");
         syscall_fail(rmdir("dir"), ENOTEMPTY);
         
-
-
         /* remove empty directory */
         syscall_success(unlink("dir/file"));
-             KASSERT(NULL != NULL);
         syscall_success(rmdir("dir"));
-        
-                         
-
         syscall_success(chdir(".."));
+
 }
 
 static void
@@ -936,14 +925,11 @@ int vfstest_main(int argc, char **argv)
         
         vfstest_stat();        
         vfstest_chdir();
-        
-         
-                
         vfstest_mkdir();
-                
- 
-
         vfstest_paths();
+        KASSERT(NULL != NULL);
+        
+        
         vfstest_fd();
         vfstest_open();
         vfstest_read();

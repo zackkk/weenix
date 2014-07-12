@@ -553,7 +553,7 @@ do_unlink(const char *path)
 	
 	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d\n", path, resNodePtr->vn_refcount);
 	
-	vput(resNodePtr);
+	/*vput(resNodePtr);*/
 	vput(parentPtr);
 	
 

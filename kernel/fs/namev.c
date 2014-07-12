@@ -111,6 +111,11 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         vnode_t *current_dir = NULL;
         vnode_t result;
         
+        /*Path cannot be empty*/
+        if(!strcmp(pathname, "")){
+                return -EINVAL;
+        }
+        
         /*Buffer length... max 28 chars*/
         char current_name[NAME_LEN+1];            /*NAME_LEN is 28 + 1 for null char*/
         const char *pathname_index = pathname;
@@ -139,6 +144,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         /*Start looking*/
         while(1){
                 
+                int extra = 0;
                 /*get point to char after slash*/
                 if(pathname[0] != '/' && i == 0){
                         current_name_index = pathname;
@@ -150,16 +156,35 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 
                 /*next slash*/
                 next_slash = strchr(current_name_index, '/');
-                if(next_slash == NULL){
+                
+                /*double/triple slash.*/
+                while(next_slash != NULL && (next_slash+1) != '\0' && *(next_slash+1) == '/'){
+                        next_slash++;
+                        extra++;
+                }
+        
+                
+                if(next_slash == NULL || *(next_slash + 1) == '\0'){
                         /*If we didn't find next slash, we are in the name part of the path name*/
                         KASSERT(NULL != res_vnode);
                         dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
                         *name = current_name_index;     /*path name ends in null character...*/
+                        
+                        /*delete slashes at the end of name*/
+                        char *tmp = strdup(*name);
+                        
+                        while(*tmp != '\0'){
+                             if(*tmp == '/'){
+                                *tmp = '\0';
+                             }
+                             tmp++;
+                        }
+                        
                         *namelen = strlen(*name);
 
                         KASSERT(NULL != current_dir);
                         dbg(DBG_PRINT,"current_dir is not null, count:%d\n", count);
-
+                
                         if(count == 0) {
                         	*res_vnode = current_dir;
                         }
@@ -170,7 +195,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 }
                 
                 /*length of the name*/
-                int len = next_slash - current_name_index;
+                int len = next_slash - current_name_index - extra;
                 if(len > NAME_LEN){
                         return -ENAMETOOLONG;
                 }
