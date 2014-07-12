@@ -316,13 +316,15 @@ vfstest_chdir(void)
         syscall_success(stat(CHDIR_TEST_DIR, &sdir));
 
         test_assert(ssrc.st_ino != sdir.st_ino, NULL);
-        
-
 
         syscall_success(chdir(CHDIR_TEST_DIR));
         syscall_success(stat(".", &sdest));
         syscall_success(stat("..", &sparent));
         
+        dbg(DBG_PRINT, "chdir to %s\n ", CHDIR_TEST_DIR);
+        
+        dbg(DBG_PRINT, "Dir inode address %d \n", sdir.st_ino);
+        dbg(DBG_PRINT, "Dest inode address %d\n", sdest.st_ino);
 
 
         test_assert(sdest.st_ino == sdir.st_ino, NULL);

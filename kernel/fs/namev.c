@@ -115,18 +115,18 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
         const char *current_name_index = NULL;
         
         /*Otherwise...*/
-        if(pathname[0] == '/' || base == NULL){
+        if(pathname[0] == '/' /*|| base == NULL*/){
                 /*start from root node*/
                 current_dir = vfs_root_vn;
                 vref(current_dir);
-        }/*
+        }
         else if(base == NULL){
 
         	 	 KASSERT(curproc->p_cwd);
         	 	dbg(DBG_PRINT,"cur proc number: %d, not null\n", curproc->p_pid);
                 current_dir = curproc->p_cwd;                
                 vref(current_dir);
-        }*/
+        }
         else{
                 current_dir = base;
                 vref(current_dir);
