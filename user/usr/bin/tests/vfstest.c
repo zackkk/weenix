@@ -215,7 +215,7 @@ vfstest_term(void)
                 if (syscall_success(__fd = open((file), O_RDONLY|O_CREAT, 0777))) {             \
                         syscall_success(close(__fd));                                           \
                 }                                                                               \
-        } while (0);
+        } while (0);                                                                            
 #define read_fd(fd, size, goal)                                                                 \
         do {                                                                                    \
                 char __buf[64];                                                                 \
@@ -316,14 +316,20 @@ vfstest_chdir(void)
         syscall_success(stat(CHDIR_TEST_DIR, &sdir));
 
         test_assert(ssrc.st_ino != sdir.st_ino, NULL);
+        
+
 
         syscall_success(chdir(CHDIR_TEST_DIR));
         syscall_success(stat(".", &sdest));
         syscall_success(stat("..", &sparent));
+        
+
 
         test_assert(sdest.st_ino == sdir.st_ino, NULL);
         test_assert(ssrc.st_ino == sparent.st_ino, NULL);
         test_assert(ssrc.st_ino != sdest.st_ino, NULL);
+        
+                        KASSERT(NULL != NULL);
 
         syscall_success(chdir(".."));
         syscall_success(stat(".", &rsrc));
@@ -914,17 +920,18 @@ int vfstest_main(int argc, char **argv)
 
 
         vfstest_start();
-        KASSERT(NULL != NULL);
+        
 
         dbg(DBG_PRINT, "vfs test stage 3\n");
         syscall_success(chdir(root_dir));
         dbg(DBG_PRINT, "vfs test stage 4\n");
-
-        vfstest_stat();
         
-        
+        vfstest_stat();        
         vfstest_chdir();
+                
         vfstest_mkdir();
+        
+
         vfstest_paths();
         vfstest_fd();
         vfstest_open();

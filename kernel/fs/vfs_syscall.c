@@ -723,6 +723,8 @@ do_chdir(const char *path)
 	
 	/*decrement ref count for previous curproc p_cwd vnode*/
 	vput(oldNode);
+        
+        dbg(DBG_PRINT, "Changed to %s directory\n", path);
 	
 	return 0;
 }
@@ -849,6 +851,7 @@ do_stat(const char *path, struct stat *buf)
 		int res_stat = 0;
 		int res = 0;
 
+                dbg(DBG_PRINT, "Calling do_stat with path %s\n", path);
 		/*
 		 * namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
 		 * fchtl.h: #define O_CREAT 0x100    Create file if non-existent.
@@ -857,18 +860,20 @@ do_stat(const char *path, struct stat *buf)
 		/*ERROR CHECKING*/
 			vnode_t *newNodePtr = NULL;
 			/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
-			if((res = open_namev(path, O_CREAT, &newNodePtr, NULL)) != 0) {
+			if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
 				dbg(DBG_PRINT, "open_namev error: %d", res);
 				return res;
 			}
 			/*newNodePtr should now point to the vnode of the directory given by 'path'*/
-
+        
 		/*
 		 * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
 		 */
 		KASSERT(newNodePtr->vn_ops->stat);
 		dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
 		res_stat = newNodePtr->vn_ops->stat(newNodePtr, buf);
+                dbg(DBG_PRINT, "open_namev return value %d\n", res);
+        dbg(DBG_PRINT, "Return value %d\n", res_stat);
         return res_stat;
 
 }

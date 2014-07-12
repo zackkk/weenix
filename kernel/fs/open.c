@@ -90,6 +90,8 @@ do_open(const char *filename, int oflags)
         file_t *my_file = NULL;
         int flags  = 0;
         
+        dbg(DBG_PRINT, "Called with filename %s\n", filename);
+        
         /*test only*/
         /*char buffer[1024];
         
@@ -108,16 +110,20 @@ do_open(const char *filename, int oflags)
         /*Get a file descriptor*/
         fd = get_empty_fd(curproc);
         
-        if(fd == EMFILE){
-        	dbg(DBG_PRINT, "1\n");
-                return EMFILE;
+        dbg(DBG_PRINT, "Current process %d got file descriptor %d\n", curproc->p_pid, fd);
+        
+        
+        if(fd == -EMFILE){
+                return -EMFILE;
         }
 
         
         /*Check flag is valid*/
         /*Can O_APPEND be OR'd with O_RDONLY??*/
         /*Set file modes depending on flags...*/
-        switch(oflags){
+        int flags_copy = oflags & ~(O_CREAT);                       /*MASK O_CREATE*/
+        
+        switch(flags_copy){
                 
                 case O_RDONLY:
                         flags = FMODE_READ;
@@ -141,8 +147,6 @@ do_open(const char *filename, int oflags)
         
         /*Get new file object*/
         my_file = fget(-1);     /*also increments reference count. Call with -1 to get a fresh file...*/
-        dbg(DBG_PRINT, "fd number is %d\n",fd);
-
         
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
@@ -160,6 +164,7 @@ do_open(const char *filename, int oflags)
         int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/                                                                               
         
         
+        
         if(/*res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO*/ res < 0){  /*Error*/
                 fput(my_file);                  /*free file memory since this is an error*/
                 return res;
@@ -167,6 +172,8 @@ do_open(const char *filename, int oflags)
         
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;
+        
+        
         
         return fd;
 }
