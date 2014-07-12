@@ -517,16 +517,16 @@ do_unlink(const char *path)
 	vnode_t *resNodePtr = NULL;
 	/*check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
 	if((res = open_namev(path, 0, &resNodePtr, NULL)) != 0) {
-		dbg(DBG_PRINT, "open_namev error: %d", res);
+		dbg(DBG_PRINT, "open_namev error: %d\n", res);
 		return res;
 	}
 		
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "unlink: open_namev called, refcount for %s: %d", path, resNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: open_namev called, refcount for %s: %d\n", path, resNodePtr->vn_refcount);
 	
 	/*check that the file name does not refer to a directory*/
 	if(S_ISDIR(resNodePtr->vn_mode)) {
-		dbg(DBG_PRINT, "file name refers to directory");
+		dbg(DBG_PRINT, "file name refers to directory\n");
 		return -EISDIR;
 	}
 	
@@ -535,30 +535,30 @@ do_unlink(const char *path)
 	vnode_t *parentPtr = NULL;
 	/*get parent directory - need for first arg of unlink*/
 	if((res = dir_namev(path, namelen, &namePtr, NULL, &parentPtr)) != 0) { /*sanity check*/
-		dbg(DBG_PRINT, "dir_namev error: %d", res);
+		dbg(DBG_PRINT, "dir_namev error: %d\n", res);
 		return res;
 	}
 	
 	/*refcount for newly opened file*/
-	dbg(DBG_PRINT, "unlink: dir_namev called, refcount for %s: %d", path, resNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: dir_namev called, refcount for %s: %d\n", path, resNodePtr->vn_refcount);
 		
 	/*call unlink from vnode*/
 	KASSERT(NULL != parentPtr->vn_ops->unlink);
-	dbg(DBG_PRINT, "(GRADING2A 3.e) KASSERT passed - vnode->vn_ops->unlink not NULL");
+	dbg(DBG_PRINT, "(GRADING2A 3.e) KASSERT passed - vnode->vn_ops->unlink not NULL\n");
 	parentPtr->vn_ops->unlink(((struct vnode *) parentPtr), namePtr, *namelen); 
 	
 	/*decrement reference counts for both the file and parent directory*/
 	/*unlink does not decrement ref count, so decrement ref count of resNodePtr again, twice total*/
 	vput(resNodePtr);
 	
-	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, resNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d\n", path, resNodePtr->vn_refcount);
 	
 	vput(resNodePtr);
 	vput(parentPtr);
 	
 
-	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d", path, resNodePtr->vn_refcount);
-	dbg(DBG_PRINT, "unlink: vput() called (parDir), refcount for %s: %d", path, parentPtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: vput() called (file), refcount for %s: %d\n", path, resNodePtr->vn_refcount);
+	dbg(DBG_PRINT, "unlink: vput() called (parDir), refcount for %s: %d\n", path, parentPtr->vn_refcount);
 	
     return 0;
 }
@@ -725,9 +725,17 @@ do_chdir(const char *path)
 	vnode_t *newNodePtr = NULL;
 	/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
 	if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
-		dbg(DBG_PRINT, "open_namev error: %d", res);
+		dbg(DBG_PRINT, "open_namev error: %d\n", res);
 		return res;
 	}
+        
+        if(!S_ISDIR(newNodePtr->vn_mode)){
+                vput(newNodePtr);
+                return -ENOTDIR;
+        }
+        
+        
+        
 	/*newNodePtr should now point to the vnode of the directory given by 'path'*/
 	
 	/*get vnode pointed to by curproc p_cwd*/

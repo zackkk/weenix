@@ -49,7 +49,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
         int res = 0;
         
-        /*If we have lookup function, then we are not a directory...*/
+        /*If we dont have a lookup function, then we are not a directory...*/
         if(dir->vn_ops->lookup == NULL){
                 return -ENOTDIR;
         }
@@ -59,7 +59,9 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, name, len, result);      /*this will increase result refcount */
         if(res == 0){
+                
         	dbg(DBG_PRINT, "Lookup succesful: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
+                
         }
         dbg(DBG_PRINT, "look up return value: %d\n", res);
 
@@ -240,6 +242,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 vput(*res_vnode);
                 
                 res = lookup(*res_vnode, name, strlen(name), res_vnode);
+                dbg(DBG_PRINT, "open_namev res %d\n",res);
                 
                 if(res == 0){
                         /*At this point res_vnode should point to the file vnode...*/
@@ -267,11 +270,11 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                         }
                         
                 }
+                else return res;
         }
         else{
                 return res;        /*We didn't find directory*/
         }
-        return 0;
 }
 
 #ifdef __GETCWD__

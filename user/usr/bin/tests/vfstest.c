@@ -272,6 +272,8 @@ vfstest_mkdir(void)
         syscall_fail(mkdir("file", 0777), EEXIST);
         syscall_success(mkdir("dir", 0777));
         syscall_fail(mkdir("dir", 0777), EEXIST);
+        
+                       
 
         /* mkdir an invalid path */
         syscall_fail(mkdir(LONGNAME, 0777), ENAMETOOLONG);
@@ -286,18 +288,27 @@ vfstest_mkdir(void)
         syscall_fail(rmdir("dir/.."), ENOTEMPTY);
         syscall_fail(rmdir("noent/."), ENOENT);
         syscall_fail(rmdir("noent/.."), ENOENT);
+        
+
 
         /* unlink and rmdir the inappropriate types */
         syscall_fail(rmdir("file"), ENOTDIR);
         syscall_fail(unlink("dir"), EISDIR);
+        
+  
 
         /* remove non-empty directory */
         create_file("dir/file");
         syscall_fail(rmdir("dir"), ENOTEMPTY);
+        
+
 
         /* remove empty directory */
         syscall_success(unlink("dir/file"));
+             KASSERT(NULL != NULL);
         syscall_success(rmdir("dir"));
+        
+                         
 
         syscall_success(chdir(".."));
 }
@@ -320,18 +331,12 @@ vfstest_chdir(void)
         syscall_success(chdir(CHDIR_TEST_DIR));
         syscall_success(stat(".", &sdest));
         syscall_success(stat("..", &sparent));
-        
-        dbg(DBG_PRINT, "chdir to %s\n ", CHDIR_TEST_DIR);
-        
-        dbg(DBG_PRINT, "Dir inode address %d \n", sdir.st_ino);
-        dbg(DBG_PRINT, "Dest inode address %d\n", sdest.st_ino);
 
 
         test_assert(sdest.st_ino == sdir.st_ino, NULL);
         test_assert(ssrc.st_ino == sparent.st_ino, NULL);
         test_assert(ssrc.st_ino != sdest.st_ino, NULL);
         
-                        KASSERT(NULL != NULL);
 
         syscall_success(chdir(".."));
         syscall_success(stat(".", &rsrc));
@@ -346,6 +351,7 @@ vfstest_chdir(void)
         syscall_fail(chdir("file"), ENOTDIR);
         syscall_fail(chdir("noent"), ENOENT);
         syscall_success(chdir(".."));
+
 }
 
 static void
@@ -930,9 +936,12 @@ int vfstest_main(int argc, char **argv)
         
         vfstest_stat();        
         vfstest_chdir();
+        
+         
                 
         vfstest_mkdir();
-        
+                
+ 
 
         vfstest_paths();
         vfstest_fd();
