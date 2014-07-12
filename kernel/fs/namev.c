@@ -54,10 +54,35 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
                 return -ENOTDIR;
         }
         
+        /*copy name to local buffer*/
+
+        char buffer[NAME_LEN+1];
+        memset(buffer, 0, NAME_LEN+1);
+        
+        size_t i = 0;
+        while (i < (NAME_LEN + 1) && i < len){
+                if(*name == '\0'){
+                        break;  
+                }
+                else if(*name == '/'){
+                      buffer[i] = 0;
+                }
+                else{
+                     buffer[i] = *name; 
+                }
+                name++;
+                i++;
+        }
+        
+        /*recalculate name length*/
+        int tmplen = strlen(buffer);
+
+        
+        
         /*look up file '/dir', use argument 'dir' to get the file system in ramfs.c lookup*/
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
-        res = dir->vn_ops->lookup(dir, name, len, result);      /*this will increase result refcount */
+        res = dir->vn_ops->lookup(dir, buffer, tmplen, result);      /*this will increase result refcount */
         if(res == 0){
                 
         	dbg(DBG_PRINT, "Lookup succesful: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
@@ -168,18 +193,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         /*If we didn't find next slash, we are in the name part of the path name*/
                         KASSERT(NULL != res_vnode);
                         dbg(DBG_PRINT,"(GRADING2A 2.b) pointer to corresponding vnode is not NULL.\n");
-                        *name = current_name_index;     /*path name ends in null character...*/
-                        
-                        /*delete slashes at the end of name*/
-                        char *tmp = strdup(*name);
-                        
-                        while(*tmp != '\0'){
-                             if(*tmp == '/'){
-                                *tmp = '\0';
-                             }
-                             tmp++;
-                        }
-                        
+                        *name = current_name_index;     /*path name ends in null character...*/                        
                         *namelen = strlen(*name);
 
                         KASSERT(NULL != current_dir);
