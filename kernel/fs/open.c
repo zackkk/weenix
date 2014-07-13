@@ -90,28 +90,11 @@ do_open(const char *filename, int oflags)
         file_t *my_file = NULL;
         int flags = 0;
         
-        dbg(DBG_PRINT, "Called with filename %s\n", filename);
-        
-        /*test only*/
-        /*char buffer[1024];
-const char *data = buffer;
-size_t len = 0;
-vnode_t res_vnode;
-vnode_t *pe = &res_vnode;
-dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
-KASSERT(NULL != NULL);*/
-        /*end of test only*/
-        
-        /*Get a file descriptor*/
-        fd = get_empty_fd(curproc);
-        
-        dbg(DBG_PRINT, "Current process %d got file descriptor %d\n", curproc->p_pid, fd);
-        
+        fd = get_empty_fd(curproc);        
         
         if(fd == -EMFILE){
                 return -EMFILE;
         }
-
         
         /*Check flag is valid*/
         /*Can O_APPEND be OR'd with O_RDONLY??*/
@@ -140,10 +123,7 @@ KASSERT(NULL != NULL);*/
         }
 
         
-        /*get vnode, return error*/
-                  
-        dbg(DBG_PRINT, "filename %s\n", filename);
-        
+        /*get vnode, return error*/        
         vnode_t *vno = NULL;
         int res = open_namev(filename, oflags, &vno, NULL); /*CHECK: need to check if argument 3 is ok or not*/
                         
@@ -161,7 +141,6 @@ KASSERT(NULL != NULL);*/
                                  
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
-         dbg(DBG_PRINT, "my_file is NULL\n");
                 vput(vno);
                 return -ENOMEM;
         }
@@ -173,16 +152,8 @@ KASSERT(NULL != NULL);*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
         
-        
-       
-        
-        
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;
-        
-        dbg(DBG_PRINT, "Process %d opened file with vnode %d and refcount %d\n", curproc->p_pid, curproc->p_files[fd]->f_vnode->vn_vno, curproc->p_files[fd]->f_vnode->vn_refcount);
-        
-        /*fput(my_file);*/
         
         return fd;
 }

@@ -461,16 +461,16 @@ initproc_run(int arg1, void *arg2)
 
 	#ifdef __DRIVERS__
 	
-			kshell_add_command("ftest", ftests, "Invokes testproc()...");
-			kshell_add_command("stest", stests, "Invokes sunghan_test()...");
-			kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
+	kshell_add_command("ftest", ftests, "Invokes testproc()...");
+	kshell_add_command("stest", stests, "Invokes sunghan_test()...");
+	kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
 	#endif /* __DRIVERS__ */
 
-	#ifdef __VFS__
+#ifdef __VFS__
 
-			kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
+	kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
 
-	#endif /* __VFS__ */
+#endif /* __VFS__ */
 
 	kshell_t *kshell = kshell_create(0);
 	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");

@@ -244,6 +244,14 @@ proc_cleanup(int status)
         /*reparent child process to init process*/
         list_link_t *link = NULL;
         proc_t *my_child_proc = NULL;
+	
+	/*Close all open files...*/
+	int i = 0;
+        for(i = 0; i < NFILES; i++){
+                if(curproc->p_files[i] != NULL){
+			do_close(i);
+		}
+        }
         
 
         /*Do this for any process except init process*/

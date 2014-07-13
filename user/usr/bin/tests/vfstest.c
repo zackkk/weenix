@@ -111,7 +111,7 @@ getdent(const char *dir, dirent_t *dirent)
 static int
 removeall(const char *dir)
 {
-        dbg(DBG_PRINT, "root dir %s\n", dir);
+        dbg(DBG_PRINT, "REMOVE ALL: root dir %s\n", dir);
         int ret, fd = -1;
         dirent_t dirent;
         struct stat status;
@@ -420,11 +420,9 @@ vfstest_fd(void)
 
         syscall_success(mkdir("fd", 0));
         syscall_success(chdir("fd"));
-        
-
 
         /* read/write/close/getdents/dup nonexistent file descriptors */
-        /*syscall_fail(read(BAD_FD, buf, FD_BUFSIZE), EBADF);        
+        syscall_fail(read(BAD_FD, buf, FD_BUFSIZE), EBADF);        
         syscall_fail(read(HUGE_FD, buf, FD_BUFSIZE), EBADF);
         syscall_fail(read(-1, buf, FD_BUFSIZE), EBADF);
 
@@ -450,17 +448,17 @@ vfstest_fd(void)
         
         syscall_fail(dup2(BAD_FD, 10), EBADF);
         syscall_fail(dup2(HUGE_FD, 10), EBADF);
-        syscall_fail(dup2(-1, 10), EBADF);*/
+        syscall_fail(dup2(-1, 10), EBADF);
 
         /* dup2 has some extra cases since it takes a second fd */
-        /*syscall_fail(dup2(0, HUGE_FD), EBADF);
-        syscall_fail(dup2(0, -1), EBADF);*/
+        syscall_fail(dup2(0, HUGE_FD), EBADF);
+        syscall_fail(dup2(0, -1), EBADF);
 
         /* if the fds are equal, but the first is invalid or out of the
          * allowed range */
-        /*syscall_fail(dup2(BAD_FD, BAD_FD), EBADF);
+        syscall_fail(dup2(BAD_FD, BAD_FD), EBADF);
         syscall_fail(dup2(HUGE_FD, HUGE_FD), EBADF);
-        syscall_fail(dup2(-1, -1), EBADF);*/
+        syscall_fail(dup2(-1, -1), EBADF);
 
         /* dup works properly in normal usage */
         dbg(DBG_PRINT, "FILE 01\n\n\n\n\n\n\n");
@@ -471,41 +469,29 @@ vfstest_fd(void)
         syscall_success(write(fd2, "hello", 5));
         test_fpos(fd1, 5); test_fpos(fd2, 5);
     
-        
-        
         syscall_success(lseek(fd2, 0, SEEK_SET));
         test_fpos(fd1, 0); test_fpos(fd2, 0);
         read_fd(fd1, 5, "hello");
         test_fpos(fd1, 5); test_fpos(fd2, 5);
         syscall_success(close(fd2));
         
-        
         /* dup2 works properly in normal usage */
         syscall_success(fd2 = dup2(fd1, 10));
-        
-        
         test_assert(10 == fd2, "dup2(%d, 10) returned %d", fd1, fd2);
         test_fpos(fd1, 5); test_fpos(fd2, 5);
         syscall_success(lseek(fd2, 0, SEEK_SET));
         test_fpos(fd1, 0); test_fpos(fd2, 0);
         syscall_success(close(fd2));
-          
-          
 
         /* dup2-ing a file to itself works */
         syscall_success(fd2 = dup2(fd1, fd1));
         test_assert(fd1 == fd2, "dup2(%d, %d) returned %d", fd1, fd1, fd2);
         
-       
-        
-       
         /* dup2 closes previous file */
         int fd3;
         create_file("file02");
         syscall_success(fd3 = open("file02", O_RDWR, 0));
         syscall_success(fd2 = dup2(fd1, fd3));
-        
-          dbg(DBG_PRINT, "ino 7\n");
         test_assert(fd2 == fd3, "dup2(%d, %d) returned %d", fd1, fd3, fd2);
         test_fpos(fd1, 0); test_fpos(fd2, 0);
         syscall_success(lseek(fd2, 5, SEEK_SET));
@@ -951,35 +937,27 @@ int vfstest_main(int argc, char **argv)
 
 
         vfstest_start();
-        
-
         dbg(DBG_PRINT, "vfs test stage 3\n");
         syscall_success(chdir(root_dir));
         dbg(DBG_PRINT, "vfs test stage 4\n");
         
-        /*vfstest_stat();        
+        vfstest_stat();        
         vfstest_chdir();
         vfstest_mkdir();
-        vfstest_paths();*/
+        vfstest_paths();
         vfstest_fd();        
-        /*vfstest_open();
+        vfstest_open();
         vfstest_read();
-        vfstest_getdents();*/
+        vfstest_getdents();
         
 #ifdef __VM__
         vfstest_s5fs_vm();
 #endif
 
         /*vfstest_infinite();*/
-
         syscall_success(chdir(".."));
-        
         vfstest_term();
-        
-       
-               
         test_fini();
-         KASSERT(NULL != NULL);
 
         return 0;
 }
