@@ -557,6 +557,8 @@ ramfs_rmdir(vnode_t *dir, const char *name, size_t name_len)
                 vput(vn);
                 return -ENOTDIR;
         }
+        
+        dbg(DBG_PRINT, "%s refcount is %d\n", name, vn->vn_refcount);
 
         /* We have to make sure that this directory is empty */
         entry = VNODE_TO_DIRENT(vn);
@@ -583,6 +585,8 @@ ramfs_rmdir(vnode_t *dir, const char *name, size_t name_len)
 
         VNODE_TO_RAMFSINODE(vn)->rf_linkcount--;
         vput(vn);
+        
+        dbg(DBG_PRINT, "%s refcount is %d\n", name, vn->vn_refcount);
 
         return 0;
 }

@@ -153,6 +153,9 @@ do_open(const char *filename, int oflags)
         int res = open_namev(filename, oflags, &vno, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
                         
 
+        
+
+        
         if(res < 0){  /*Error*/
                 return res;
         }
@@ -181,6 +184,8 @@ do_open(const char *filename, int oflags)
         
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;
+        
+        dbg(DBG_PRINT, "Current process %d opened file with vnode %d, refcount %d\n", curproc->p_pid, vno->vn_vno, vno->vn_refcount);
         
         
         

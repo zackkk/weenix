@@ -111,6 +111,7 @@ getdent(const char *dir, dirent_t *dirent)
 static int
 removeall(const char *dir)
 {
+        dbg(DBG_PRINT, "root dir %s\n", dir);
         int ret, fd = -1;
         dirent_t dirent;
         struct stat status;
@@ -940,17 +941,17 @@ int vfstest_main(int argc, char **argv)
         
 
         dbg(DBG_PRINT, "vfs test stage 3\n");
-        syscall_success(chdir(root_dir));
+        /*syscall_success(chdir(root_dir));*/
         dbg(DBG_PRINT, "vfs test stage 4\n");
         
-        vfstest_stat();        
+        /*vfstest_stat();        
         vfstest_chdir();
         vfstest_mkdir();
         vfstest_paths();
         vfstest_fd();        
         vfstest_open();
         vfstest_read();
-        vfstest_getdents();
+        vfstest_getdents();*/
         
 #ifdef __VM__
         vfstest_s5fs_vm();
@@ -958,7 +959,7 @@ int vfstest_main(int argc, char **argv)
 
         /*vfstest_infinite();*/
 
-        syscall_success(chdir(".."));
+        /*syscall_success(chdir(".."));*/
 
         vfstest_term();
         test_fini();

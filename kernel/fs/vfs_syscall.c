@@ -166,6 +166,8 @@ do_write(int fd, const void *buf, size_t nbytes)
 int
 do_close(int fd)
 {
+         
+        
         if(fd<0 || fd >= NFILES)
         {
              dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_close\n");
@@ -176,12 +178,14 @@ do_close(int fd)
         {
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_close\n");
              return -EBADF;
-        } 
-        /* vput(f->f_vnode);*/
+        }    
+        dbg(DBG_PRINT, "Before before: file vnode number %d, refcount %d\n", f->f_vnode->vn_vno, f->f_vnode->vn_refcount);
 
         curproc->p_files[fd] = 0;
         fput(f);        /*fput does vput*/
         fput(f);
+        
+        dbg(DBG_PRINT, "After close: file vnode number %d, refcount %d\n", f->f_vnode->vn_vno, f->f_vnode->vn_refcount);
         return 0;
 }
 
@@ -381,8 +385,6 @@ do_mkdir(const char *path)
         
         dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
         dbg(DBG_PRINT,"res_node address:%p\n", &res_vnode);
-        dbg(DBG_PRINT, "2\n");
-        
 
         if (namelen >= NAME_LEN)
         {
@@ -390,7 +392,6 @@ do_mkdir(const char *path)
              vput(res_vnode);
              return -ENAMETOOLONG;
         }
-        dbg(DBG_PRINT, "3\n");
 
         KASSERT(res_vnode);
         dbg(DBG_PRINT,"res_vnode is not null\n");
@@ -401,7 +402,6 @@ do_mkdir(const char *path)
              vput(res_vnode);
              return -ENOTDIR;
         }
-        dbg(DBG_PRINT, "4\n");
         vnode_t *result = NULL;
         if(!lookup(res_vnode, name, namelen, &result))
         {
@@ -411,24 +411,18 @@ do_mkdir(const char *path)
               return -EEXIST;
         }
         KASSERT(NULL != res_vnode->vn_ops->mkdir);
-        dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");
+        dbg(DBG_PRINT, "(GRADING2A 3.c) mkdir operation is not NULL\n");   
         vput(res_vnode);
+        dbg(DBG_PRINT, "res_vnode id %d\n", res_vnode->vn_vno);
+
+        vnode_t  *new_dir = NULL;
         
         int res = res_vnode->vn_ops->mkdir(res_vnode,name,namelen); /* hasn't increased refcoun*/
         if(res == 0){
                 int return_value = lookup(res_vnode, name, namelen, &result);
-                vput(result);           /*since lookup called vref*/
-                                         
-                dbg(DBG_PRINT, "Created dir %s\n", path);
-                
-                /*
-                vnode_t *dotdot_vnode = NULL;                         
-                result->vn_ops->create(&dotdot_vnode, result, "..", strlen(".."));
-                result->vn_ops->link(res_vnode, dotdot_vnode, "..", strlen(".."));
-                
-                vnode_t *dot_vnode = NULL;
-                result->vn_ops->create(&dot_vnode, result, "..", strlen(".."));
-                result->vn_ops->link(result, result, ".", strlen("."));*/
+                vput(result);
+                dbg(DBG_PRINT, "Created dir %s, result vnode number %d, refcount %d\n", name, result->vn_vno, result->vn_refcount);
+                return res;
         }
         
         return res;                                                              
@@ -455,6 +449,8 @@ do_mkdir(const char *path)
 int
 do_rmdir(const char *path)
 {
+        
+        dbg(DBG_PRINT, "directory to remove %s\n", path);
         size_t namelen = 0;
         const char *name;
         vnode_t *res_vnode;
@@ -463,6 +459,8 @@ do_rmdir(const char *path)
              dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_rmdir\n");
              return -ENOENT;
         }
+        
+        dbg(DBG_PRINT, "name is  %s\n", name);
         /*if(res_vnode ==NULL)
         {
              return -ENOENT;
@@ -723,21 +721,19 @@ do_chdir(const char *path)
 	/*
 	 * error checking in case its not a directory??
 	*/
-	dbg(DBG_PRINT, "Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
+	dbg(DBG_PRINT, "Curproc %d current directory vnode %d, refcount %d\n", curproc->p_pid, curproc->p_cwd->vn_vno, curproc->p_cwd->vn_refcount);
 	/*ERROR CHECKING*/
 	vnode_t *newNodePtr = NULL;
 	/*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
 	if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
 		dbg(DBG_PRINT, "open_namev error: %d\n", res);
 		return res;
-	}
+        }
         
         if(!S_ISDIR(newNodePtr->vn_mode)){
                 vput(newNodePtr);
                 return -ENOTDIR;
         }
-        
-        
         
 	/*newNodePtr should now point to the vnode of the directory given by 'path'*/
 	
@@ -746,12 +742,10 @@ do_chdir(const char *path)
 	
 	/*set curproc p_cwd = new vnode. ref count for vnode should already be incremented from call to open_namev*/
 	curproc->p_cwd = newNodePtr;
-        
-        dbg(DBG_PRINT, "Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
 	
 	/*decrement ref count for previous curproc p_cwd vnode*/
 	vput(oldNode);
-        
+        dbg(DBG_PRINT, "Curproc %d current directory vnode %d, refcount %d\n", curproc->p_pid, curproc->p_cwd->vn_vno, curproc->p_cwd->vn_refcount);
         dbg(DBG_PRINT, "Changed to %s directory\n", path);
 	
 	return 0;

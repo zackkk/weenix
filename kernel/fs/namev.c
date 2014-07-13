@@ -292,7 +292,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 if(res == 0){
                         
                         /*At this point res_vnode should point to the file vnode...*/
-                        dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
+                        dbg(DBG_PRINT, "File inode %d vnode refcount %d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
                         return res;
                 }
                 else if(res == -ENOENT){
@@ -305,13 +305,11 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                                /*Call the the create function in directory vnode*/
                                /*return newly create file vnode in res_vnode*/
                                res = (*res_vnode)->vn_ops->create(*res_vnode, name, strlen(name), res_vnode);     /*Create file on res_vnode (which should be the directory)*/
-                               dbg(DBG_PRINT, "9\n");
                                return res;
                                
                         }
                         else{
                                 /*Return file not found?*/
-                        	dbg(DBG_PRINT, "10\n");
                                 return -ENOENT;                         /*Not sure...*/
                         }
                         
