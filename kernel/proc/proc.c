@@ -244,6 +244,14 @@ proc_cleanup(int status)
         /*reparent child process to init process*/
         list_link_t *link = NULL;
         proc_t *my_child_proc = NULL;
+	
+	/*Close all open files...*/
+	int i = 0;
+        for(i = 0; i < NFILES; i++){
+                if(curproc->p_files[i] != NULL){
+			do_close(i);
+		}
+        }
         
 
         /*Do this for any process except init process*/
@@ -322,15 +330,15 @@ proc_cleanup(int status)
 void
 proc_kill(proc_t *p, int status)
 {
-		dbg(DBG_PRINT, "proc_code_path_check\n");
+	dbg(DBG_PRINT, "proc_code_path_check\n");
         KASSERT(p != proc_initproc);           
         struct kthread *parent_thread = NULL;
         
         list_link_t *link2;
-		link2 = p->p_threads.l_next;
-		kthread_t *thr = list_item(link2, kthread_t, kt_plink);
-		dbg(DBG_PRINT, "Current process being killed %d\n", p->p_pid);
-       
+	link2 = p->p_threads.l_next;
+	kthread_t *thr = list_item(link2, kthread_t, kt_plink);
+	dbg(DBG_PRINT, "Current process being killed %d\n", p->p_pid);
+	
         sched_cancel(thr);
         sched_make_runnable(curthr);
         sched_switch();
@@ -370,7 +378,7 @@ proc_kill(proc_t *p, int status)
 void
 proc_kill_all()
 {
-		dbg(DBG_PRINT, "proc_code_path_check\n");
+	dbg(DBG_PRINT, "proc_code_path_check\n");
         /*Dont kill init nor idle*/
         /*kill using proc_kill*/
         proc_t *current_proc = NULL;
