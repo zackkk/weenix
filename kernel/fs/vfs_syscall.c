@@ -66,7 +66,7 @@ do_read(int fd, void *buf, size_t nbytes)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_read\n");
              return -EBADF;
         }
-        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
+        
         if(!(f->f_mode & FMODE_READ))
         {
              dbg(DBG_PRINT, "(GRADING2C) file mode is not READ do_read\n");
@@ -81,12 +81,13 @@ do_read(int fd, void *buf, size_t nbytes)
         }
         int returnVal = f->f_vnode->vn_ops->read(f->f_vnode, f->f_pos, buf, nbytes);
 
-        dbg(DBG_PRINT, "returnVal:%d\n", returnVal);
         if(returnVal>0)
         {
-             f -> f_pos += returnVal;
+        	dbg(DBG_PRINT, "(GRADING2C) successful do_read(), return val > 0\n");
+            f -> f_pos += returnVal;
         }
         fput(f);
+        dbg(DBG_PRINT, "(GRADING2C) successful do_read()\n");
         return returnVal;
 }
 
@@ -133,7 +134,7 @@ do_write(int fd, const void *buf, size_t nbytes)
         }
         int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
 
-        if(returnVal>0)
+        if(returnVal>=0)
         {
              f -> f_pos += returnVal;
               
@@ -142,6 +143,7 @@ do_write(int fd, const void *buf, size_t nbytes)
         }
 
         fput(f);
+        dbg(DBG_PRINT, "(GRADING2C) successful do_write()\n");
         return returnVal;
 }
 
@@ -170,6 +172,7 @@ do_close(int fd)
         curproc->p_files[fd] = 0;
         fput(f); /*fput does vput*/
         fput(f);
+        dbg(DBG_PRINT, "(GRADING2C) successful do_close()\n");
         return 0;
 }
 
@@ -212,7 +215,7 @@ do_dup(int fd)
              return -EMFILE;
         }
         curproc->p_files[dfd]=f;
-        
+        dbg(DBG_PRINT, "(GRADING2C) successful do_dup()\n");
         return dfd;
 }
 
@@ -244,7 +247,7 @@ do_dup2(int ofd, int nfd)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_dup2\n");
              return -EBADF;
         }
-        dbg(DBG_PRINT, "Duplicate file vnode %d, refcount %d\n", f->f_vnode->vn_vno, f->f_vnode->vn_refcount);
+        
         if(ofd != nfd)
         {
              dbg(DBG_PRINT, "(GRADING2C) give f=fget(ofd) to nfd do_dup2\n");
@@ -256,7 +259,7 @@ do_dup2(int ofd, int nfd)
              curproc->p_files[nfd]=f;
              fref(f);
         }
-        
+        dbg(DBG_PRINT, "(GRADING2C) do_dup2() success\n");
         fput(f);        
         return nfd;
 }
@@ -357,9 +360,6 @@ do_mkdir(const char *path)
              dbg(DBG_PRINT, "(GRADING2C) A directory component in path does not exist. dir_name fail do_mkdir\n");
              return -ENOENT;
         }
-        
-        dbg(DBG_PRINT,"res_node:%p\n", res_vnode);
-        dbg(DBG_PRINT,"res_node address:%p\n", &res_vnode);
 
         if (namelen >= NAME_LEN)
         {
@@ -367,7 +367,6 @@ do_mkdir(const char *path)
              vput(res_vnode);
              return -ENAMETOOLONG;
         }
-        KASSERT(res_vnode);
 
         if(!S_ISDIR(res_vnode->vn_mode))
         {
@@ -474,7 +473,7 @@ do_unlink(const char *path)
         vnode_t *resNodePtr = NULL;
         /*check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(path, 0, &resNodePtr, NULL)) != 0) {
-                dbg(DBG_PRINT, "open_namev error: %d\n", res);
+                dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
                 return res;
         }
         
@@ -482,7 +481,7 @@ do_unlink(const char *path)
         
         /*check that the file name does not refer to a directory*/
         if(S_ISDIR(resNodePtr->vn_mode)) {
-                dbg(DBG_PRINT, "file name refers to directory\n");
+                dbg(DBG_PRINT, "(GRADING2C)file name refers to directory\n");
                 vput(resNodePtr);
                 return -EISDIR;
         }
@@ -493,7 +492,7 @@ do_unlink(const char *path)
         
         /*get parent directory - need for first arg of unlink*/
         if((res = dir_namev(path, namelen, &namePtr, NULL, &parentPtr)) != 0) { /*sanity check*/
-                dbg(DBG_PRINT, "dir_namev error: %d\n", res);
+                dbg(DBG_PRINT, "(GRADING2C) dir_namev error: %d\n", res);
                 vput(resNodePtr);
                 return res;
         }
@@ -546,7 +545,7 @@ do_link(const char *from, const char *to)
         vnode_t *fromNodePtr = NULL;
         /*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(from, 0, &fromNodePtr, NULL)) != 0) {
-                dbg(DBG_PRINT, "open_namev error: %d", res);
+                dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
                 return res;
         }
         
@@ -555,7 +554,7 @@ do_link(const char *from, const char *to)
         vnode_t *toNodePtr = NULL;
         /*get 'to' vnode (directory) and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = dir_namev(to, namelen, &namePtr, NULL, &toNodePtr)) != 0) { /*sanity check*/
-                dbg(DBG_PRINT, "dir_namev error: %d", res);
+                dbg(DBG_PRINT, "(GRADING2C) dir_namev error: %d\n", res);
                 vput(fromNodePtr);
                 return res;
         }
@@ -570,7 +569,7 @@ do_link(const char *from, const char *to)
         */
         vput(fromNodePtr);
         vput(toNodePtr);
-        
+        dbg(DBG_PRINT, "(GRADING2C) do_link() successful\n");
         return result;
 }
 
@@ -594,20 +593,20 @@ do_rename(const char *oldname, const char *newname)
         vnode_t *oldNodePtr = NULL;
         /*get 'oldname' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(oldname, O_CREAT, &oldNodePtr, NULL)) != 0) {
-        dbg(DBG_PRINT, "open_namev error: %d", res);
-        return res;
+        	dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
+        	return res;
         }
         
         /*refcount for newly opened file*/
-        dbg(DBG_PRINT, "rename: open_namev called, refcount for %s: %d", oldname, oldNodePtr->vn_refcount);
+        dbg(DBG_PRINT, "(GRADING2C) rename: open_namev called, refcount for %s: %d\n", oldname, oldNodePtr->vn_refcount);
         
         size_t *namelen = (size_t*) kmalloc(sizeof(size_t));
         const char *namePtr = NULL; /*last element in path name stored here*/
         vnode_t *dirNodePtr = NULL;
         /*get 'oldname' vnode (parent directory) which is needed for link*/
         if((res = dir_namev(oldname, namelen, &namePtr, NULL, &dirNodePtr)) != 0) { /*sanity check*/
-        dbg(DBG_PRINT, "dir_namev error: %d", res);
-        vput(oldNodePtr);
+        	dbg(DBG_PRINT, "(GRADING2C) dir_namev error: %d\n", res);
+        	vput(oldNodePtr);
         return res;
         }
         /*
@@ -630,7 +629,7 @@ do_rename(const char *oldname, const char *newname)
         /*decrement reference counts for both the file and parent directory*/
         vput(oldNodePtr);
         vput(dirNodePtr);
-        
+        dbg(DBG_PRINT, "(GRADING2C) do_rename() successful\n");
         return result;
 }
 
@@ -655,17 +654,18 @@ do_chdir(const char *path)
         /*
         * error checking in case its not a directory??
         */
-        dbg(DBG_PRINT, "Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
+        
         /*ERROR CHECKING*/
         vnode_t *newNodePtr = NULL;
         /*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
-        dbg(DBG_PRINT, "open_namev error: %d\n", res);
+        dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
         return res;
         }
                 
         if(!S_ISDIR(newNodePtr->vn_mode)){
                 vput(newNodePtr);
+                dbg(DBG_PRINT, "(GRADING2C) do_chdir() failed, not a directory\n");
                 return -ENOTDIR;
         }
 
@@ -678,7 +678,7 @@ do_chdir(const char *path)
         /*set curproc p_cwd = new vnode. ref count for vnode should already be incremented from call to open_namev*/
         curproc->p_cwd = newNodePtr;
                 
-                dbg(DBG_PRINT, "Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
+        dbg(DBG_PRINT, "(GRADING2C) Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
         
         /*decrement ref count for previous curproc p_cwd vnode*/
         vput(oldNode);        
@@ -710,7 +710,7 @@ do_getdent(int fd, struct dirent *dirp)
 */
         if(fd<0 || fd >= NFILES)
         {
-             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num in do_getdent()\n");
              return -EBADF;
         }
         file_t *tmp_file = fget(fd);
@@ -718,16 +718,17 @@ do_getdent(int fd, struct dirent *dirp)
 
         /* fd is not an open file descriptor. */
         if(NULL == tmp_file){
+        	dbg(DBG_PRINT, "(GRADING2C) invalid file descriptor in do_getdent()\n");
                 return -EBADF;
         }
 
         /* File descriptor does not refer to a directory. */
         if(!S_ISDIR(tmp_file->f_vnode->vn_mode)){
                 fput(tmp_file);
+                dbg(DBG_PRINT, "(GRADING2C) fd not a directory in do_getdent()\n");
                 return -ENOTDIR;
         }
         
-        dbg(DBG_PRINT, "dir->f_pos is %d\n", tmp_file->f_pos);
 
         /* If the end of the file as been reached (offset == file->vn_len),
         no directory entry will be read and 0 will be returned. */
@@ -737,10 +738,12 @@ do_getdent(int fd, struct dirent *dirp)
         if(ret_readdir > 0){
                 tmp_file->f_pos += ret_readdir;
                 fput(tmp_file);
+                dbg(DBG_PRINT, "(GRADING2C) do_readdir() successful\n");
                 return sizeof(dirent_t);
         }
         else{
                 fput(tmp_file);
+                dbg(DBG_PRINT, "(GRADING2C) do_readdir() unsuccessful\n");
                 return 0;
         }
 
@@ -766,13 +769,14 @@ do_lseek(int fd, int offset, int whence)
         
         if(fd<0 || fd >= NFILES)
         {
-             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_lseek()\n");
              return -EBADF;
         }
         file_t *tmp_file = fget(fd);
 
         /* fd is not an open file descriptor. */
         if(NULL == tmp_file){
+        	dbg(DBG_PRINT, "(GRADING2C) fd is NULL in do_lseek()\n");
                 return -EBADF;
         }
         /* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
@@ -789,6 +793,7 @@ do_lseek(int fd, int offset, int whence)
                         break;
                 default:
                         fput(tmp_file); /*free file memory*/
+                        dbg(DBG_PRINT, "(GRADING2C) whence invalid in do_lseek()\n");
                         return -EINVAL;
         }        
         
@@ -796,11 +801,12 @@ do_lseek(int fd, int offset, int whence)
         if(tmp_file->f_pos < 0){
                 tmp_file->f_pos = previous_fpos;
                 fput(tmp_file); /*free file memory*/
+                dbg(DBG_PRINT, "(GRADING2C) fpos < 0 in do_lseek()\n");
                 return -EINVAL;
         }
         int retval = tmp_file->f_pos;
         fput(tmp_file); /*free file memory*/
-                                 
+        dbg(DBG_PRINT, "(GRADING2C) do_lseek() successful\n");                         
         return retval; /*return position*/
 }
 
@@ -834,7 +840,7 @@ do_stat(const char *path, struct stat *buf)
         vnode_t *newNodePtr = NULL;
         /*get 'from' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(path, 0, &newNodePtr, NULL)) != 0) {
-                dbg(DBG_PRINT, "open_namev error: %d\n", res);
+                dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
                 return res;
         }
         /*newNodePtr should now point to the vnode of the directory given by 'path'*/
