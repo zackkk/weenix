@@ -239,6 +239,7 @@ find:
 void
 vput(struct vnode *vn)
 {
+        dbg(DBG_PRINT, "respages %d, refcount %d\n",vn->vn_nrespages,vn->vn_refcount);
         KASSERT(vn);
 
         KASSERT(0 <= vn->vn_nrespages);
