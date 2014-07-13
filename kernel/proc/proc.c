@@ -535,6 +535,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
                                 
+
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) thr points to a thread to be destroied \n");
 
