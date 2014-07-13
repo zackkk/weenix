@@ -494,6 +494,7 @@ do_unlink(const char *path)
         /*get parent directory - need for first arg of unlink*/
         if((res = dir_namev(path, namelen, &namePtr, NULL, &parentPtr)) != 0) { /*sanity check*/
                 dbg(DBG_PRINT, "dir_namev error: %d\n", res);
+                vput(resNodePtr);
                 return res;
         }
         

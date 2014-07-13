@@ -99,7 +99,7 @@ kthread_destroy(kthread_t *t)
 kthread_t *
 kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 {
-		dbg(DBG_PRINT, "kthread_code_path_check\n");
+	dbg(DBG_PRINT, "kthread_code_path_check\n");
         KASSERT(NULL != p);
         dbg(DBG_PRINT, "(GRADING1A 3.a) the process:%s of the kthread is not empty\n", p->p_comm);
 
@@ -107,6 +107,9 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 									    
 	
         thr->kt_kstack = alloc_stack();
+	
+	KASSERT(thr->kt_kstack != NULL);
+	dbg(DBG_PRINT, "what!\n");
 
         context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 
