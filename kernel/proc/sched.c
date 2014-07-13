@@ -11,12 +11,9 @@
 
 #include "globals.h"
 #include "errno.h"
-
 #include "main/interrupt.h"
-
 #include "proc/sched.h"
 #include "proc/kthread.h"
-
 #include "util/init.h"
 #include "util/debug.h"
 
@@ -111,9 +108,10 @@ sched_queue_empty(ktqueue_t *q)
 void
 sched_sleep_on(ktqueue_t *q)
 {     
-		dbg(DBG_PRINT, "sched_code_path_check\n");
+		dbg(DBG_PRINT, "(GRADING1E) Sched_sleep_on is testing \n");
         curthr->kt_state = KT_SLEEP;
         if(curthr->kt_wchan){
+        	dbg(DBG_PRINT, "(GRADING1E) Curthr->kt_wchan is not empty\n");
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
@@ -132,14 +130,16 @@ sched_sleep_on(ktqueue_t *q)
 int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
+		dbg(DBG_PRINT, "(GRADING1E) Sched_cancellable_sleep_on is testing \n");
         if(curthr->kt_cancelled)
         {
+        	dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
              return -EINTR;
         }
         curthr->kt_state=KT_SLEEP_CANCELLABLE;
 
         if(curthr->kt_wchan){
+        	dbg(DBG_PRINT, "(GRADING1E) curthr->kt_wchan is not empty \n");
         	ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
@@ -148,6 +148,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
         sched_switch();
         if(curthr->kt_cancelled)
         {
+        	dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
              return -EINTR;
         }
         return 0;
@@ -156,9 +157,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
 kthread_t *
 sched_wakeup_on(ktqueue_t *q)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
         kthread_t * thr;
-
         if(sched_queue_empty(q))
         {
              return NULL;
@@ -176,11 +175,12 @@ sched_wakeup_on(ktqueue_t *q)
 void
 sched_broadcast_on(ktqueue_t *q)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
+		dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on is testing \n");
 		/* move all threads into runnable queue */
         kthread_t * singleThr;
         while(!sched_queue_empty(q))
         {
+        	dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on while loop \n");
             singleThr = ktqueue_dequeue(q);
             sched_make_runnable(singleThr);
         }
@@ -199,11 +199,12 @@ sched_broadcast_on(ktqueue_t *q)
 void
 sched_cancel(struct kthread *kthr)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
         kthr->kt_cancelled = 1;
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
+        	dbg(DBG_PRINT, "(GRADING1E) The current kthr->kt_state is KT_SLEEP_CANCELLABLE\n");
         	if(kthr->kt_wchan){
+        		dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
         		ktqueue_remove(kthr->kt_wchan, kthr);
         	}
             sched_make_runnable(kthr);
@@ -250,7 +251,7 @@ sched_cancel(struct kthread *kthr)
 void
 sched_switch(void)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
+		dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
 		/*
 		 * adopted from lecture slides 5.2
 		 */
@@ -271,16 +272,13 @@ sched_switch(void)
         }
 
         /* switch thread context, chapter 3.1 */
-        dbg(DBG_PRINT, "Old: process %d \n", curproc->p_pid);
         oldThread = curthr;
         curthr = ktqueue_dequeue(&kt_runq);
         curproc = curthr->kt_proc;  /* added on lecture slides*/
-        dbg(DBG_PRINT, "New: process %d \n", curproc->p_pid);
         context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
 
         /* restore IPL */
         intr_setipl(oldIPL);
-
 }
 
 /*
@@ -299,7 +297,6 @@ sched_switch(void)
 void
 sched_make_runnable(kthread_t *thr)
 {
-		dbg(DBG_PRINT, "sched_code_path_check\n");
 		/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "(GRADING1A 4.b) The thread is not blocked on kt_runq\n");
@@ -311,15 +308,15 @@ sched_make_runnable(kthread_t *thr)
 
         /* dequeue from the current queue, and enqueue into the runnable queue */
         if(thr->kt_wchan){
+        	dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
         	ktqueue_remove(thr->kt_wchan, thr);
         }
 
-        dbg(DBG_PRINT, "(GRADING1A 4.b) The thread for process: %s is now in kt_runq\n", thr->kt_proc->p_comm);
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 
         if(thr->kt_proc->p_pid == 1){
-        	dbg(DBG_PRINT, "process: %d makes init process runnable \n", curproc->p_pid);
+        	dbg(DBG_PRINT, "(GRADING1E) Process: %d makes init process runnable \n", curproc->p_pid);
         }
         /* restore IPL */
         intr_setipl(oldIPL);
