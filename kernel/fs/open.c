@@ -143,32 +143,41 @@ do_open(const char *filename, int oflags)
                 default:
                         return -EINVAL;
         }
+
         
+        /*get vnode, return error*/
+                  
+        dbg(DBG_PRINT, "filename %s\n", filename);
         
-        /*Get new file object*/
+        vnode_t *vno = NULL; 
+        int res = open_namev(filename, oflags, &vno, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
+                        
+
+        if(res < 0){  /*Error*/
+                return res;
+        }
+        if(flags & FMODE_WRITE  && S_ISDIR(vno->vn_mode)){
+                /*vput(vno);*/
+                return -EISDIR;
+        }
+        
+         /*Get new file object*/
         my_file = fget(-1);     /*also increments reference count. Call with -1 to get a fresh file...*/
-        
+                                 
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
         	dbg(DBG_PRINT, "my_file is NULL\n");
                 return -ENOMEM;
         }
         
+        /*assign the found vnode to the file*/
+        my_file->f_vnode = vno;
+        
         /*Set field, ref count and vnode*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
         
-        /*get vnode, return error*/
-                  
-        dbg(DBG_PRINT, "filename %s\n", filename);                                                                               
-        int res = open_namev(filename, oflags, &my_file->f_vnode, NULL);                /*CHECK: need to check if argument 3 is ok or not*/                                                                               
         
-        
-        
-        if(/*res == ENAMETOOLONG || res == ENOENT || res == EISDIR || res == ENXIO*/ res < 0){  /*Error*/
-                fput(my_file);                  /*free file memory since this is an error*/
-                return res;
-        }
         
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;

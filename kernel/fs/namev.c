@@ -49,18 +49,19 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /*NOT_YET_IMPLEMENTED("VFS: lookup");*/
         int res = 0;
         
+        dbg(DBG_PRINT, "Looking for file/dir: %s\n", name);
+        
         /*If we dont have a lookup function, then we are not a directory...*/
         if(dir->vn_ops->lookup == NULL){
                 return -ENOTDIR;
         }
         
         /*copy name to local buffer*/
-
-        char buffer[NAME_LEN+1];
-        memset(buffer, 0, NAME_LEN+1);
+        char buffer[2*NAME_LEN+1];
+        memset(buffer, 0, 2*NAME_LEN+1);
         
         size_t i = 0;
-        while (i < (NAME_LEN + 1) && i < len){
+        while (i < (2*NAME_LEN + 1) && i < len){
                 if(*name == '\0'){
                         break;  
                 }
@@ -76,6 +77,10 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         
         /*recalculate name length*/
         int tmplen = strlen(buffer);
+        
+        if(tmplen > NAME_LEN){
+                return -ENAMETOOLONG;
+        }
 
         
         
@@ -283,7 +288,9 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 res = lookup(*res_vnode, name, strlen(name), res_vnode);
                 dbg(DBG_PRINT, "open_namev res %d\n",res);
                 
+                
                 if(res == 0){
+                        
                         /*At this point res_vnode should point to the file vnode...*/
                         dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
                         return res;

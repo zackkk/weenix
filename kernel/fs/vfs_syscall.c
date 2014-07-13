@@ -62,13 +62,13 @@ do_read(int fd, void *buf, size_t nbytes)
         }
 
         file_t *f = fget(fd);
-        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
 
         if(NULL == f)
         {
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_read\n");
              return -EBADF;
-        }        
+        }
+        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
         if(!(f->f_mode & FMODE_READ))
         {
              dbg(DBG_PRINT, "(GRADING2C) file mode is not READ do_read\n");
@@ -103,6 +103,7 @@ int
 do_write(int fd, const void *buf, size_t nbytes)
 {
 	dbg(DBG_PRINT, "do write called, fd:%d, size_t:%d\n", fd, nbytes);
+        
 
         if(fd<0 || fd >= NFILES)
         {
@@ -112,45 +113,45 @@ do_write(int fd, const void *buf, size_t nbytes)
 
 
         file_t *f = fget(fd);
-        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
+
         if(f == NULL)
         {
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_write\n");
              return -EBADF;
-        } 
-        dbg(DBG_PRINT, "22\n");
+        }
+        dbg(DBG_PRINT, "(GRADING2C) file mode is : %d\n", f->f_mode);
         if(f->f_mode & FMODE_APPEND)
         {
              dbg(DBG_PRINT, "(GRADING2C) file mode is FMODE_APPEND do_write\n");
-             do_lseek(fd,f->f_pos,SEEK_END);
+             do_lseek(fd, 0, SEEK_END);
              int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
              f -> f_pos += returnVal;
 
              fput(f);
              return returnVal;
         }     
-        dbg(DBG_PRINT, "33\n");
         if(!(f->f_mode & FMODE_WRITE))
         {                                                                               /*Need to check modes using bitwise ops...*/
              dbg(DBG_PRINT, "(GRADING2C) file mode is not FMODE_WRITE do_write\n");
              fput(f);
              return -EBADF;
         }  
-        dbg(DBG_PRINT, "44\n");
 
-        dbg(DBG_PRINT, "f_pos: %d\n", f->f_pos);
+        dbg(DBG_PRINT, "inti f_pos: %d\n", f->f_pos);
         dbg(DBG_PRINT, "f_mode: %d\n", f->f_vnode->vn_mode);
         dbg(DBG_PRINT, "nbytes: %d\n", nbytes);
         int returnVal = f->f_vnode->vn_ops->write(f->f_vnode, f->f_pos, buf, nbytes);
 
+        dbg(DBG_PRINT, "before f_pos: %d\n", f->f_pos);
         dbg(DBG_PRINT, "f pos:%d, return val:%d\n", f->f_pos, returnVal);
         if(returnVal>0)
         {
         	f -> f_pos += returnVal;
+                dbg(DBG_PRINT, "after f_pos: %d\n", f->f_pos);
              KASSERT((S_ISCHR(f->f_vnode->vn_mode)) || (S_ISBLK(f->f_vnode->vn_mode)) || ((S_ISREG(f->f_vnode->vn_mode)) && (f->f_pos <= f->f_vnode->vn_len)));
              dbg(DBG_PRINT, "(GRADING2A 3.a) successful write kassert\n");
         }
-        dbg(DBG_PRINT, "55\n");
+
         fput(f);
         return returnVal;
 }
@@ -224,7 +225,7 @@ do_dup(int fd)
         }
 
         curproc->p_files[dfd]=f;
-        fput(f);
+        /*fput(f);*/
         return dfd;
 }
 
@@ -265,9 +266,11 @@ do_dup2(int ofd, int nfd)
                   do_close(nfd);
              }
              curproc->p_files[nfd]=f;
+             fref(f);
         }
         
         fput(f);
+        
         return nfd;
 }
 
@@ -773,41 +776,48 @@ int
 do_getdent(int fd, struct dirent *dirp)
 {
         /* NOT_YET_IMPLEMENTED("VFS: do_getdent"); */
-		/*
-		 * check ramfs.c: int ramfs_mount(struct fs *fs) for tutorial purpose
-		 * file.h: struct file *fget(int fd);
-		 */
-		file_t *tmp_file = fget(fd);
-		int ret_readdir = 0;
+        /*
+         * check ramfs.c: int ramfs_mount(struct fs *fs) for tutorial purpose
+         * file.h: struct file *fget(int fd);
+         */
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
+             return -EBADF;
+        }
+        file_t *tmp_file = fget(fd);
+        int ret_readdir = 0;
 
-		dbg(DBG_PRINT,"file reference count for fd:%d  is %d.\n",fd, tmp_file->f_refcount);
+        /* fd is not an open file descriptor. */
+        if(NULL == tmp_file){
+                return -EBADF;
+        }
 
-		/* fd is not an open file descriptor. */
-		if(NULL == tmp_file){
-			return EBADF;
-		}
+        /* File descriptor does not refer to a directory. */
+        if(!S_ISDIR(tmp_file->f_vnode->vn_mode)){
+                return -ENOTDIR;
+        }
+        
+        dbg(DBG_PRINT, "dir->f_pos is %d\n", tmp_file->f_pos);
 
-		/* File descriptor does not refer to a directory. */
-		if(!S_ISDIR(tmp_file->f_vnode->vn_mode)){
-			return ENOTDIR;
-		}
-
-		/* If the end of the file as been reached (offset == file->vn_len),
-		   no directory entry will be read and 0 will be returned. */
-		if(tmp_file->f_pos == tmp_file->f_vnode->vn_len){
-			return 0;
-		}
-		/* vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d); */
-		ret_readdir = tmp_file->f_vnode->vn_ops->readdir(tmp_file->f_vnode, tmp_file->f_pos, dirp);
-		if(ret_readdir > 0){
-			tmp_file->f_pos += ret_readdir;
-			return 0;
-		}
-		else{
-			return ret_readdir;
-		}
-
-        return -1;
+        /* If the end of the file as been reached (offset == file->vn_len),
+           no directory entry will be read and 0 will be returned. */
+        /*if(tmp_file->f_pos == tmp_file->f_vnode->vn_len){
+                dbg(DBG_PRINT, "1\n");
+                return sizeof(dirent_t);
+        }*/
+        /* vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d); */
+        ret_readdir = tmp_file->f_vnode->vn_ops->readdir(tmp_file->f_vnode, tmp_file->f_pos, dirp);
+        if(ret_readdir > 0){
+                dbg(DBG_PRINT, "ret_readdir offset %d, size of directory entry struct %d\n", ret_readdir,  sizeof(dirent_t));
+                tmp_file->f_pos += ret_readdir;
+                dbg(DBG_PRINT, "2\n");
+                return sizeof(dirent_t);
+        }
+        else{
+                dbg(DBG_PRINT, "3\n");
+                return 0;
+        }
 
 }
 
@@ -825,34 +835,54 @@ int
 do_lseek(int fd, int offset, int whence)
 {
         /* NOT_YET_IMPLEMENTED("VFS: do_lseek"); */
-		/*
-		 * file.h struct file *fget(int fd);
-		 */
-		file_t *tmp_file = fget(fd);
+        /*
+         * file.h struct file *fget(int fd);
+         */
+        
+        
+        if(fd<0 || fd >= NFILES)
+        {
+             dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_read\n");
+             return -EBADF;
+        }
+        file_t *tmp_file = fget(fd);
 
-		/* fd is not an open file descriptor. */
-		if(NULL == tmp_file){
-			return EBADF;
-		}
-		/* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
-		switch(whence){
-			case SEEK_SET:
-				tmp_file->f_pos = offset;
-				break;
-			case SEEK_CUR:
-				tmp_file->f_pos += offset;
-				break;
-			case SEEK_END:
-				tmp_file->f_pos = tmp_file->f_vnode->vn_len + offset;
-				break;
-			default:
-				return EINVAL;
-		}
-		/* the resulting file offset would be negative. */
-		if(tmp_file->f_pos < 0){
-			return EINVAL;
-		}
-        return -1;
+        /* fd is not an open file descriptor. */
+        if(NULL == tmp_file){
+                return -EBADF;
+        }
+        /* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
+        int previous_fpos = tmp_file->f_pos;
+        dbg(DBG_PRINT, "fd is %d, fpos is %d\n", fd, previous_fpos);
+        switch(whence){
+                case SEEK_SET:
+                        tmp_file->f_pos = offset;
+                        break;
+                case SEEK_CUR:
+                        tmp_file->f_pos += offset;
+                        break;
+                case SEEK_END:
+                        tmp_file->f_pos = tmp_file->f_vnode->vn_len + offset;
+                        break;
+                default:
+                        fput(tmp_file);         /*free file memory*/
+                        return -EINVAL;
+        }
+        
+        dbg(DBG_PRINT,"Current vn_len %d\n", tmp_file->f_vnode->vn_len);
+        
+        
+        /* the resulting file offset would be negative. */
+        if(tmp_file->f_pos < 0 /*|| tmp_file->f_pos > tmp_file->f_vnode->vn_len*/){
+                tmp_file->f_pos = previous_fpos;
+                fput(tmp_file);         /*free file memory*/
+                return -EINVAL;
+        }
+        int retval = tmp_file->f_pos;
+        fput(tmp_file);         /*free file memory*/
+                                 
+        dbg(DBG_PRINT,"returning position... %d\n", retval);
+        return retval; /*return position*/
 }
 
 /*
