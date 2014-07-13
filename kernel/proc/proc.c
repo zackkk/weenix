@@ -224,7 +224,7 @@ proc_create(char *name)
 void
 proc_cleanup(int status)
 {
-		dbg(DBG_PRINT, "proc_code_path_check\n");
+	dbg(DBG_PRINT, "proc_code_path_check\n");
         /*current process calls this function*/
         
         KASSERT(NULL != proc_initproc); /* should have an "init" process */
@@ -441,6 +441,14 @@ proc_kill_all()
                 }
         }
         dbg(DBG_PRINT, "switching processes\n");
+	
+	/*After we kill everyone, commit suicide*/
+	if(curproc->p_pid > 1){
+		list_link_t *link2;
+		link2 = curproc->p_threads.l_next;
+		kthread_t *thr = list_item(link2, kthread_t, kt_plink);
+		kthread_exit(thr);
+	}	
         sched_switch();         
         return;
 }
@@ -532,7 +540,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 
                                 KASSERT(-1 == pid || p->p_pid == pid);
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d\n", p->p_pid);
-                                
+				
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
                                 
 

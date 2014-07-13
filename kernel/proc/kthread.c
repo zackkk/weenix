@@ -142,9 +142,11 @@ kthread_cancel(kthread_t *kthr, void *retval)
 		dbg(DBG_PRINT, "(GRADING1A 3.b) the kthread is not empty (thread process pid %d)\n", kthr->kt_proc->p_pid);
 
 		if(kthr == curthr){
+			dbg(DBG_PRINT, "what!\n");
 			kthread_exit(retval);
 		}
 		else{
+			dbg(DBG_PRINT, "no!\n");
 			kthr->kt_cancelled = 1;
 			kthr->kt_retval = retval;
 			if(kthr->kt_state == KT_SLEEP_CANCELLABLE){
