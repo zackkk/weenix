@@ -943,7 +943,8 @@ int vfstest_main(int argc, char **argv)
         syscall_success(chdir(root_dir));
         dbg(DBG_PRINT, "vfs test stage 4\n");
         
-        vfstest_stat();        
+        vfstest_stat();     
+        /*
         vfstest_chdir();
         vfstest_mkdir();
         vfstest_paths();
@@ -951,6 +952,7 @@ int vfstest_main(int argc, char **argv)
         vfstest_open();
         vfstest_read();
         vfstest_getdents();
+        */
         
 #ifdef __VM__
         vfstest_s5fs_vm();
