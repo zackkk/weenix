@@ -89,9 +89,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, buffer, tmplen, result); /*this will increase result refcount */
         if(res == 0){
-                
-         dbg(DBG_PRINT, "Lookup succesful: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
-                
+        	dbg(DBG_PRINT, "Lookup succesful: Name:%s, Len:%d, node reference count: %d, \n", name, len, (*result)->vn_refcount);
         }
         dbg(DBG_PRINT, "look up return value: %d\n", res);
 
@@ -231,7 +229,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 res = lookup(current_dir, current_name, strlen(current_name), res_vnode); /* increase res_vnode refccount */
                 if(res == 0){
                  vput(current_dir);
-                        dbg(DBG_PRINT, "Found directory:%s\n", current_name);
+                  dbg(DBG_PRINT, "Found directory:%s\n", current_name);
                         dbg(DBG_PRINT, "current_dir: vnode num:%d, ref count:%d\n", current_dir->vn_vno, current_dir->vn_refcount);
                         dbg(DBG_PRINT, "res_vnode: vnode num:%d, ref count:%d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
                         current_dir = *res_vnode;
@@ -290,9 +288,8 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 
                 
                 if(res == 0){
-                        
                         /*At this point res_vnode should point to the file vnode...*/
-                        dbg(DBG_PRINT, "File vnode refcount %d\n", (*res_vnode)->vn_refcount);
+                        dbg(DBG_PRINT, "File vnode %d refcount %d\n", (*res_vnode)->vn_vno, (*res_vnode)->vn_refcount);
                         return res;
                 }
                 else if(res == -ENOENT){
@@ -311,7 +308,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                         }
                         else{
                                 /*Return file not found?*/
-                         dbg(DBG_PRINT, "10\n");
+                        		dbg(DBG_PRINT, "10\n");
                                 return -ENOENT; /*Not sure...*/
                         }
                         

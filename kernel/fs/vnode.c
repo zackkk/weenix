@@ -115,6 +115,10 @@ init_func(vnode_init);
 void
 vref(vnode_t *vn)
 {
+	if(vn->vn_vno == 7){
+				dbg(DBG_PRINT, "zack, ref count will be: %d\n", vn->vn_refcount + 1);
+			}
+
         KASSERT(vn);
         KASSERT(0 < vn->vn_refcount);
         vn->vn_refcount++;
@@ -125,6 +129,8 @@ vref(vnode_t *vn)
 vnode_t *
 vget(struct fs *fs, ino_t vno)
 {
+
+
         vnode_t *vn = NULL;
 
         KASSERT(fs);
@@ -210,6 +216,13 @@ find:
 
         vn->vn_refcount = 1;
 
+        if(vn->vn_vno == 25){
+        		dbg(DBG_PRINT, "zack: respages %d, refcount %d\n",vn->vn_nrespages,vn->vn_refcount);
+
+        }
+
+
+
         return vn;
 }
 
@@ -239,6 +252,10 @@ find:
 void
 vput(struct vnode *vn)
 {
+
+	if(vn->vn_vno == 7){
+					dbg(DBG_PRINT, "zack, ref count will be: %d\n", vn->vn_refcount - 1);
+				}
         KASSERT(vn);
 
         KASSERT(0 <= vn->vn_nrespages);

@@ -172,13 +172,19 @@ KASSERT(NULL != NULL);*/
         /*Set field, ref count and vnode*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
-        
-        
-        
+
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;
+       /* curproc->p_cwd = my_file->f_vnode; */
+
+
+        dbg(DBG_PRINT, "Process %d opened file with vnode %d and refcount %d\n", curproc->p_pid, curproc->p_files[fd]->f_vnode->vn_vno, curproc->p_files[fd]->f_vnode->vn_refcount);
+        if(curproc->p_files[fd]->f_vnode->vn_vno == 7){
+        	dbg(DBG_PRINT, "zack Process %d opened file with vnode %d and refcount %d  and pwd: %p\n", curproc->p_pid, curproc->p_files[fd]->f_vnode->vn_vno, curproc->p_files[fd]->f_vnode->vn_refcount, curproc->p_cwd);
+        }
+
         
-        
+        /*fput(my_file);*/
         
         return fd;
 }
