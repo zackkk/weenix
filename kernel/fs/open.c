@@ -93,6 +93,7 @@ do_open(const char *filename, int oflags)
         fd = get_empty_fd(curproc);        
         
         if(fd == -EMFILE){
+                dbg(DBG_PRINT, "(GRADING2C) fd == -EMFILE, max number of files open\n");
                 return -EMFILE;
         }
         
@@ -119,6 +120,7 @@ do_open(const char *filename, int oflags)
                         flags = FMODE_READ | FMODE_APPEND; /*do we need FMODE_APPEND??*/
                         break;
                 default:
+                        dbg(DBG_PRINT, "(GRADING2C) Invalid flag combination\n");
                         return -EINVAL;
         }
 
@@ -129,9 +131,11 @@ do_open(const char *filename, int oflags)
                         
 
         if(res < 0){ /*Error*/
+                dbg(DBG_PRINT, "(GRADING2C) open_namev returned an error\n");
                 return res;
         }
         if(flags & FMODE_WRITE && S_ISDIR(vno->vn_mode)){
+                dbg(DBG_PRINT, "(GRADING2C) File is a directory and has write flag enabled (error)\n");
                 vput(vno);
                 return -EISDIR;
         }
@@ -141,6 +145,7 @@ do_open(const char *filename, int oflags)
                                  
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
+                dbg(DBG_PRINT, "(GRADING2C) fget could not create file object\n");
                 vput(vno);
                 return -ENOMEM;
         }
