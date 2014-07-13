@@ -1,20 +1,20 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 /*
- *  FILE: open.c
- *  AUTH: mcc | jal
- *  DESC:
- *  DATE: Mon Apr  6 19:27:49 1998
- */
+* FILE: open.c
+* AUTH: mcc | jal
+* DESC:
+* DATE: Mon Apr 6 19:27:49 1998
+*/
 
 #include "globals.h"
 #include "errno.h"
@@ -46,40 +46,40 @@ get_empty_fd(proc_t *p)
 }
 
 /*
- * There a number of steps to opening a file:
- *      1. Get the next empty file descriptor.
- *      2. Call fget to get a fresh file_t.
- *      3. Save the file_t in curproc's file descriptor table.
- *      4. Set file_t->f_mode to OR of FMODE_(READ|WRITE|APPEND) based on
- *         oflags, which can be O_RDONLY, O_WRONLY or O_RDWR, possibly OR'd with
- *         O_APPEND.
- *      5. Use open_namev() to get the vnode for the file_t.
- *      6. Fill in the fields of the file_t.
- *      7. Return new fd.
- *
- * If anything goes wrong at any point (specifically if the call to open_namev
- * fails), be sure to remove the fd from curproc, fput the file_t and return an
- * error.
- *
- * Error cases you must handle for this function at the VFS level:
- *      o EINVAL        OK
- *        oflags is not valid.
- *      o EMFILE        OK
- *        The process already has the maximum number of files open.
- *      o ENOMEM        OK
- *        Insufficient kernel memory was available.
- *      o ENAMETOOLONG  OK
- *        A component of filename was too long.
- *      o ENOENT        OK
- *        O_CREAT is not set and the named file does not exist.  Or, a
- *        directory component in pathname does not exist.
- *      o EISDIR        OK
- *        pathname refers to a directory and the access requested involved
- *        writing (that is, O_WRONLY or O_RDWR is set).
- *      o ENXIO         OK
- *        pathname refers to a device special file and no corresponding device
- *        exists.
- */
+* There a number of steps to opening a file:
+* 1. Get the next empty file descriptor.
+* 2. Call fget to get a fresh file_t.
+* 3. Save the file_t in curproc's file descriptor table.
+* 4. Set file_t->f_mode to OR of FMODE_(READ|WRITE|APPEND) based on
+* oflags, which can be O_RDONLY, O_WRONLY or O_RDWR, possibly OR'd with
+* O_APPEND.
+* 5. Use open_namev() to get the vnode for the file_t.
+* 6. Fill in the fields of the file_t.
+* 7. Return new fd.
+*
+* If anything goes wrong at any point (specifically if the call to open_namev
+* fails), be sure to remove the fd from curproc, fput the file_t and return an
+* error.
+*
+* Error cases you must handle for this function at the VFS level:
+* o EINVAL OK
+* oflags is not valid.
+* o EMFILE OK
+* The process already has the maximum number of files open.
+* o ENOMEM OK
+* Insufficient kernel memory was available.
+* o ENAMETOOLONG OK
+* A component of filename was too long.
+* o ENOENT OK
+* O_CREAT is not set and the named file does not exist. Or, a
+* directory component in pathname does not exist.
+* o EISDIR OK
+* pathname refers to a directory and the access requested involved
+* writing (that is, O_WRONLY or O_RDWR is set).
+* o ENXIO OK
+* pathname refers to a device special file and no corresponding device
+* exists.
+*/
 
 int
 do_open(const char *filename, int oflags)
@@ -88,23 +88,18 @@ do_open(const char *filename, int oflags)
         int i = 0;
         int open_files = 0;
         file_t *my_file = NULL;
-        int flags  = 0;
+        int flags = 0;
         
         dbg(DBG_PRINT, "Called with filename %s\n", filename);
         
         /*test only*/
         /*char buffer[1024];
-        
-        const char *data = buffer;
-        size_t len = 0;
-        
-        vnode_t res_vnode;
-        
-        vnode_t *pe = &res_vnode;
-        
-        dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
-        
-        KASSERT(NULL != NULL);*/
+const char *data = buffer;
+size_t len = 0;
+vnode_t res_vnode;
+vnode_t *pe = &res_vnode;
+dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
+KASSERT(NULL != NULL);*/
         /*end of test only*/
         
         /*Get a file descriptor*/
@@ -121,7 +116,7 @@ do_open(const char *filename, int oflags)
         /*Check flag is valid*/
         /*Can O_APPEND be OR'd with O_RDONLY??*/
         /*Set file modes depending on flags...*/
-        int flags_copy = oflags & ~(O_CREAT);                       /*MASK O_CREATE*/
+        int flags_copy = oflags & ~(O_CREAT); /*MASK O_CREATE*/
         
         switch(flags_copy){
                 
@@ -135,10 +130,10 @@ do_open(const char *filename, int oflags)
                         flags = FMODE_WRITE | FMODE_READ;
                         break;
                 case O_WRONLY | O_APPEND:
-                        flags = FMODE_APPEND;   /*do we need FMODE_WRITE too?*/
+                        flags = FMODE_APPEND; /*do we need FMODE_WRITE too?*/
                         break;
                 case O_RDWR | O_APPEND:
-                        flags = FMODE_READ | FMODE_APPEND;      /*do we need FMODE_APPEND??*/
+                        flags = FMODE_READ | FMODE_APPEND; /*do we need FMODE_APPEND??*/
                         break;
                 default:
                         return -EINVAL;
@@ -149,27 +144,25 @@ do_open(const char *filename, int oflags)
                   
         dbg(DBG_PRINT, "filename %s\n", filename);
         
-        vnode_t *vno = NULL; 
-        int res = open_namev(filename, oflags, &vno, NULL);                /*CHECK: need to check if argument 3 is ok or not*/
+        vnode_t *vno = NULL;
+        int res = open_namev(filename, oflags, &vno, NULL); /*CHECK: need to check if argument 3 is ok or not*/
                         
 
-        
-
-        
-        if(res < 0){  /*Error*/
+        if(res < 0){ /*Error*/
                 return res;
         }
-        if(flags & FMODE_WRITE  && S_ISDIR(vno->vn_mode)){
-                /*vput(vno);*/
+        if(flags & FMODE_WRITE && S_ISDIR(vno->vn_mode)){
+                vput(vno);
                 return -EISDIR;
         }
         
          /*Get new file object*/
-        my_file = fget(-1);     /*also increments reference count. Call with -1 to get a fresh file...*/
+        my_file = fget(-1); /*also increments reference count. Call with -1 to get a fresh file...*/
                                  
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
-        	dbg(DBG_PRINT, "my_file is NULL\n");
+         dbg(DBG_PRINT, "my_file is NULL\n");
+                vput(vno);
                 return -ENOMEM;
         }
         
@@ -184,8 +177,6 @@ do_open(const char *filename, int oflags)
         
         /*Assign file to process*/
         curproc->p_files[fd] = my_file;
-        
-        dbg(DBG_PRINT, "Current process %d opened file with vnode %d, refcount %d\n", curproc->p_pid, vno->vn_vno, vno->vn_refcount);
         
         
         
