@@ -217,6 +217,7 @@ proc_create(char *name)
 void
 proc_cleanup(int status)
 {
+
         KASSERT(NULL != proc_initproc); /* should have an "init" process */
         dbg(DBG_PRINT,"(GRADING1A 2.b) We have an init process\n");
         
@@ -234,6 +235,14 @@ proc_cleanup(int status)
         /*reparent child process to init process*/
         list_link_t *link = NULL;
         proc_t *my_child_proc = NULL;
+	
+	/*Close all open files...*/
+	int i = 0;
+        for(i = 0; i < NFILES; i++){
+                if(curproc->p_files[i] != NULL){
+			do_close(i);
+		}
+        }
         
 
         /*Do this for any process except init process*/
@@ -305,16 +314,17 @@ proc_cleanup(int status)
 void
 proc_kill(proc_t *p, int status)
 {
+
 		dbg(DBG_PRINT, "(GRADING1E) proc_kill test \n");
+
         KASSERT(p != proc_initproc);           
         struct kthread *parent_thread = NULL;
         
         list_link_t *link2;
 		link2 = p->p_threads.l_next;
 		kthread_t *thr = list_item(link2, kthread_t, kt_plink);
-       
-		thr->kt_state = KT_EXITED;
 		sched_cancel(thr);
+
         sched_make_runnable(curthr);
         sched_switch();
 
@@ -416,6 +426,15 @@ proc_kill_all()
 
                 }
         }
+	
+	/*After we kill everyone, commit suicide*/
+	if(curproc->p_pid > 1){
+		list_link_t *link2;
+		link2 = curproc->p_threads.l_next;
+		kthread_t *thr = list_item(link2, kthread_t, kt_plink);
+		kthread_exit(thr);
+	}	
+
         sched_switch();         
         return;
 }
@@ -508,6 +527,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 KASSERT(-1 == pid || p->p_pid == pid);
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d\n", p->p_pid);
                                 thr = list_item(p->p_threads.l_next, kthread_t, kt_plink);
+
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) thr points to a thread to be destroied \n");
 

@@ -90,28 +90,12 @@ do_open(const char *filename, int oflags)
         file_t *my_file = NULL;
         int flags = 0;
         
-        dbg(DBG_PRINT, "Called with filename %s\n", filename);
-        
-        /*test only*/
-        /*char buffer[1024];
-const char *data = buffer;
-size_t len = 0;
-vnode_t res_vnode;
-vnode_t *pe = &res_vnode;
-dir_namev("/dev/root/eduardo/ls", &len, &data, NULL, &pe);
-KASSERT(NULL != NULL);*/
-        /*end of test only*/
-        
-        /*Get a file descriptor*/
-        fd = get_empty_fd(curproc);
-        
-        dbg(DBG_PRINT, "Current process %d got file descriptor %d\n", curproc->p_pid, fd);
-        
+        fd = get_empty_fd(curproc);        
         
         if(fd == -EMFILE){
+                dbg(DBG_PRINT, "(GRADING2C) fd == -EMFILE, max number of files open\n");
                 return -EMFILE;
         }
-
         
         /*Check flag is valid*/
         /*Can O_APPEND be OR'd with O_RDONLY??*/
@@ -136,22 +120,22 @@ KASSERT(NULL != NULL);*/
                         flags = FMODE_READ | FMODE_APPEND; /*do we need FMODE_APPEND??*/
                         break;
                 default:
+                        dbg(DBG_PRINT, "(GRADING2C) Invalid flag combination\n");
                         return -EINVAL;
         }
 
         
-        /*get vnode, return error*/
-                  
-        dbg(DBG_PRINT, "filename %s\n", filename);
-        
+        /*get vnode, return error*/        
         vnode_t *vno = NULL;
         int res = open_namev(filename, oflags, &vno, NULL); /*CHECK: need to check if argument 3 is ok or not*/
                         
 
         if(res < 0){ /*Error*/
+                dbg(DBG_PRINT, "(GRADING2C) open_namev returned an error\n");
                 return res;
         }
-        if(flags & FMODE_WRITE && S_ISDIR(vno->vn_mode)){
+        if((flags & FMODE_WRITE) && S_ISDIR(vno->vn_mode)){
+                dbg(DBG_PRINT, "(GRADING2C) File is a directory and has write flag enabled (error)\n");
                 vput(vno);
                 return -EISDIR;
         }
@@ -161,7 +145,7 @@ KASSERT(NULL != NULL);*/
                                  
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
-         dbg(DBG_PRINT, "my_file is NULL\n");
+                dbg(DBG_PRINT, "(GRADING2C) fget could not create file object\n");
                 vput(vno);
                 return -ENOMEM;
         }
@@ -173,18 +157,7 @@ KASSERT(NULL != NULL);*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
 
-        /*Assign file to process*/
         curproc->p_files[fd] = my_file;
-       /* curproc->p_cwd = my_file->f_vnode; */
-
-
-        dbg(DBG_PRINT, "Process %d opened file with vnode %d and refcount %d\n", curproc->p_pid, curproc->p_files[fd]->f_vnode->vn_vno, curproc->p_files[fd]->f_vnode->vn_refcount);
-        if(curproc->p_files[fd]->f_vnode->vn_vno == 7){
-        	dbg(DBG_PRINT, "zack Process %d opened file with vnode %d and refcount %d  and pwd: %p\n", curproc->p_pid, curproc->p_files[fd]->f_vnode->vn_vno, curproc->p_files[fd]->f_vnode->vn_refcount, curproc->p_cwd);
-        }
-
-        
-        /*fput(my_file);*/
         
         return fd;
 }

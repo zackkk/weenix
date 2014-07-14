@@ -79,7 +79,7 @@ all equal contributions, 25% each.
 | OTHER |
 +-------+
 
-Special DBG setting in Config.mk for certain tests: no
-Comments on deviation from spec (you will still lose points, but it's better to let the grader know): no
-General comments on design decisions: none
+Special DBG setting in Config.mk for certain tests: ?
+Comments on deviation from spec (you will still lose points, but it's better to let the grader know): ?
+General comments on design decisions: ?
 
