@@ -111,7 +111,6 @@ getdent(const char *dir, dirent_t *dirent)
 static int
 removeall(const char *dir)
 {
-        dbg(DBG_PRINT, "REMOVE ALL: root dir %s\n", dir);
         int ret, fd = -1;
         dirent_t dirent;
         struct stat status;
@@ -461,7 +460,6 @@ vfstest_fd(void)
         syscall_fail(dup2(-1, -1), EBADF);
 
         /* dup works properly in normal usage */
-        dbg(DBG_PRINT, "FILE 01\n\n\n\n\n\n\n");
         create_file("file01");
         syscall_success(fd1 = open("file01", O_RDWR, 0));
         syscall_success(fd2 = dup(fd1));
@@ -924,22 +922,15 @@ int main(int argc, char **argv)
 int vfstest_main(int argc, char **argv)
 #endif
 {
-	dbg(DBG_PRINT, "vfs test entered\n");
-
         if (argc != 1) {
                 fprintf(stderr, "USAGE: vfstest\n");
                 return 1;
         }
-
-        dbg(DBG_PRINT, "vfs test stage 1\n");
+        
         test_init();
-        dbg(DBG_PRINT, "vfs test stage 2\n");
-
 
         vfstest_start();
-        dbg(DBG_PRINT, "vfs test stage 3\n");
         syscall_success(chdir(root_dir));
-        dbg(DBG_PRINT, "vfs test stage 4\n");
         
         vfstest_stat();     
         
