@@ -108,8 +108,8 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
         thr->kt_kstack = alloc_stack();
 	
 	KASSERT(thr->kt_kstack != NULL);
-	dbg(DBG_PRINT, "what!\n");
 
+	/*Create new context...*/
         context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 
         thr->kt_retval = NULL;
@@ -195,8 +195,51 @@ kthread_exit(void *retval)
 kthread_t *
 kthread_clone(kthread_t *thr)
 {
-        NOT_YET_IMPLEMENTED("VM: kthread_clone");
-        return NULL;
+        /*NOT_YET_IMPLEMENTED("VM: kthread_clone");*/
+        kthread_t *cloned_thr = NULL;
+	
+	/*Create new thread*/
+	cloned_thr = slab_obj_alloc(kthread_allocator);
+	
+	KASSERT(thr != NULL);
+	
+	/*new context and stack...*/
+	thr->kt_kstack = alloc_stack();
+	KASSERT(thr->kt_kstack != NULL);
+	
+	/*New context... EBP points to correct place in stack after returning from this function*/
+        context_setup(&cloned_thr->kt_ctx, NULL, NULL, NULL, cloned_thr->kt_kstack, DEFAULT_STACK_SIZE, curproc->p_pagedir); /*current process page directory...*/
+															      													      
+	/*
+	 *Now copy address of func, arg1 and arg2 from old thread's context
+	 *to new thread context. We know where they are with respect to
+	 *EBP.
+	 *Function is at EBP - sizeof(context_func_t)    
+	 *arg1 at EBP - sizeof(context_func_t) - sizeof(long)
+	 *arg2 at EBP - sizeof(context_func_t) - sizeof(long) - sizeof(void *)
+	 *
+	 */
+	
+	/*arg2 address*/
+	*(void **)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *)) = *(void **)(thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *));
+	
+	/*arg1 address*/
+	*(int *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long)) = *(int *)(thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long));
+	
+	/*function*/
+	*(context_func_t *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t)) = *(context_func_t *)(thr->kt_ctx.c_ebp - sizeof(context_func_t));
+
+	/*init other values..*/
+	cloned_thr->kt_retval = NULL;
+        cloned_thr->kt_errno = NULL;	
+        cloned_thr->kt_cancelled = thr->kt_cancelled;
+        cloned_thr->kt_wchan = thr->kt_wchan;		/*Same wait queue?*/
+        cloned_thr->kt_proc = curproc;			/*Single thread per process. Assign to current process?? Newly created proess..?*/
+        cloned_thr->kt_state = thr->kt_state;   	/*Copy state...?*/
+        
+	/*Insert thread in current process?? Curproc should be cloned process?? Or does fork do this?...*/
+	/*list_insert_head(&(curproc->p_threads), &(cloned_thr->kt_plink));*/
+        return cloned_thr;
 }
 
 /*
