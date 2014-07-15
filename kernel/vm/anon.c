@@ -50,7 +50,11 @@ static mmobj_ops_t anon_mmobj_ops = {
 void
 anon_init()
 {
-        NOT_YET_IMPLEMENTED("VM: anon_init");
+        /*NOT_YET_IMPLEMENTED("VM: anon_init");*/
+        anon_allocator = slab_allocator_create("anon-alloc", sizeof(mmobj_t));
+        KASSERT(anon_allocator);
+        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully");
+        return;
 }
 
 /*
@@ -62,8 +66,34 @@ anon_init()
 mmobj_t *
 anon_create()
 {
-        NOT_YET_IMPLEMENTED("VM: anon_create");
-        return NULL;
+        /*NOT_YET_IMPLEMENTED("VM: anon_create");*/
+        
+        mmobj_t *object = NULL;
+        
+        /*try to allocate some memory for the anon object*/
+        object = (mmobj_t *)slab_obj_alloc(anon_allocator);
+        
+        if(object == NULL){
+                dbg(DBG_PRINT, "(GRADING3E) Could not create anonymus object");
+                return NULL;
+        }
+        
+        /*Keep track of number of anon objects created */
+        anon_count++;
+        
+        /*init the anon object...*/
+        mmobj_init(object, &anon_mmobj_ops);
+        
+        /*CHECK: increase refcount???
+        Since whoever called create
+        must will be the one referencing it at
+        the beginning*/
+        object->mmo_refcount++;
+        
+        /*MACROS return pointer to list of mmobj_bottom_obj (for shadowed objects
+         * or pointer to list mmobj_bottom_vmas for anon objects...*/
+
+        return object;
 }
 
 /* Implementation of mmobj entry points: */
@@ -74,7 +104,13 @@ anon_create()
 static void
 anon_ref(mmobj_t *o)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_ref");
+        /*NOT_YET_IMPLEMENTED("VM: anon_ref");*/
+        KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
+        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL");
+        
+        o->mmo_refcount++;
+        
+        return;
 }
 
 /*
@@ -88,7 +124,34 @@ anon_ref(mmobj_t *o)
 static void
 anon_put(mmobj_t *o)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_put");
+        /*NOT_YET_IMPLEMENTED("VM: anon_put");*/
+        KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
+        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL");
+        
+        o->mmo_refcount--;
+        
+        /*Check if recount == respages*/
+        if(o->mmo_refcount == o->mmo_nrespages){
+                dbg(DBG_PRINT, "(GRADING3E) Anonymus object refcount == nrespages");
+                
+                pframe_t *frame = NULL;
+                list_link_t *link = o->mmo_respages.l_next;    /*First element*/
+                
+                /*iterate through pages..*/
+                /*Uncache and unpin*/
+                while(link != &(o->mmo_respages)){
+                       
+                        frame = list_item(link, pframe_t, pf_olink);     
+                        KASSERT(NULL != frame);
+                        pframe_unpin(frame);
+                        /*Uncache?? How?*/
+                        link = link->l_next;
+        
+                }    
+        }
+        
+        /*Free the object...*/
+        slab_obj_free(anon_allocator, o);
 }
 
 /* Get the corresponding page from the mmobj. No special handling is
