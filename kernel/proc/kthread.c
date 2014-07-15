@@ -230,7 +230,7 @@ kthread_clone(kthread_t *thr)
 	*(context_func_t *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t)) = *(context_func_t *)(thr->kt_ctx.c_ebp - sizeof(context_func_t));
 
 	/*init other values..*/
-	cloned_thr->kt_retval = NULL;
+	cloned_thr->kt_retval = NULL; 
         cloned_thr->kt_errno = NULL;	
         cloned_thr->kt_cancelled = thr->kt_cancelled;
         cloned_thr->kt_wchan = thr->kt_wchan;		/*Same wait queue?*/
