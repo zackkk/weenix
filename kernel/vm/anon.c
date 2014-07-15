@@ -139,12 +139,12 @@ anon_put(mmobj_t *o)
                 
                 /*iterate through pages..*/
                 /*Uncache and unpin*/
-                while(link != &(o->mmo_respages)){
-                       
-                        frame = list_item(link, pframe_t, pf_olink);     
+                while(link != &(o->mmo_respages)){                       
+                        frame = list_item(link, pframe_t, pf_olink);
+                        list_remove(link);
                         KASSERT(NULL != frame);
-                        pframe_unpin(frame);
-                        /*Uncache?? How?*/
+                        pframe_unpin(frame);    /*Unpin frame*/
+                        pframe_free(frame);     /*CHECK: free frame??*/
                         link = link->l_next;
         
                 }    
@@ -152,6 +152,9 @@ anon_put(mmobj_t *o)
         
         /*Free the object...*/
         slab_obj_free(anon_allocator, o);
+        anon_count--;
+        
+        return;
 }
 
 /* Get the corresponding page from the mmobj. No special handling is
@@ -159,8 +162,11 @@ anon_put(mmobj_t *o)
 static int
 anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_lookuppage");
-        return -1;
+        /*NOT_YET_IMPLEMENTED("VM: anon_lookuppage");*/
+        KASSERT(o != NULL);
+        int res = 0;
+        res = o->mmo_ops->lookuppage(o, pagenum, forwrite, pf); /*check...lookup on itself??*/
+        return res;
 }
 
 /* The following three functions should not be difficult. */
@@ -168,20 +174,29 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 static int
 anon_fillpage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_fillpage");
-        return 0;
+        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
+        KASSERT(o != NULL);
+        int res = 0;
+        res = o->mmo_ops->fillpage(o, pf); /*check...lookup on itself??*/
+        return res;
 }
 
 static int
 anon_dirtypage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_dirtypage");
-        return -1;
+        /*NOT_YET_IMPLEMENTED("VM: anon_dirtypage");*/
+        KASSERT(o != NULL);
+        int res = 0;
+        res = o->mmo_ops->dirtypage(o, pf); /*check...lookup on itself??*/
+        return res;
 }
 
 static int
 anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_cleanpage");
-        return -1;
+        /*NOT_YET_IMPLEMENTED("VM: anon_cleanpage");*/
+        KASSERT(o != NULL);
+        int res = 0;
+        res = o->mmo_ops->cleanpage(o, pf); /*check...lookup on itself??*/
+        return res;
 }
