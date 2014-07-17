@@ -67,7 +67,12 @@
 int
 do_brk(void *addr, void **ret)
 {
-        /*NOT_YET_IMPLEMENTED("VM: do_brk");*/
+        
+        /*If we request the same, just return*/
+        if(addr == curproc->p_brk){
+                return 0;               /*Do nothing*/
+        }
+        
         /*check address is null*/
         if(addr == NULL){
                 *ret = curproc->p_brk;
@@ -85,26 +90,34 @@ do_brk(void *addr, void **ret)
          */
         
         /*get the vmmarea corresponding to the heap*/
-        list_link_t *vmarea_link = NULL;
-        int area_number = 0;                    /* 0 is text, 1 is data, 2 is bss, 3 is heap!*/
-                                                  
-        KASSERT(curproc->p_vmmap != NULL);
+        /*list_link_t *vmarea_link = NULL;
+        int area_number = 0;                    
+                                 
+              
+        KASSERT(curproc->p_vmmap != NULL);*/
         
-        vmarea_link = curproc->p_vmmap->vmm_list.l_next;        /*vmarea_link point to first area*/
+        /*vmarea_link = curproc->p_vmmap->vmm_list.l_next; */       /*vmarea_link point to first area*/
                                                                  
-        while(area_number < 4){
+        /*while(area_number < 4){
                 vmarea_link = vmarea_link->l_next;                
-        }
+        }*/
         
-        /*Now vmarea_link point to the heap area*/      
-        vmarea_t *heap_vmarea = (vmarea_t *)list_item(vmarea_link, vmarea_t, vma_plink); /*get heap vmarea*/
-                                                                                          
+        /*Now vmarea_link point to the heap area (vmarea_t *)list_item(vmarea_link, vmarea_t, vma_plink);*/      
+        
+        /*Get area current p_brk belongs to... Need to calculate the vfn (virtual frame number)*/
+        uint32_t cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           /*this gets us address of the frame boundary of the frame that containt address p_brk*/
+                                                                                                                 
+        cur_brk_vfn = cur_brk_vfn / PAGE_SIZE;                  /*now divide address by frame size, this gets us the vf. cur_brk_vfn in the division is multiple of PAGE_SIZE*/
+        
+        vmarea_t *heap_vmarea =  vmmap_lookup(curproc->p_vmmap, cur_brk_vfn);                                                                   
+        
+        
         uint32_t req_address = (uint32_t)addr;
         
         /*We want to reduce the heap memory area...*/
         if(req_address < heap_vmarea->vma_start + heap_vmarea->vma_start){
                 
-                if(req_address % 0x400000 == 0){
+                if(req_address % PAGE_SIZE == 0){
                         /*Requested address is page aligned...*/
                         
                         /*TODO: check remove pages, reduce vmmarea size????*/
@@ -113,20 +126,27 @@ do_brk(void *addr, void **ret)
                         curproc->p_brk = addr;
                         *ret = addr;
                         return 0;
-                        
                 }
                 else{
                         /*next smallest that's page aligned*/
-                        req_address = req_address - (req_address % 0x400000);
+                        req_address = req_address - (req_address % PAGE_SIZE);
                          
-                        /*TODO pages??*/
+                        /*TODO: reduce vmarea size, pages??*/
                         
                         curproc->p_brk = (void *)req_address;
                         *ret = (void *)req_address;
                         return 0;
-                        
                 }
                 
+        }
+        else{
+                /*We want to increase it*/
+                if(req_address > USER_MEM_HIGH){
+                        return -1;                      /*Can't extend beyond userland*/
+                }
+                else{
+                        
+                }
         }
         
         

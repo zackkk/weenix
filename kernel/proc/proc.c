@@ -532,6 +532,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) thr points to a thread to be destroied \n");
 				
 				/*FREE VM AREA*/
+				vmmap_destroy(curproc->p_vmmap);
 
                                 slab_obj_free(proc_allocator, p);           /*free memory used by process*/
                                 return return_pid;
@@ -567,6 +568,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
 					
 					/*FREE VM*/
+					vmmap_destroy(curproc->p_vmmap);
                                         
                                         slab_obj_free(proc_allocator, p);         
                                         
@@ -587,6 +589,7 @@ do_waitpid(pid_t pid, int options, int *status)
                                         dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
 					
 					/*FRE VM*/
+					vmmap_destroy(curproc->p_vmmap);
                                         
                                         slab_obj_free(proc_allocator, p);           
                                         
