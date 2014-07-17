@@ -85,57 +85,73 @@ do_brk(void *addr, void **ret)
                 return -1;              /*check*/
         }
         
-        /*Now get the maximun allowable break
-         *which is min(starting address of next mapping, USER_MEM_HIGH)
+        uint32_t cur_brk_vfn = 0;
+        uint32_t cur_brk = (uint32_t)curproc->p_brk;
+
+        /*Get vfn current p_brk belongs to... Need to calculate the vfn (virtual frame number)*/
+        /*
+         *For example, if brk = 8192, it means brk is on third vfn (since addresses start at 0)
+         *vfn 0 goes from 0 to 4095
+         *vfn 1 goes from 4096 to 8191
+         *vfn 2 goes from 8192 to 12287
          */
+        if(cur_brk % PAGE_SIZE == 0){
+                cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           /*this gets us address of the frame boundary of the frame that containt address p_brk*/                                                                                               
+                cur_brk_vfn = (cur_brk_vfn / PAGE_SIZE) + 1;                                                   /*now divide address by frame size, this gets us the vf. cur_brk_vfn in the division is multiple of PAGE_SIZE*/
+        }
+        else{
+                cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           
+                cur_brk_vfn = (cur_brk_vfn / PAGE_SIZE) + 1;                                                                      
+        }
         
-        /*get the vmmarea corresponding to the heap*/
-        /*list_link_t *vmarea_link = NULL;
-        int area_number = 0;                    
-                                 
-              
-        KASSERT(curproc->p_vmmap != NULL);*/
-        
-        /*vmarea_link = curproc->p_vmmap->vmm_list.l_next; */       /*vmarea_link point to first area*/
-                                                                 
-        /*while(area_number < 4){
-                vmarea_link = vmarea_link->l_next;                
-        }*/
-        
-        /*Now vmarea_link point to the heap area (vmarea_t *)list_item(vmarea_link, vmarea_t, vma_plink);*/      
-        
-        /*Get area current p_brk belongs to... Need to calculate the vfn (virtual frame number)*/
-        uint32_t cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           /*this gets us address of the frame boundary of the frame that containt address p_brk*/
-                                                                                                                 
-        cur_brk_vfn = cur_brk_vfn / PAGE_SIZE;                  /*now divide address by frame size, this gets us the vf. cur_brk_vfn in the division is multiple of PAGE_SIZE*/
-        
+        /*get the vmarea*/
         vmarea_t *heap_vmarea =  vmmap_lookup(curproc->p_vmmap, cur_brk_vfn);                                                                   
-        
-        
         uint32_t req_address = (uint32_t)addr;
+        
+        
         
         /*We want to reduce the heap memory area...*/
         if(req_address < heap_vmarea->vma_start + heap_vmarea->vma_start){
                 
-                if(req_address % PAGE_SIZE == 0){
-                        /*Requested address is page aligned...*/
+                
+                /*Case 1 & 2  --> WE want to reduce brk (aligned or not) to new address, which is page aligned.*/
+                /*Thus, we unmap any pages above the new address, until previous brk page...*/
+                if(req_address % PAGE_SIZE == 0){                               
+                
+                        /*calculate req_address vfn*/
+                        uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;
                         
-                        /*TODO: check remove pages, reduce vmmarea size????*/
-                        
+                        /*Unmap region the p_break - req_addr*/
+                        vmmap_remove(curproc->p_vmmap, req_addr_vfn + 1, cur_brk_vfn - req_addr_vfn);
                         
                         curproc->p_brk = addr;
                         *ret = addr;
                         return 0;
+                        
                 }
-                else{
-                        /*next smallest that's page aligned*/
+                else{   /*new break is not page */
+                        /*find next page boundary*/
                         req_address = req_address - (req_address % PAGE_SIZE);
                          
-                        /*TODO: reduce vmarea size, pages??*/
+                        /*Calculate vfn*/
+                        uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;
                         
-                        curproc->p_brk = (void *)req_address;
-                        *ret = (void *)req_address;
-                        return 0;
+                        if(cur_brk_vfn == req_addr_vfn){
+                                /*If we end up reducing to the same page, we do no ummaping of pages*/
+                                curproc->p_brk = (void *)req_address;
+                                *ret = (void *)req_address;
+                                return 0;
+                        }
+                        else{
+                                /*We want to reduce to an address that on a lower page than the current brk*/
+                                /*remove mapping starting from next after req_addr_vfn*/
+                                vmmap_remove(curproc->p_vmmap, req_addr_vfn + 1, cur_brk_vfn - req_addr_vfn);
+                                
+                                /*REturn requested address. By this time, we unmmaped the vfn above*/
+                                curproc->p_brk = (void *)req_address;
+                                *ret = (void *)req_address;
+                                return 0;
+                        }   
                 }
                 
         }
