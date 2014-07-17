@@ -39,7 +39,7 @@
  * to any value less than 'p_start_brk' should be disallowed).
  *
  * The upper limit of 'p_brk' is defined by the minimum of (1) the
- * starting address of the next occuring mapping or (2) USER_MEM_HIGH.
+ * starting address of the next occuring mapping or (2) USER_MEM_HIGH. (0xc0000000) 3GB
  * That is, growth of the process break is limited only in that it cannot
  * overlap with/expand into an existing mapping or beyond the region of
  * the address space allocated for use by userland. (note the presence of
@@ -67,6 +67,68 @@
 int
 do_brk(void *addr, void **ret)
 {
-        NOT_YET_IMPLEMENTED("VM: do_brk");
+        /*NOT_YET_IMPLEMENTED("VM: do_brk");*/
+        /*check address is null*/
+        if(addr == NULL){
+                *ret = curproc->p_brk;
+                return 0;
+        }
+        
+        /*Disallow going below p_start_brk*/
+        if(addr < curproc->p_start_brk){
+                ret = curproc->p_brk;
+                return -1;              /*check*/
+        }
+        
+        /*Now get the maximun allowable break
+         *which is min(starting address of next mapping, USER_MEM_HIGH)
+         */
+        
+        /*get the vmmarea corresponding to the heap*/
+        list_link_t *vmarea_link = NULL;
+        int area_number = 0;                    /* 0 is text, 1 is data, 2 is bss, 3 is heap!*/
+                                                  
+        KASSERT(curproc->p_vmmap != NULL);
+        
+        vmarea_link = curproc->p_vmmap->vmm_list.l_next;        /*vmarea_link point to first area*/
+                                                                 
+        while(area_number < 4){
+                vmarea_link = vmarea_link->l_next;                
+        }
+        
+        /*Now vmarea_link point to the heap area*/      
+        vmarea_t *heap_vmarea = (vmarea_t *)list_item(vmarea_link, vmarea_t, vma_plink); /*get heap vmarea*/
+                                                                                          
+        uint32_t req_address = (uint32_t)addr;
+        
+        /*We want to reduce the heap memory area...*/
+        if(req_address < heap_vmarea->vma_start + heap_vmarea->vma_start){
+                
+                if(req_address % 0x400000 == 0){
+                        /*Requested address is page aligned...*/
+                        
+                        /*TODO: check remove pages, reduce vmmarea size????*/
+                        
+                        
+                        curproc->p_brk = addr;
+                        *ret = addr;
+                        return 0;
+                        
+                }
+                else{
+                        /*next smallest that's page aligned*/
+                        req_address = req_address - (req_address % 0x400000);
+                         
+                        /*TODO pages??*/
+                        
+                        curproc->p_brk = (void *)req_address;
+                        *ret = (void *)req_address;
+                        return 0;
+                        
+                }
+                
+        }
+        
+        
         return 0;
 }

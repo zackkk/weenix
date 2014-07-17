@@ -176,11 +176,11 @@ proc_create(char *name)
         new_process->p_cwd = vfs_root_vn;
         
         /* VM */
-        new_process->p_brk = NULL;           /* process break; see brk(2) */
-        new_process->p_start_brk = NULL;     /* initial value of process break */
-        new_process->p_vmmap = NULL;         /* list of areas mapped into
-                                          * process' user address
-                                          * space */
+        new_process->p_brk = NULL;           		/* process break; see brk(2) */
+        new_process->p_start_brk = NULL;    		/* initial value of process break */
+        new_process->p_vmmap = vmmap_create();         /* list of areas mapped into
+							* process' user address
+							* space */
         
         /*Add process to process list.*/
         new_process->p_list_link.l_next = NULL;
@@ -530,6 +530,8 @@ do_waitpid(pid_t pid, int options, int *status)
 
                                 KASSERT(KT_EXITED == thr->kt_state);    /* thr points to a thread to be destroied */
                                 dbg(DBG_PRINT,"(GRADING1A 2.c) thr points to a thread to be destroied \n");
+				
+				/*FREE VM AREA*/
 
                                 slab_obj_free(proc_allocator, p);           /*free memory used by process*/
                                 return return_pid;
@@ -563,6 +565,8 @@ do_waitpid(pid_t pid, int options, int *status)
                                         
                                         KASSERT(-1 == pid || p->p_pid == pid);
                                         dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
+					
+					/*FREE VM*/
                                         
                                         slab_obj_free(proc_allocator, p);         
                                         
@@ -581,6 +585,8 @@ do_waitpid(pid_t pid, int options, int *status)
                                         
                                         KASSERT(-1 == pid || p->p_pid == pid);
                                         dbg(DBG_PRINT,"(GRADING1A 2.c) Found a dead process with pid %d (status %d)\n", p->p_pid, p->p_status);
+					
+					/*FRE VM*/
                                         
                                         slab_obj_free(proc_allocator, p);           
                                         

@@ -219,7 +219,7 @@ kthread_clone(kthread_t *thr)
 	 *arg2 at EBP - sizeof(context_func_t) - sizeof(long) - sizeof(void *)
 	 *
 	 */
-	
+	/*CHECK!!!!*/
 	/*arg2 address*/
 	*(void **)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *)) = *(void **)(thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *));
 	
