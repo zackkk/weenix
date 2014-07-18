@@ -348,8 +348,45 @@ pframe_fill(pframe_t *pf)
 int
 pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_get");
-        return 0;
+	/*try to get pframe from resident memory*/
+	pframe_t *pframe = pframe_get_resident(o, pagenum);
+	
+	/*only return the pframe if it isn't NULL and isn't busy*/
+	while((pframe == NULL) || (pframe->pf_flags == PF_BUSY)) {
+		
+		/*pframe not in memory*/
+		if (pframe == NULL) {
+			/*check if pageout daemon should be woken up*/
+			if(pageoutd_needed())
+				pageoutd_wakeup();
+			
+			/*get new pframe*/
+			if((pframe = pframe_alloc(o, pagenum)) == NULL)
+				return -1;
+			
+			/*fill in new pframe, mark as busy during operation*/
+			pframe->pf_flags = PF_BUSY;
+			if(pframe_fill(pframe) != 0)
+				return -1;
+			pframe->pf_flags = 0;
+		}
+	
+		/*pframe is in memory*/
+		else {
+			/*check whether the returned pframe is busy, wait if it is*/
+			if(pframe->pf_flags == PF_BUSY)
+				sched_sleep_on(&(pframe->pf_waitq));
+			
+			/*when the thread is woken up, pframe could have been freed,
+			 * and this will get checked by the while loop condition pframe == NULL*/
+		}
+		
+	}
+	
+	/*now we have a non-NULL, non-busy pframe, put it in result, then return*/
+	*result = pframe;
+	
+	return 0;
 }
 
 /*
@@ -368,7 +405,21 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 void
 pframe_pin(pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_pin");
+	/*pframe not pinned?*/
+	if(pf->pf_pincount == 0){
+		/*remove from allocated list*/
+		list_remove(&(pf->pf_link));
+		
+		/*put on pinned list*/
+		list_insert_tail(&(pinned_list), &(pf->pf_link));
+		
+		/*update counts*/
+		nallocated--;
+		npinned++;
+	}
+	
+	/*increment pf_pincount*/
+	pf->pf_pincount++;
 }
 
 /*
@@ -384,7 +435,21 @@ pframe_pin(pframe_t *pf)
 void
 pframe_unpin(pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_unpin");
+	/*increment pf_pincount*/
+	pf->pf_pincount++;
+	
+	if(pf->pf_pincount == 0){
+		/*remove from pinned list*/
+		list_remove(&(pf->pf_link));
+		
+		/*put on allocated list*/
+		list_insert_tail(&(alloc_list), &(pf->pf_link));
+		
+		/*update counts*/
+		nallocated++;
+		npinned--;
+	}
+	
 }
 
 /*
