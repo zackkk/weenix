@@ -164,9 +164,59 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
         /*NOT_YET_IMPLEMENTED("VM: anon_lookuppage");*/
         KASSERT(o != NULL);
-        int res = 0;
-        res = o->mmo_ops->lookuppage(o, pagenum, forwrite, pf); /*check...lookup on itself??*/
-        return res;
+        
+         /* Finds the correct page frame from a high-level perspective
+         * for performing the given operation on an area backed by
+         * the given pagenum of the given object. If "forwrite" is
+         * specified then the pframe should be suitable for writing;
+         * otherwise, it is permitted not to support writes. In
+         * either case, it must correctly support reads.
+         */
+         
+        /*get pf at head of list*/
+        list_link_t *current_pf_link = NULL;
+        current_pf_link = o->mmo_respages.l_next;
+        int found_flag = 0;
+        
+        while(current_pf_link != &(o->mmo_respages)){
+                *pf = list_item(current_pf_link, pframe_t, pf_olink);
+                
+                if((*pf)->pf_pagenum == pagenum){
+                        found_flag = 1;
+                        break;
+                }
+        }
+        
+        /*We didn't find page with given pagenumber*/
+        if(!found_flag){
+                /*TODO set error*/
+                *pf = NULL;
+                return -ENOENT;
+        }
+        else{
+                if(forwrite){
+                       if( 1 /*how do we check page is suitable for writing?*/){       /*if suitable for writing CHECK!!!*/
+                                if(pframe_is_busy(*pf)){
+                                        sched_sleep_on(&((*pf)->pf_waitq));      /*wait till page not busy since we may be writing it*/
+                                }
+                                
+                                return 0;
+                       }
+                       else{                                    /*no suitable for writing*/
+                                *pf = NULL;
+                                return -1;                                                 
+                       }
+                }
+                else{
+                        /*just return what we found*/
+                        if(pframe_is_busy(*pf)){
+                                sched_sleep_on(&((*pf)->pf_waitq));   /*wait till pframe is NOT busy, since we may be writing it*/
+                        }
+                       return 0; 
+                }
+        }
+        
+        return -1;
 }
 
 /* The following three functions should not be difficult. */
@@ -176,8 +226,23 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
 {
         /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
         KASSERT(o != NULL);
-        int res = 0;
-        res = o->mmo_ops->fillpage(o, pf); /*check...lookup on itself??*/
+        KASSERT(pf != NULL);
+        
+        /* Fill the page frame starting at address pf->pf_addr with the
+         * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
+         * This may block.
+         * Return 0 on success and -errno otherwise.
+         */
+        
+        
+        /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
+        pframe_t *source_pf = NULL;
+        int res = o->mmo_ops->lookuppage(pf->pf_obj, pf->pf_pagenum, 0, &source_pf);
+        
+        if(res == 0){
+                memcpy(pf->pf_addr, source_pf, PAGE_SIZE);
+        }
+        
         return res;
 }
 
@@ -196,7 +261,22 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
         /*NOT_YET_IMPLEMENTED("VM: anon_cleanpage");*/
         KASSERT(o != NULL);
-        int res = 0;
-        res = o->mmo_ops->cleanpage(o, pf); /*check...lookup on itself??*/
+        KASSERT(pf != NULL);
+        
+        /* Fill the page frame starting at address pf->pf_addr with the
+         * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
+         * This may block.
+         * Return 0 on success and -errno otherwise.
+         */
+        
+        
+        /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
+        pframe_t *source_pf = NULL;
+        int res = o->mmo_ops->lookuppage(pf->pf_obj, pf->pf_pagenum, 0, &source_pf);
+        
+        if(res == 0){
+                memcpy(source_pf, pf->pf_addr, PAGE_SIZE);
+        }
+        
         return res;
 }

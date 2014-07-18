@@ -84,9 +84,6 @@ do_brk(void *addr, void **ret)
                 ret = curproc->p_brk;
                 return -1;              /*check*/
         }
-        
-        uint32_t cur_brk_vfn = 0;
-        uint32_t cur_brk = (uint32_t)curproc->p_brk;
 
         /*Get vfn current p_brk belongs to... Need to calculate the vfn (virtual frame number)*/
         /*
@@ -95,64 +92,51 @@ do_brk(void *addr, void **ret)
          *vfn 1 goes from 4096 to 8191
          *vfn 2 goes from 8192 to 12287
          */
-        if(cur_brk % PAGE_SIZE == 0){
-                cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           /*this gets us address of the frame boundary of the frame that containt address p_brk*/                                                                                               
-                cur_brk_vfn = (cur_brk_vfn / PAGE_SIZE) + 1;                                                   /*now divide address by frame size, this gets us the vf. cur_brk_vfn in the division is multiple of PAGE_SIZE*/
+        uint32_t cur_brk_vfn = 0;
+        uint32_t cur_brk_add = (uint32_t)curproc->p_brk;
+        
+        if(cur_brk_add % PAGE_SIZE == 0){
+                /*plus one since addresses start at 0...*/
+                cur_brk_vfn = (cur_brk_add / PAGE_SIZE) + 1;                                                  
         }
         else{
-                cur_brk_vfn = ((uint32_t)curproc->p_brk) - (((uint32_t)curproc->p_brk) % PAGE_SIZE);           
+                cur_brk_vfn = cur_brk_add - (cur_brk_add % PAGE_SIZE);           
                 cur_brk_vfn = (cur_brk_vfn / PAGE_SIZE) + 1;                                                                      
         }
         
-        /*get the vmarea*/
-        vmarea_t *heap_vmarea =  vmmap_lookup(curproc->p_vmmap, cur_brk_vfn);                                                                   
+        /*Calculate requested address vfn*/
+        uint32_t req_addr_vfn = 0;
         uint32_t req_address = (uint32_t)addr;
         
+        if(req_address % PAGE_SIZE == 0){
+                /*calculate req_address vfn*/
+                uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;                                             
+        }
+        else{
+                /*find next page boundary*/
+                req_address = req_address - (req_address % PAGE_SIZE);
+                 
+                /*Calculate vfn of the requesting address*/
+                uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;                                                                    
+        }
         
+        /*get the vmareas for each...*/
+        vmarea_t *cur_brk_vmarea =  vmmap_lookup(curproc->p_vmmap, cur_brk_vfn);
+        vmarea_t *req_brk_vmarea =  vmmap_lookup(curproc->p_vmmap, req_addr_vfn);
         
         /*We want to reduce the heap memory area...*/
-        if(req_address < heap_vmarea->vma_start + heap_vmarea->vma_start){
+        if(req_address < cur_brk_add){
                 
-                
-                /*Case 1 & 2  --> WE want to reduce brk (aligned or not) to new address, which is page aligned.*/
-                /*Thus, we unmap any pages above the new address, until previous brk page...*/
-                if(req_address % PAGE_SIZE == 0){                               
-                
-                        /*calculate req_address vfn*/
-                        uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;
-                        
-                        /*Unmap region the p_break - req_addr*/
-                        vmmap_remove(curproc->p_vmmap, req_addr_vfn + 1, cur_brk_vfn - req_addr_vfn);
-                        
+                if(cur_brk_vmarea == req_brk_vmarea){
+                        /*our destination  address lies within the same area*/
                         curproc->p_brk = addr;
                         *ret = addr;
                         return 0;
-                        
                 }
-                else{   /*new break is not page */
-                        /*find next page boundary*/
-                        req_address = req_address - (req_address % PAGE_SIZE);
-                         
-                        /*Calculate vfn*/
-                        uint32_t req_addr_vfn = (req_address / PAGE_SIZE) + 1;
-                        
-                        if(cur_brk_vfn == req_addr_vfn){
-                                /*If we end up reducing to the same page, we do no ummaping of pages*/
-                                curproc->p_brk = (void *)req_address;
-                                *ret = (void *)req_address;
-                                return 0;
-                        }
-                        else{
-                                /*We want to reduce to an address that on a lower page than the current brk*/
-                                /*remove mapping starting from next after req_addr_vfn*/
-                                vmmap_remove(curproc->p_vmmap, req_addr_vfn + 1, cur_brk_vfn - req_addr_vfn);
-                                
-                                /*REturn requested address. By this time, we unmmaped the vfn above*/
-                                curproc->p_brk = (void *)req_address;
-                                *ret = (void *)req_address;
-                                return 0;
-                        }   
+                else{
+                        /*we */
                 }
+                
                 
         }
         else{
