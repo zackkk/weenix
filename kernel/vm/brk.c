@@ -129,15 +129,45 @@ do_brk(void *addr, void **ret)
                 
                 if(cur_brk_vmarea == req_brk_vmarea){
                         /*our destination  address lies within the same area*/
+                        /*Just reduce the brk...*/
                         curproc->p_brk = addr;
                         *ret = addr;
                         return 0;
                 }
                 else{
-                        /*we */
-                }
-                
-                
+                        /*we reduce from many areas*/
+                        /*Check if each area between p_brk and addr is NOT in use*/
+                        list_link_t *area_link = req_brk_vmarea->vma_plink.l_next; /*start from area following the new brk's area*/
+                        vmarea_t *cur_area = NULL;
+                        int exit_flag = 0;
+                        
+                        /*Loop through areas between */
+                                                                                    
+                        while(1){
+                                /*if we reached the starting area, we must exit after doing some checks..*/
+                                if(cur_area == cur_brk_vmarea){
+                                       exit_flag = 1; 
+                                }
+                                
+                                /*get area...*/
+                                cur_area = list_item(area_link, vmarea_t, vma_plink);
+                                
+                                /*if range is not mapped (area), free it*/
+                                if(vmmap_is_range_empty(curproc->p_vmmap, cur_area->vma_start, (cur_area->vma_end - cur_area->vma_start))){
+                                        vmmap_is_range_empty(curproc->p_vmmap, cur_area->vma_start, (cur_area->vma_end - cur_area->vma_start));
+                                }
+                                
+                                if(exit_flag){
+                                        break;
+                                }
+                                
+                        }
+                        
+                        /*set the new break...*/
+                        curproc->p_brk = addr;
+                        *ret = addr;
+                        return 0; 
+                }                
         }
         else{
                 /*We want to increase it*/
@@ -145,7 +175,15 @@ do_brk(void *addr, void **ret)
                         return -1;                      /*Can't extend beyond userland*/
                 }
                 else{
-                        
+                        /*we want to increase the brk...*/
+                        /*Two case...*/
+                        if(req_addr_vfn < cur_brk_vmarea->vma_end){
+                                /*extend within the same area*/
+                                
+                        }
+                        else{
+                                /*extend beyond the current area...*/
+                        }
                 }
         }
         

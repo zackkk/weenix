@@ -228,6 +228,8 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
         
+        int res = 0;
+        
         /* Fill the page frame starting at address pf->pf_addr with the
          * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
          * This may block.
@@ -237,12 +239,6 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
         
         /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
         pframe_t *source_pf = NULL;
-        int res = o->mmo_ops->lookuppage(pf->pf_obj, pf->pf_pagenum, 0, &source_pf);
-        
-        if(res == 0){
-                memcpy(pf->pf_addr, source_pf, PAGE_SIZE);
-        }
-        
         return res;
 }
 
@@ -263,6 +259,8 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
         
+        int res = 0;
+        
         /* Fill the page frame starting at address pf->pf_addr with the
          * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
          * This may block.
@@ -272,11 +270,6 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
         
         /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
         pframe_t *source_pf = NULL;
-        int res = o->mmo_ops->lookuppage(pf->pf_obj, pf->pf_pagenum, 0, &source_pf);
-        
-        if(res == 0){
-                memcpy(source_pf, pf->pf_addr, PAGE_SIZE);
-        }
-        
+      
         return res;
 }
