@@ -176,13 +176,18 @@ do_brk(void *addr, void **ret)
                 }
                 else{
                         /*we want to increase the brk...*/
-                        /*Two case...*/
-                        if(req_addr_vfn < cur_brk_vmarea->vma_end){
+                        /*Two cases...*/
+                        if(cur_brk_vmarea == cur_brk_vmarea){
                                 /*extend within the same area*/
+                                 curproc->p_brk = addr;
+                                *ret = addr;
+                                return 0;
                                 
                         }
                         else{
                                 /*extend beyond the current area...*/
+                                
+                                /*First check we dont '*/
                         }
                 }
         }

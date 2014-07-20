@@ -236,9 +236,18 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
          * Return 0 on success and -errno otherwise.
          */
         
-        
-        /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
         pframe_t *source_pf = NULL;
+        res = o->mmo_ops->lookuppage(o, pf->pf_pagenum, 0, &source_pf);
+        
+        KASSERT(source_pf);
+        
+        if(res == 0){
+                /*Now copy from source_pf to pf->pf_addr*/
+                memcpy(pf->pf_addr, source_pf->pf_addr, PAGE_SIZE);
+                return 0;
+        }
+        
+
         return res;
 }
 
