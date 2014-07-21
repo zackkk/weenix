@@ -137,30 +137,28 @@ do_brk(void *addr, void **ret)
                 else{
                         /*we reduce from many areas*/
                         /*Check if each area between p_brk and addr is NOT in use*/
-                        list_link_t *area_link = req_brk_vmarea->vma_plink.l_next; /*start from area following the new brk's area*/
+                        list_link_t *area_link = cur_brk_vmarea->vma_plink.l_prev; /*start from area (backward) from the new brk's area*/
                         vmarea_t *cur_area = NULL;
                         int exit_flag = 0;
                         
                         /*Loop through areas between */
                                                                                     
                         while(1){
-                                /*if we reached the starting area, we must exit after doing some checks..*/
-                                if(cur_area == cur_brk_vmarea){
-                                       exit_flag = 1; 
+                                /*if we reached the the req vmarea area, we must exit after doing some checks..*/
+                                if(cur_area == req_brk_vmarea){
+                                       break;
                                 }
                                 
                                 /*get area...*/
                                 cur_area = list_item(area_link, vmarea_t, vma_plink);
                                 
-                                /*if range is not mapped (area), free it*/
+                                /*if range is empty of mappings (area), remove mapping*/
                                 if(vmmap_is_range_empty(curproc->p_vmmap, cur_area->vma_start, (cur_area->vma_end - cur_area->vma_start))){
-                                        vmmap_is_range_empty(curproc->p_vmmap, cur_area->vma_start, (cur_area->vma_end - cur_area->vma_start));
+                                        vmmap_remove(curproc->p_vmmap, cur_area->vma_start, (cur_area->vma_end - cur_area->vma_start));
                                 }
                                 
-                                if(exit_flag){
-                                        break;
-                                }
-                                
+                                /*got to next area*/
+                                area_link = area_link->l_prev;   
                         }
                         
                         /*set the new break...*/
@@ -172,13 +170,13 @@ do_brk(void *addr, void **ret)
         else{
                 /*We want to increase it*/
                 if(req_address > USER_MEM_HIGH){
-                        return -1;                      /*Can't extend beyond userland*/
+                        return -EPERM;                      /*Can't extend beyond userland*/
                 }
                 else{
                         /*we want to increase the brk...*/
                         /*Two cases...*/
                         if(cur_brk_vmarea == cur_brk_vmarea){
-                                /*extend within the same area*/
+                                /*extend within the same area, area is already mapped*/
                                  curproc->p_brk = addr;
                                 *ret = addr;
                                 return 0;
@@ -187,11 +185,36 @@ do_brk(void *addr, void **ret)
                         else{
                                 /*extend beyond the current area...*/
                                 
-                                /*First check we dont '*/
+                                /*
+                                 *we need to check that the space between the end of the current brk vmarea (in vfn #) and the requested vfn
+                                 *for the new brk is empty.
+                                 */
+                                int res = vmmap_is_range_empty(curproc->p_vmmap, cur_brk_vmarea->vma_end + 1, req_addr_vfn - cur_brk_vmarea->vma_end);
+                                
+                                if(res){
+                                        vmarea_t *result = NULL;
+                                        
+                                        /*range is empty, we can add new vmarea*/
+                                        /*Offset must be zero (since whatever extra space we need, will start at the next area's first page boundary*/
+                                        vmmap_map(curproc->p_vmmap, NULL, cur_brk_vmarea->vma_end + 1, req_addr_vfn - cur_brk_vmarea->vma_end,
+                                                  PROT_EXEC | PROT_READ, MAP_PRIVATE, 0, 0, &result);
+                                        
+                                        if(result != NULL){
+                                                curproc->p_brk = addr;
+                                                *ret = addr;
+                                                return 0;
+                                        }
+                                        else{
+                                                *ret = NULL;
+                                                return -ENOMEM;
+                                        }
+                                }
+                                else{
+                                        /*there's no space to increment the brk to the desired address location*/
+                                        return -ENOMEM ;
+                                }
                         }
                 }
         }
-        
-        
         return 0;
 }

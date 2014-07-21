@@ -173,9 +173,6 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
          * either case, it must correctly support reads.
          */
          
-        /*get pf at head of list*/
-        list_link_t *current_pf_link = NULL;
-        current_pf_link = o->mmo_respages.l_next;
         int found_flag = 0;
         
         
