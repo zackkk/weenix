@@ -178,17 +178,11 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
         current_pf_link = o->mmo_respages.l_next;
         int found_flag = 0;
         
-        while(current_pf_link != &(o->mmo_respages)){
-                *pf = list_item(current_pf_link, pframe_t, pf_olink);
-                
-                if((*pf)->pf_pagenum == pagenum){
-                        found_flag = 1;
-                        break;
-                }
-        }
+        
+        found_flag = pframe_get(o, pagenum, pf);
         
         /*We didn't find page with given pagenumber*/
-        if(!found_flag){
+        if(found_flag != 0){
                 /*TODO set error*/
                 *pf = NULL;
                 return -ENOENT;
@@ -196,7 +190,7 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
         else{
                 if(forwrite){
                        if( 1 /*how do we check page is suitable for writing?*/){       /*if suitable for writing CHECK!!!*/
-                                if(pframe_is_busy(*pf)){
+                                while(pframe_is_busy(*pf)){
                                         sched_sleep_on(&((*pf)->pf_waitq));      /*wait till page not busy since we may be writing it*/
                                 }
                                 
@@ -209,7 +203,7 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
                 }
                 else{
                         /*just return what we found*/
-                        if(pframe_is_busy(*pf)){
+                        while(pframe_is_busy(*pf)){
                                 sched_sleep_on(&((*pf)->pf_waitq));   /*wait till pframe is NOT busy, since we may be writing it*/
                         }
                        return 0; 
@@ -247,7 +241,6 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
                 return 0;
         }
         
-
         return res;
 }
 
@@ -257,14 +250,14 @@ anon_dirtypage(mmobj_t *o, pframe_t *pf)
         /*NOT_YET_IMPLEMENTED("VM: anon_dirtypage");*/
         KASSERT(o != NULL);
         int res = 0;
-        res = o->mmo_ops->dirtypage(o, pf); /*check...lookup on itself??*/
+        
         return res;
 }
 
 static int
 anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_cleanpage");*/
+        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
         
@@ -276,9 +269,16 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
          * Return 0 on success and -errno otherwise.
          */
         
+        pframe_t *dest_pf = NULL;
+        res = o->mmo_ops->lookuppage(o, pf->pf_pagenum, 1, &dest_pf);   /*destination pf must be available for WRITING*/
         
-        /*Get page frame identified by pf->pf_obj and pf->pf_pagenum*/
-        pframe_t *source_pf = NULL;
-      
+        KASSERT(dest_pf);
+        
+        if(res == 0){
+                /*Now copy from pf->pf_add to dest->pf_addr*/
+                memcpy(dest_pf->pf_addr, pf->pf_addr, PAGE_SIZE);
+                return 0;
+        }
+        
         return res;
 }
