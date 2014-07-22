@@ -45,8 +45,18 @@ int
 do_mmap(void *addr, size_t len, int prot, int flags,
         int fd, off_t off, void **ret)
 {
-        NOT_YET_IMPLEMENTED("VM: do_mmap");
-        return -1;
+        tlb_flush(addr);
+        uint32_t npages = 0;
+        if((len % PAGE_SIZE) ==0)
+        {
+               npages=len / PAGE_SIZE;
+        }
+        else
+        {
+               npages=len / PAGE_SIZE +1;
+        }
+        int retval = vmmap_map(curproc->p_vmmap, curproc->p_files[fd]->f_vnode, 0, npages, prot, flags, off, VMMAP_DIR_LOHI, (vmarea_t**)ret);
+        return retval;
 }
 
 
@@ -60,7 +70,16 @@ do_mmap(void *addr, size_t len, int prot, int flags,
 int
 do_munmap(void *addr, size_t len)
 {
-        NOT_YET_IMPLEMENTED("VM: do_munmap");
-        return -1;
+        tlb_flush(addr);
+        uint32_t npages = 0;
+        if((len % PAGE_SIZE) ==0)
+        {
+               npages=len / PAGE_SIZE;
+        }
+        else
+        {
+               npages=len / PAGE_SIZE +1;
+        }
+        int retval = vmmap_remove(curproc->p_vmmap, 0, npages);
+        return retval;
 }
-
