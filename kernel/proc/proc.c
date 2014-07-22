@@ -518,8 +518,8 @@ do_waitpid(pid_t pid, int options, int *status)
                         
                         /*We found a dead child*/
                         if(p->p_state == PROC_DEAD){
-                                
-                                *status = p->p_status;                      /*return status*/
+                                if(NULL != status)
+                                	*status = p->p_status;                      /*return status*/
                                 list_remove(&p->p_child_link);               /*remove dead process from list of curproc children list*/
                                 list_remove(&p->p_list_link);                /*remove from global process list*/
                                 return_pid = p->p_pid;                      /*copy return pid*/
@@ -556,7 +556,8 @@ do_waitpid(pid_t pid, int options, int *status)
                         /*we found the process with the given pid...*/
                         if(p->p_pid == pid){
                                 if(p->p_state == PROC_DEAD){
-                                        *status = p->p_status;                      
+                                		if(NULL != status)
+                                        	*status = p->p_status;
                                         list_remove(&p->p_child_link);               
                                         list_remove(&p->p_list_link);           
                                         return_pid = p->p_pid;                      
@@ -574,7 +575,8 @@ do_waitpid(pid_t pid, int options, int *status)
                                         sched_sleep_on(&curproc->p_wait);
                                         
                                         /*if sched_sleep_on() is block, */
-                                        *status = p->p_status;                      
+                                        if(NULL != status)
+                                        	*status = p->p_status;
                                         list_remove(&p->p_child_link);               
                                         list_remove(&p->p_list_link);                
                                         return_pid = p->p_pid;                      
