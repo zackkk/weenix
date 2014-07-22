@@ -518,8 +518,11 @@ special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 static int
 special_file_mmap(vnode_t *file, vmarea_t *vma, mmobj_t **ret)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_mmap");
-        return 0;
+	dbg(DBG_PRINT, "(GRADING3E) special_file_mmap\n");
+	
+	/*call file's mmap function*/
+	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->mmap);
+	return file->vn_cdev->cd_ops->mmap(file, vma, ret); 
 }
 
 /* Just as with mmap above, pass the call through to the
@@ -530,8 +533,11 @@ special_file_mmap(vnode_t *file, vmarea_t *vma, mmobj_t **ret)
 static int
 special_file_fillpage(vnode_t *file, off_t offset, void *pagebuf)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_fillpage");
-        return 0;
+	dbg(DBG_PRINT, "(GRADING3E) special_file_fillpage\n");
+		
+	/*call file's mmap function*/
+	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->fillpage);
+	return file->vn_cdev->cd_ops->fillpage(file, offset, pagebuf); 
 }
 
 /* Just as with mmap above, pass the call through to the
@@ -542,8 +548,11 @@ special_file_fillpage(vnode_t *file, off_t offset, void *pagebuf)
 static int
 special_file_dirtypage(vnode_t *file, off_t offset)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_dirtypage");
-        return 0;
+	dbg(DBG_PRINT, "(GRADING3E) special_file_dirtypage\n");
+			
+	/*call file's mmap function*/
+	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->dirtypage);
+	return file->vn_cdev->cd_ops->dirtypage(file, offset); 
 }
 
 /* Just as with mmap above, pass the call through to the
@@ -554,8 +563,11 @@ special_file_dirtypage(vnode_t *file, off_t offset)
 static int
 special_file_cleanpage(vnode_t *file, off_t offset, void *pagebuf)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_cleanpage");
-        return 0;
+	dbg(DBG_PRINT, "(GRADING3E) special_file_cleanpage\n");
+			
+	/*call file's mmap function*/
+	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->cleanpage);
+	return file->vn_cdev->cd_ops->cleanpage(file, offset, pagebuf); 
 }
 
 /*

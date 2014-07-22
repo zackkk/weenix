@@ -67,8 +67,41 @@ init_func(syscall_init);
 static int
 sys_read(read_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_read");
-        return -1;
+	read_args_t kern_args;
+	int numRead;
+	int err;
+	
+	/*copy the read_args_t from userland into kernel address space*/
+	if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
+		curthr->kt_errno = -err;
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_from_user() error");
+		return -1;
+	}
+	
+	/*set up a buffer in the kernel and read to it*/
+	if((kern_args.buf = page_alloc()) == NULL){
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() page_alloc() error");
+		return -ENOMEM;
+	}
+	if ((numRead = do_read(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
+		curthr->kt_errno = -numRead;
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() do_read() error");
+		return -1;
+	}
+	
+	/*what if buffer (1 page) wasn't big enough?*/
+	
+	/*copy the read_args_t back to userland, containing the new void* that hold the address of the buffer*/
+	if ((err = copy_to_user(arg->buf, kern_args.buf, numRead)) < 0) {
+		curthr->kt_errno = -err;
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_to_user() error");
+		return -1;
+	}
+	
+	page_free(kern_args.buf);
+	
+	dbg(DBG_PRINT,"(GRADING3E) sys_read() successful");
+	return numRead;
 }
 
 /*
@@ -77,8 +110,38 @@ sys_read(read_args_t *arg)
 static int
 sys_write(write_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_write");
-        return -1;
+	read_args_t kern_args;
+	int numWritten;
+	int err;
+		
+	/*copy the read_args_t from userland into kernel address space*/
+	if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
+		curthr->kt_errno = -err;
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error");
+		return -1;
+	}
+	
+	/*allocate a buffer, then copy the data to write from userland into the buffer*/
+	if((kern_args.buf = page_alloc()) == NULL){
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error");
+		return -ENOMEM;
+	}
+	if ((err = copy_from_user(kern_args.buf, arg->buf, arg->nbytes)) < 0) {
+		curthr->kt_errno = -err;
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error");
+		return -1;
+	}
+	
+	if ((numWritten = do_write(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
+		curthr->kt_errno = -numWritten;
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error");
+		return -1;
+	}
+	
+	page_free(kern_args.buf);
+	
+	dbg(DBG_PRINT,"(GRADING3E) sys_write(): successful");
+	return numWritten;
 }
 
 /*
@@ -93,8 +156,39 @@ sys_write(write_args_t *arg)
 static int
 sys_getdents(getdents_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_getdents");
-        return -1;
+	struct dirent directory;
+	int ret_val;
+	uint32_t num_read = 0;
+	
+	if(arg->count < sizeof(directory)) {
+		dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): buf too small");
+		return 0;
+	}
+	else {
+		while(num_read < arg->count){
+			/*arg->dirp will point to the dir ent read*/
+			ret_val = do_getdent(arg->fd, arg->dirp);
+			
+			num_read += ret_val;
+			
+			if(ret_val == 0) {
+				dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful");
+				return num_read;
+			}
+			
+			if(ret_val < 0) {
+				curthr->kt_errno = -ret_val;
+				dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): do_getdent error");
+				return -1;
+			}
+			
+			/*after this, dirp will point to the space in the buffer just after the previously read-in dir ent*/
+			arg->dirp++;
+		}
+	}
+	
+	dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful");
+	return num_read;
 }
 
 #ifdef __MOUNTING__
