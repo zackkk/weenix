@@ -63,7 +63,6 @@ static mmobj_ops_t shadow_mmobj_ops = {
 void
 shadow_init()
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_init"); */
         shadow_allocator = slab_allocator_create("shadow_mmobj", sizeof(mmobj_t));
         KASSERT(NULL != shadow_allocator);
         dbg(DBG_PRINT,"(GRADING3A 6.a) Failed to create shadow allocator!\n");
@@ -78,7 +77,6 @@ shadow_init()
 mmobj_t *
 shadow_create()
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_create"); */
 		mmobj_t *new_shadow = (mmobj_t *) slab_obj_alloc(shadow_allocator);
 		KASSERT(NULL != new_shadow);
 		mmobj_init(new_shadow, &shadow_mmobj_ops);
@@ -95,7 +93,6 @@ shadow_create()
 static void
 shadow_ref(mmobj_t *o)
 {
-       	/* NOT_YET_IMPLEMENTED("VM: shadow_ref"); */
 		KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
 		dbg(DBG_PRINT,"(GRADING3A 6.b) Failed to ref shadow !\n");
 	    o->mmo_refcount++;
@@ -112,7 +109,6 @@ shadow_ref(mmobj_t *o)
 static void
 shadow_put(mmobj_t *o)
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_put"); */
 		KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
 		dbg(DBG_PRINT,"(GRADING3A 6.c) Failed to put shadow !\n");
 
@@ -146,7 +142,6 @@ shadow_put(mmobj_t *o)
 static int
 shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_lookuppage"); */
 		/* being looked up for writing */
 		if(forwrite){
 			return pframe_get(o, pagenum, pf);
@@ -182,7 +177,6 @@ shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 static int
 shadow_fillpage(mmobj_t *o, pframe_t *pf)
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_fillpage"); */
         KASSERT(pframe_is_busy(pf));
         dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is not busy !\n");
         KASSERT(!pframe_is_pinned(pf));
@@ -210,7 +204,6 @@ shadow_fillpage(mmobj_t *o, pframe_t *pf)
 static int
 shadow_dirtypage(mmobj_t *o, pframe_t *pf)
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_dirtypage"); */
 		/*
 		 * last slide of Lecture 17: Weenix doesn't support swap space
 		 */
@@ -230,7 +223,6 @@ shadow_dirtypage(mmobj_t *o, pframe_t *pf)
 static int
 shadow_cleanpage(mmobj_t *o, pframe_t *pf)
 {
-        /* NOT_YET_IMPLEMENTED("VM: shadow_cleanpage"); */
 		KASSERT(NULL != o);
 		KASSERT(NULL != pf);
 		/*

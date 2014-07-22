@@ -62,7 +62,6 @@
 void
 handle_pagefault(uintptr_t vaddr, uint32_t cause)
 {
-        /* NOT_YET_IMPLEMENTED("VM: handle_pagefault"); */
 		pde_t page_dir_flag   = PD_PRESENT | PD_USER;
 		pte_t page_table_flag = PT_PRESENT | PT_USER;
 		int forwrite = 0;
