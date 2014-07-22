@@ -63,6 +63,7 @@ fork_setup_stack(const regs_t *regs, void *kstack)
 int
 do_fork(struct regs *regs)
 {
-        NOT_YET_IMPLEMENTED("VM: do_fork");
+        /**/
+        proc_t *new_proc = NULL;
         return 0;
 }
