@@ -145,18 +145,18 @@ int addr_perm(struct proc *p, const void *vaddr, int perm)
 		if((addrArea = vmmap_lookup(p->p_vmmap, vfn)) != NULL) {
 			/*finally, check permission level*/
 			if((addrArea->vma_prot) >= perm) {
-				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful");
+				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful\n");
 				return 1;
 			}
 			else {
-				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): permission denied");
+				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): permission denied\n");
 				return 0;
 			}
 		}
 	
 	}
 	
-	dbg(DBG_PRINT,"(GRADING3E) addr_perm(): unsuccessful");
+	dbg(DBG_PRINT,"(GRADING3E) addr_perm(): unsuccessful\n");
 	return 0;
 }
 
@@ -171,16 +171,20 @@ int addr_perm(struct proc *p, const void *vaddr, int perm)
  */
 int range_perm(struct proc *p, const void *avaddr, size_t len, int perm)
 {
-	return 0;
-	/*
-	void* next_addr = avaddr;
+	
+	uint32_t next_addr = (uint32_t) avaddr;
+	
 	while(len > 0) {
-		addr_perm(p, avaddr, perm);
+		const void* new_addr = (const void*) next_addr;
+		if(!addr_perm(p, new_addr, perm)) {
+			dbg(DBG_PRINT,"(GRADING3E) range_perm(): permission denied\n");
+			return 0;
+		}
 		len--;
-		next_addr avaddr + 1;
+		next_addr++;
 	}
-	
-	
+	dbg(DBG_PRINT,"(GRADING3E) range_perm() successful\n");
+	/*
 	uint32_t addr = (uint32_t) vaddr;
 	vfn = ((addr - (addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
 	
@@ -205,5 +209,5 @@ int range_perm(struct proc *p, const void *avaddr, size_t len, int perm)
 		len--;
 	}
 	*/
-
+	return 1;
 }

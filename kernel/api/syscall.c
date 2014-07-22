@@ -74,18 +74,18 @@ sys_read(read_args_t *arg)
 	/*copy the read_args_t from userland into kernel address space*/
 	if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
 		curthr->kt_errno = -err;
-		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_from_user() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_from_user() error\n");
 		return -1;
 	}
 	
 	/*set up a buffer in the kernel and read to it*/
 	if((kern_args.buf = page_alloc()) == NULL){
-		dbg(DBG_PRINT,"(GRADING3E) sys_read() page_alloc() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() page_alloc() error\n");
 		return -ENOMEM;
 	}
 	if ((numRead = do_read(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
 		curthr->kt_errno = -numRead;
-		dbg(DBG_PRINT,"(GRADING3E) sys_read() do_read() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() do_read() error\n");
 		return -1;
 	}
 	
@@ -94,13 +94,13 @@ sys_read(read_args_t *arg)
 	/*copy the read_args_t back to userland, containing the new void* that hold the address of the buffer*/
 	if ((err = copy_to_user(arg->buf, kern_args.buf, numRead)) < 0) {
 		curthr->kt_errno = -err;
-		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_to_user() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_to_user() error\n");
 		return -1;
 	}
 	
 	page_free(kern_args.buf);
 	
-	dbg(DBG_PRINT,"(GRADING3E) sys_read() successful");
+	dbg(DBG_PRINT,"(GRADING3E) sys_read() successful\n");
 	return numRead;
 }
 
@@ -117,30 +117,30 @@ sys_write(write_args_t *arg)
 	/*copy the read_args_t from userland into kernel address space*/
 	if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
 		curthr->kt_errno = -err;
-		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
 		return -1;
 	}
 	
 	/*allocate a buffer, then copy the data to write from userland into the buffer*/
 	if((kern_args.buf = page_alloc()) == NULL){
-		dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error\n");
 		return -ENOMEM;
 	}
 	if ((err = copy_from_user(kern_args.buf, arg->buf, arg->nbytes)) < 0) {
 		curthr->kt_errno = -err;
-		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
 		return -1;
 	}
 	
 	if ((numWritten = do_write(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
 		curthr->kt_errno = -numWritten;
-		dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error");
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error\n");
 		return -1;
 	}
 	
 	page_free(kern_args.buf);
 	
-	dbg(DBG_PRINT,"(GRADING3E) sys_write(): successful");
+	dbg(DBG_PRINT,"(GRADING3E) sys_write(): successful\n");
 	return numWritten;
 }
 
@@ -161,7 +161,7 @@ sys_getdents(getdents_args_t *arg)
 	uint32_t num_read = 0;
 	
 	if(arg->count < sizeof(directory)) {
-		dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): buf too small");
+		dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): buf too small\n");
 		return 0;
 	}
 	else {
@@ -172,13 +172,13 @@ sys_getdents(getdents_args_t *arg)
 			num_read += ret_val;
 			
 			if(ret_val == 0) {
-				dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful");
+				dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful\n");
 				return num_read;
 			}
 			
 			if(ret_val < 0) {
 				curthr->kt_errno = -ret_val;
-				dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): do_getdent error");
+				dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): do_getdent error\n");
 				return -1;
 			}
 			
@@ -187,7 +187,7 @@ sys_getdents(getdents_args_t *arg)
 		}
 	}
 	
-	dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful");
+	dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful\n");
 	return num_read;
 }
 
