@@ -518,10 +518,14 @@ special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 static int
 special_file_mmap(vnode_t *file, vmarea_t *vma, mmobj_t **ret)
 {
-	dbg(DBG_PRINT, "(GRADING3E) special_file_mmap\n");
+	KASSERT(file);
+	KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+	KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+	KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->mmap);
+	
+	dbg(DBG_PRINT, "(GRADING3E) special_file_mmap(): assertions passed\n");
 	
 	/*call file's mmap function*/
-	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->mmap);
 	return file->vn_cdev->cd_ops->mmap(file, vma, ret); 
 }
 
@@ -532,11 +536,15 @@ special_file_mmap(vnode_t *file, vmarea_t *vma, mmobj_t **ret)
  */
 static int
 special_file_fillpage(vnode_t *file, off_t offset, void *pagebuf)
-{
-	dbg(DBG_PRINT, "(GRADING3E) special_file_fillpage\n");
-		
-	/*call file's mmap function*/
-	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->fillpage);
+{		
+	KASSERT(file);
+	KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+	KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+	KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->fillpage);
+	
+	dbg(DBG_PRINT, "(GRADING3E) special_file_fillpage(): assertions passed\n");
+	
+	/*call file's fillpage function*/
 	return file->vn_cdev->cd_ops->fillpage(file, offset, pagebuf); 
 }
 
@@ -548,10 +556,14 @@ special_file_fillpage(vnode_t *file, off_t offset, void *pagebuf)
 static int
 special_file_dirtypage(vnode_t *file, off_t offset)
 {
-	dbg(DBG_PRINT, "(GRADING3E) special_file_dirtypage\n");
-			
-	/*call file's mmap function*/
-	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->dirtypage);
+	KASSERT(file);
+	KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+	KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+	KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->dirtypage);
+	
+	dbg(DBG_PRINT, "(GRADING3E) special_file_dirtypage(): assertions passed\n");
+	
+	/*call file's dirtypage function*/
 	return file->vn_cdev->cd_ops->dirtypage(file, offset); 
 }
 
@@ -563,10 +575,14 @@ special_file_dirtypage(vnode_t *file, off_t offset)
 static int
 special_file_cleanpage(vnode_t *file, off_t offset, void *pagebuf)
 {
-	dbg(DBG_PRINT, "(GRADING3E) special_file_cleanpage\n");
-			
-	/*call file's mmap function*/
-	KASSERT(file->vn_cdev && file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->cleanpage);
+	KASSERT(file);
+	KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+	KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+	KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->cleanpage);
+	
+	dbg(DBG_PRINT, "(GRADING3E) special_file_cleanpage(): assertions passed\n");
+	
+	/*call file's cleanpage function*/
 	return file->vn_cdev->cd_ops->cleanpage(file, offset, pagebuf); 
 }
 

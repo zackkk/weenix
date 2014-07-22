@@ -405,6 +405,10 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 void
 pframe_pin(pframe_t *pf)
 {
+	KASSERT(!pframe_is_free(pf));
+	KASSERT(pf->pf_pincount >= 0);
+	dbg(DBG_PRINT,"(GRADING3E) pframe_pin(): assertions passed\n");
+	
 	/*pframe not pinned?*/
 	if(pf->pf_pincount == 0){
 		/*remove from allocated list*/
@@ -416,6 +420,7 @@ pframe_pin(pframe_t *pf)
 		/*update counts*/
 		nallocated--;
 		npinned++;
+		dbg(DBG_PRINT,"(GRADING3E) pframe_pin(): pframe pinned\n");
 	}
 
 	/*increment pf_pincount*/
@@ -435,6 +440,11 @@ pframe_pin(pframe_t *pf)
 void
 pframe_unpin(pframe_t *pf)
 {
+	
+	KASSERT(!pframe_is_free(pf));
+	KASSERT(pf->pf_pincount > 0);
+	dbg(DBG_PRINT,"(GRADING3E) pframe_unpin(): assertions passed\n");
+		
 	/*decrement pf_pincount*/
 	pf->pf_pincount--;
 
@@ -448,6 +458,7 @@ pframe_unpin(pframe_t *pf)
 		/*update counts*/
 		nallocated++;
 		npinned--;
+		dbg(DBG_PRINT,"(GRADING3E) pframe_unpin(): pframe unpinned\n");
 	}
 
 }
