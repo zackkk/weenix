@@ -127,9 +127,9 @@ do_open(const char *filename, int oflags)
         
         /*get vnode, return error*/        
         vnode_t *vno = NULL;
+        
         int res = open_namev(filename, oflags, &vno, NULL); /*CHECK: need to check if argument 3 is ok or not*/
                         
-
         if(res < 0){ /*Error*/
                 dbg(DBG_PRINT, "(GRADING2C) open_namev returned an error\n");
                 return res;
@@ -141,8 +141,7 @@ do_open(const char *filename, int oflags)
         }
         
          /*Get new file object*/
-        my_file = fget(-1); /*also increments reference count. Call with -1 to get a fresh file...*/
-                                 
+        my_file = fget(-1); /*also increments reference count. Call with -1 to get a fresh file...*/     
         /*we could not allocate memory for file...*/
         if(my_file == NULL){
                 dbg(DBG_PRINT, "(GRADING2C) fget could not create file object\n");

@@ -50,6 +50,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         int res = 0;
         
         /*If we dont have a lookup function, then we are not a directory...*/
+        
         if(dir->vn_ops->lookup == NULL){
                 dbg(DBG_PRINT, "(GRADING2C) dir is NOT a directory\n");
                 return -ENOTDIR;
@@ -89,7 +90,6 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, buffer, tmplen, result); /*this will increase result refcount */
-
 
         return res;
 }
@@ -271,6 +271,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
         const char *name = NULL;
         
         /*look for the path and file name...*/
+        
         res = dir_namev(pathname, &namelen, &name, base, res_vnode);
 
         if(res == 0){
@@ -283,9 +284,9 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                 **/
                 
                 /*TEST... Decrement parent directory vnode*/
-                vput(*res_vnode);
+                vnode_t *dir_node = *res_vnode;
                 res = lookup(*res_vnode, name, strlen(name), res_vnode);
-                
+                vput(dir_node);
                 if(res == 0){
                         dbg(DBG_PRINT, "(GRADING2C) Found file to open\n");
                         return res;
