@@ -417,7 +417,7 @@ pframe_pin(pframe_t *pf)
 		nallocated--;
 		npinned++;
 	}
-	
+
 	/*increment pf_pincount*/
 	pf->pf_pincount++;
 }
@@ -435,13 +435,13 @@ pframe_pin(pframe_t *pf)
 void
 pframe_unpin(pframe_t *pf)
 {
-	/*increment pf_pincount*/
+	/*decrement pf_pincount*/
 	pf->pf_pincount--;
-	
+
 	if(pf->pf_pincount == 0){
 		/*remove from pinned list*/
 		list_remove(&(pf->pf_link));
-		
+
 		/*put on allocated list*/
 		list_insert_tail(&(alloc_list), &(pf->pf_link));
 		
@@ -449,7 +449,7 @@ pframe_unpin(pframe_t *pf)
 		nallocated++;
 		npinned--;
 	}
-	
+
 }
 
 /*

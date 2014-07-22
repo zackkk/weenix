@@ -50,7 +50,6 @@ static mmobj_ops_t anon_mmobj_ops = {
 void
 anon_init()
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_init");*/
         anon_allocator = slab_allocator_create("anon-alloc", sizeof(mmobj_t));
         KASSERT(anon_allocator);
         dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully");
@@ -66,7 +65,6 @@ anon_init()
 mmobj_t *
 anon_create()
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_create");*/
         mmobj_t *object = NULL;
         object = (mmobj_t *)slab_obj_alloc(anon_allocator);
         KASSERT(object);
@@ -83,7 +81,6 @@ anon_create()
 static void
 anon_ref(mmobj_t *o)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_ref");*/
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
         dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL");
         o->mmo_refcount++;
@@ -101,7 +98,6 @@ anon_ref(mmobj_t *o)
 static void
 anon_put(mmobj_t *o)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_put");*/
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
         dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL");
         o->mmo_refcount--;
@@ -137,8 +133,6 @@ anon_put(mmobj_t *o)
 static int
 anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_lookuppage");*/
-
 		/* no read/write issues for anonymous objects */
         KASSERT(o != NULL);
         int found_flag = 0;
@@ -162,7 +156,6 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 static int
 anon_fillpage(mmobj_t *o, pframe_t *pf)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
         int res = 0;
@@ -173,7 +166,6 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
 static int
 anon_dirtypage(mmobj_t *o, pframe_t *pf)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_dirtypage");*/
         KASSERT(o != NULL);
         int res = 0;
         return res;
@@ -182,7 +174,6 @@ anon_dirtypage(mmobj_t *o, pframe_t *pf)
 static int
 anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
-        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
 
