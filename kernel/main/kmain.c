@@ -427,6 +427,29 @@ int vtests(kshell_t *kshell, int argc, char **argv)
 
 #endif /* __VFS__ */
 
+#ifdef __VM__
+
+static void *
+hello_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	char *argv[] = { NULL };
+	char *envp[] = { NULL };
+	kernel_execve("/usr/bin/hello", argv, envp);
+	return NULL;
+}
+
+int hellotests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("hello_test");
+    kthread_t *thr = kthread_create(p, hello_test, 1111, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
+#endif /* __VM__ */
+
 /**
  * The init thread's function changes depending on how far along your Weenix is
  * developed. Before VM/FI, you'll probably just want to have this run whatever
@@ -454,12 +477,18 @@ initproc_run(int arg1, void *arg2)
 
 #endif /* __VFS__ */
 
+#ifdef __VM__
+
+	kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
+
+#endif /* __VM__ */
+
+
 	kshell_t *kshell = kshell_create(0);
 	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
 	while (kshell_execute_next(kshell))
 		;
 	kshell_destroy(kshell);
-
 
 	vput(curproc->p_cwd);
 
