@@ -139,16 +139,17 @@ do_fork(struct regs *regs)
                         /*increase vma_obj refcount by one (one new shadow object references this vma_obj*/
                         cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);                 /*CHECK!! Increase ref of shadowed object or of the shadow object???*/
                                                                           
-                        /*make vmarea's point to their new shadow objects.*/
+                        /*make vmarea's vma_obj point to their new shadow objects.*/
                         cur_area->vma_obj = curproc_shadow;
                         newproc_cur_area->vma_obj = newproc_shadow;
-                        
-                        
-                }
-                
+                }                
         }
         
-        /**/
+        /*Copy file table*/
+        int i = 0;
+        for(i = 0; i < NFILES; i++){
+                new_process->p_files[i] = curproc->p_files[i];
+        }
         
         return 0;
 }
