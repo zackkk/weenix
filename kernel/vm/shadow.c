@@ -77,11 +77,11 @@ shadow_init()
 mmobj_t *
 shadow_create()
 {
-		mmobj_t *new_shadow = (mmobj_t *) slab_obj_alloc(shadow_allocator);
-		KASSERT(NULL != new_shadow);
-		mmobj_init(new_shadow, &shadow_mmobj_ops);
-		new_shadow->mmo_un.mmo_bottom_obj = NULL; /* this field has not been initialized in mmobj_init */
-		shadow_count++;
+        mmobj_t *new_shadow = (mmobj_t *) slab_obj_alloc(shadow_allocator);
+        KASSERT(NULL != new_shadow);
+        mmobj_init(new_shadow, &shadow_mmobj_ops);
+        new_shadow->mmo_un.mmo_bottom_obj = NULL; /* this field has not been initialized in mmobj_init */
+        shadow_count++;
         return new_shadow;
 }
 

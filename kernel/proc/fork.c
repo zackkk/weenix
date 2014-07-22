@@ -63,7 +63,92 @@ fork_setup_stack(const regs_t *regs, void *kstack)
 int
 do_fork(struct regs *regs)
 {
+        
+        KASSERT(regs != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) regs are not null\n");
+        KASSERT(curproc != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a)current process is not NULL\n");
+        KASSERT(curproc->p_state == PROC_RUNNING);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) Current process state is PROC_RUNNING\n");
+        
+        
+        proc_t *new_process = NULL;
+        
+        /*Create new process*/
+        new_process = proc_create(curproc->p_comm);            /*use name*/
+        
+        /*deallocate vmmap, since we will clone it...*/
+        vmmap_destroy(new_process->p_vmmap);
+        
+        /*clonde the vmmap...*/
+        new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
+        
+        KASSERT(new_process->p_vmmap != NULL);                   /*correctly cloned*/
+                                                                 
+        /*Now we need to increment refcount of all object in vmmareas...*/
+        list_link_t *area_link= NULL;
+        list_link_t *newproc_area_link = NULL;
+        
+        area_link = curproc->p_vmmap->vmm_list.l_next;   /*get first area*/
+        newproc_area_link = new_process->p_vmmap->vmm_list.l_next;
+        
+        vmarea_t *cur_area = NULL;
+        vmarea_t *newproc_cur_area = NULL;
+        
+        while(area_link != &(curproc->p_vmmap->vmm_list)){       /*last area will point to the  anchor...*/
+                
+                cur_area = list_item(area_link, vmarea_t, vma_plink);
+                newproc_cur_area = list_item(newproc_area_link, vmarea_t, vma_plink);
+                
+                KASSERT(cur_area != NULL && newproc_cur_area != NULL);
+                
+                /*Now check that if sharing is PRIVATE (COW) or SHARED...*/
+                if(cur_area->vma_flags == MAP_SHARED){
+                        
+                        /*Make new process vmarea point to shared object...*/
+                        newproc_cur_area->vma_obj = cur_area->vma_obj;
+                        
+                        /*increase refcount, same for anon/shadow...*/
+                        cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);
+                        
+                }
+                else{
+                        /*private mapping*/
+                        /*create two new shadow objects, one for curproc, and one for new process*/
+                        mmobj_t *curproc_shadow = shadow_create();
+                        mmobj_t *newproc_shadow = shadow_create();
+                        
+                        KASSERT(curproc_shadow && newproc_shadow);
+                        
+                        /*make both objects point to the old vma_object...*/
+                        curproc_shadow->mmo_shadowed = cur_area->vma_obj;
+                        newproc_shadow->mmo_shadowed = cur_area->vma_obj;
+                        
+                        /*make new shadow objects point to the botton object too?? CHECK*/
+                        mmobj_t *bottom_obj = NULL;
+                        
+                        bottom_obj = mmobj_bottom_obj(cur_area->vma_obj);
+                        
+                        /*increase bottom obj refcount, since new shadow objects will point to them? CHECK*/
+                        bottom_obj->mmo_ops->ref(bottom_obj);
+                        bottom_obj->mmo_ops->ref(bottom_obj);
+                        
+                        curproc_shadow->mmo_un.mmo_bottom_obj = bottom_obj;
+                        newproc_shadow->mmo_un.mmo_bottom_obj = bottom_obj;
+                        
+                        /*increase vma_obj refcount by one (one new shadow object references this vma_obj*/
+                        cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);                 /*CHECK!! Increase ref of shadowed object or of the shadow object???*/
+                                                                          
+                        /*make vmarea's point to their new shadow objects.*/
+                        cur_area->vma_obj = curproc_shadow;
+                        newproc_cur_area->vma_obj = newproc_shadow;
+                        
+                        
+                }
+                
+        }
+        
         /**/
-        proc_t *new_proc = NULL;
+        
         return 0;
 }
