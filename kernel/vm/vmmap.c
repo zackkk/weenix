@@ -468,7 +468,7 @@ vmmap_remove(vmmap_t *map, uint32_t lopage, uint32_t npages)
 				if(vmarea->vma_start == vmarea->vma_end){
 					list_remove(&(vmarea->vma_olink));
 					list_remove(&(vmarea->vma_plink));
-					vma_free(vmarea);
+					vmarea_free(vmarea);
 					if(vmarea->vma_obj != NULL)
 					{
 						/*decrement ref count*/
@@ -492,7 +492,7 @@ vmmap_remove(vmmap_t *map, uint32_t lopage, uint32_t npages)
 			{
 				list_remove(&(vmarea->vma_olink));
 				list_remove(&(vmarea->vma_plink));
-				vma_free(vmarea);
+				vmarea_free(vmarea);
 				if(vmarea->vma_obj != NULL)
 				{
 					/*decrement ref count*/
