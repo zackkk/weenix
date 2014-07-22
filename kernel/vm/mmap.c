@@ -45,7 +45,7 @@ int
 do_mmap(void *addr, size_t len, int prot, int flags,
         int fd, off_t off, void **ret)
 {
-        tlb_flush(addr);
+        /* tlb_flush(addr); */
         uint32_t npages = 0;
         if((len % PAGE_SIZE) ==0)
         {
@@ -70,7 +70,7 @@ do_mmap(void *addr, size_t len, int prot, int flags,
 int
 do_munmap(void *addr, size_t len)
 {
-        tlb_flush(addr);
+		/* tlb_flush(addr); */
         uint32_t npages = 0;
         if((len % PAGE_SIZE) ==0)
         {
