@@ -99,9 +99,8 @@ kthread_destroy(kthread_t *t)
 kthread_t *
 kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 {
-	dbg(DBG_PRINT, "kthread_code_path_check\n");
         KASSERT(NULL != p);
-        dbg(DBG_PRINT, "(GRADING1A 3.a) the process:%s of the kthread is not empty\n", p->p_comm);
+        dbg(DBG_PRINT, "(GRADING1A 3.a) The process:%s of the kthread is not empty\n", p->p_comm);
 
         kthread_t *thr = (kthread_t *)slab_obj_alloc(kthread_allocator);  /* set up size in kthread_init(); */
 									    
@@ -137,16 +136,15 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
 void
 kthread_cancel(kthread_t *kthr, void *retval)
 {
-		dbg(DBG_PRINT, "kthread_code_path_check\n");
 		KASSERT(NULL != kthr);
-		dbg(DBG_PRINT, "(GRADING1A 3.b) the kthread is not empty (thread process pid %d)\n", kthr->kt_proc->p_pid);
+		dbg(DBG_PRINT, "(GRADING1A 3.b) The kthread is not empty (thread process pid %d)\n", kthr->kt_proc->p_pid);
 
 		if(kthr == curthr){
-			dbg(DBG_PRINT, "what!\n");
+			dbg(DBG_PRINT, "(GRADING1E) The thread to be cancelled is the current thread");
 			kthread_exit(retval);
 		}
 		else{
-			dbg(DBG_PRINT, "no!\n");
+			dbg(DBG_PRINT, "(GRADING1E) The thread to be cancelled is not the current thread");
 			kthr->kt_cancelled = 1;
 			kthr->kt_retval = retval;
 			if(kthr->kt_state == KT_SLEEP_CANCELLABLE){
@@ -174,17 +172,16 @@ kthread_exit(void *retval)
 		curthr->kt_qlink.l_prev = NULL;
 
 		KASSERT(!curthr->kt_wchan);
-		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread's blocked on queue is empty\n");
+		dbg(DBG_PRINT, "(GRADING1A 3.c) Kthread's blocked on queue is empty\n");
 		KASSERT(!curthr->kt_qlink.l_next && !curthr->kt_qlink.l_prev);
-		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread's link on ktqueue is empty\n");
+		dbg(DBG_PRINT, "(GRADING1A 3.c) Kthread's link on ktqueue is empty\n");
 		KASSERT(curthr->kt_proc == curproc);
-		dbg(DBG_PRINT, "(GRADING1A 3.c) curthr and curproc match\n");
+		dbg(DBG_PRINT, "(GRADING1A 3.c) Curthr and curproc match\n");
 
 		curthr->kt_retval = retval;
 		curthr->kt_state = KT_EXITED;
                 
 		proc_thread_exited(retval);
-		dbg(DBG_PRINT, "(GRADING1A 3.c) kthread_exit successfully\n");
 		return;
 }
 

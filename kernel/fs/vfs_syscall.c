@@ -137,7 +137,7 @@ do_write(int fd, const void *buf, size_t nbytes)
         if(returnVal>=0)
         {
              f -> f_pos += returnVal;
-              
+
              KASSERT((S_ISCHR(f->f_vnode->vn_mode)) || (S_ISBLK(f->f_vnode->vn_mode)) || ((S_ISREG(f->f_vnode->vn_mode)) && (f->f_pos <= f->f_vnode->vn_len)));
              dbg(DBG_PRINT, "(GRADING2A 3.a) successful write kassert\n");
         }
@@ -247,7 +247,7 @@ do_dup2(int ofd, int nfd)
              dbg(DBG_PRINT, "(GRADING2C) fget(fd) is NULL do_dup2\n");
              return -EBADF;
         }
-        
+
         if(ofd != nfd)
         {
              dbg(DBG_PRINT, "(GRADING2C) give f=fget(ofd) to nfd do_dup2\n");
@@ -662,19 +662,19 @@ do_chdir(const char *path)
         dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
         return res;
         }
-                
+
         if(!S_ISDIR(newNodePtr->vn_mode)){
                 vput(newNodePtr);
                 dbg(DBG_PRINT, "(GRADING2C) do_chdir() failed, not a directory\n");
                 return -ENOTDIR;
         }
 
-                
+
         /*newNodePtr should now point to the vnode of the directory given by 'path'*/
         
         /*get vnode pointed to by curproc p_cwd*/
         vnode_t *oldNode = curproc->p_cwd;
-        
+
         /*set curproc p_cwd = new vnode. ref count for vnode should already be incremented from call to open_namev*/
         curproc->p_cwd = newNodePtr;
                 
@@ -852,7 +852,7 @@ do_stat(const char *path, struct stat *buf)
         dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
         res_stat = newNodePtr->vn_ops->stat(newNodePtr, buf);
         vput(newNodePtr);
-        
+
         return res_stat;
 
 }

@@ -181,7 +181,6 @@ hard_shutdown()
 static void *
 bootstrap(int arg1, void *arg2)
 {
-		dbg(DBG_PRINT, "kmain_code_path_check\n");
         /* necessary to finalize page table information */
         pt_template_init();
 
@@ -224,7 +223,7 @@ idleproc_run(int arg1, void *arg2)
         pid_t child;
 
 	
-	dbg(DBG_PRINT, "vn_root_node not NULL\n");
+        dbg(DBG_PRINT, "vn_root_node not NULL\n");
         /* create init proc */
         kthread_t *initthr = initproc_create();
         init_call_all();
@@ -263,21 +262,7 @@ idleproc_run(int arg1, void *arg2)
          * file for macros with the device ID's you will need to pass to mknod */
         /* NOT_YET_IMPLEMENTED("VFS: idleproc_run"); */
 
-
-        /* vnode.h
-         * int (*mknod)(struct vnode *dir, const char *name, size_t name_len,
-         *             int mode, devid_t devid);
-         */
-
-        /* vfs_syscall.h
-         * int do_mknod(const char *path, int mode, unsigned devid);
-         * int do_mkdir(const char *path);
-         *
-         * S_IFCHR: character special
-         */
-
         do_mkdir("/dev");
-        dbg(DBG_PRINT, "ID: %d, refcount: %d\n", vfs_root_vn->vn_vno, vfs_root_vn->vn_refcount);
         int rc_null = do_mknod("/dev/null", S_IFCHR, MEM_NULL_DEVID);
         int rc_zero = do_mknod("/dev/zero", S_IFCHR, MEM_ZERO_DEVID);
         int i;
@@ -348,7 +333,6 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-		dbg(DBG_PRINT, "kmain_code_path_check\n");
 		proc_t *proc = proc_create("init_process");
 		KASSERT(NULL != proc);
 		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
@@ -457,8 +441,6 @@ int vtests(kshell_t *kshell, int argc, char **argv)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-	dbg(DBG_PRINT, "kmain_code_path_check\n");
-
 	#ifdef __DRIVERS__
 	
 	kshell_add_command("ftest", ftests, "Invokes testproc()...");

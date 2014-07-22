@@ -62,12 +62,15 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         size_t i = 0;
         while (i < (2*NAME_LEN + 1) && i < len){
                 if(*name == '\0'){
+                	dbg(DBG_PRINT, "(GRADING2C) *name is null\n");
                         break;
                 }
                 else if(*name == '/'){
+                	dbg(DBG_PRINT, "(GRADING2C) *name == '/'\n");
                       buffer[i] = 0;
                 }
                 else{
+                	dbg(DBG_PRINT, "(GRADING2C) *name != / && *name is not null\n");
                      buffer[i] = *name;
                 }
                 name++;
@@ -86,6 +89,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, buffer, tmplen, result); /*this will increase result refcount */
+
 
         return res;
 }
@@ -169,9 +173,11 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 int extra = 0;
                 /*get point to char after slash*/
                 if(pathname[0] != '/' && i == 0){
+                	dbg(DBG_PRINT, "(GRADING2C) pathname[0] != '/' && i == 0\n");
                         current_name_index = pathname;
                 }
                 else{
+                	dbg(DBG_PRINT, "(GRADING2C) !(pathname[0] != '/' && i == 0)\n");
                         slash_ptr = strchr(pathname_index, '/');
                         current_name_index = slash_ptr + 1;
                 }
@@ -202,6 +208,7 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                         return 0;
                 }
                 else{
+                	dbg(DBG_PRINT, "(GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)\n");
                         pathname_index = next_slash; /*Now we point to next slash to get next word on the following iteration*/
                 }
                 
@@ -226,8 +233,10 @@ dir_namev(const char *pathname, size_t *namelen, const char **name,
                 /*Found directory*/
                 res = lookup(current_dir, current_name, strlen(current_name), res_vnode); /* increase res_vnode refccount */
                 if(res == 0){
+
                         dbg(DBG_PRINT, "(GRADING2C) Found given file/dir from pathname\n");
                         vput(current_dir);
+
                         current_dir = *res_vnode;
                 }
                 else{
@@ -285,11 +294,13 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
                         
                         /*If we didn't find the file, create and if flag set to O_CREATE*/
                         if(flag & O_CREAT){
-                                dbg(DBG_PRINT, "(GRADING2C) File not found and O_CREAT flag set\n");
                                /*return the newly created vnode in res_vnode...*/
                                /*At this point res_vnode is the parent directory*/
                                /*Call the the create function in directory vnode*/
                                /*return newly create file vnode in res_vnode*/
+                               KASSERT(NULL != (*res_vnode)->vn_ops->create);
+                               dbg(DBG_PRINT, "(GRADING2A 2.c) res_vnode op not NULL\n");
+
                                res = (*res_vnode)->vn_ops->create(*res_vnode, name, strlen(name), res_vnode); /*Create file on res_vnode (which should be the directory)*/
                                return res; 
                         }

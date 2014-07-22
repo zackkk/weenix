@@ -50,7 +50,11 @@ static mmobj_ops_t anon_mmobj_ops = {
 void
 anon_init()
 {
-        NOT_YET_IMPLEMENTED("VM: anon_init");
+        /*NOT_YET_IMPLEMENTED("VM: anon_init");*/
+        anon_allocator = slab_allocator_create("anon-alloc", sizeof(mmobj_t));
+        KASSERT(anon_allocator);
+        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully");
+        return;
 }
 
 /*
@@ -62,8 +66,13 @@ anon_init()
 mmobj_t *
 anon_create()
 {
-        NOT_YET_IMPLEMENTED("VM: anon_create");
-        return NULL;
+        /*NOT_YET_IMPLEMENTED("VM: anon_create");*/
+        mmobj_t *object = NULL;
+        object = (mmobj_t *)slab_obj_alloc(anon_allocator);
+        KASSERT(object);
+        anon_count++;
+        mmobj_init(object, &anon_mmobj_ops);
+        return object;
 }
 
 /* Implementation of mmobj entry points: */
@@ -74,7 +83,11 @@ anon_create()
 static void
 anon_ref(mmobj_t *o)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_ref");
+        /*NOT_YET_IMPLEMENTED("VM: anon_ref");*/
+        KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
+        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL");
+        o->mmo_refcount++;
+        return;
 }
 
 /*
@@ -88,7 +101,35 @@ anon_ref(mmobj_t *o)
 static void
 anon_put(mmobj_t *o)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_put");
+        /*NOT_YET_IMPLEMENTED("VM: anon_put");*/
+        KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
+        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL");
+        o->mmo_refcount--;
+
+        /*Check if recount == respages*/
+        if(o->mmo_refcount == o->mmo_nrespages){
+                dbg(DBG_PRINT, "(GRADING3E) Anonymus object refcount == nrespages");
+
+                pframe_t *frame = NULL;
+                list_link_t *link = o->mmo_respages.l_next;    /*First element*/
+
+                /*iterate through pages..*/
+                /*Uncache and unpin*/
+                while(link != &(o->mmo_respages)){
+                        frame = list_item(link, pframe_t, pf_olink);
+                        list_remove(link);
+                        KASSERT(NULL != frame);
+                        pframe_unpin(frame);    /*Unpin frame*/
+                        pframe_free(frame);     /*CHECK: free frame??*/
+                        link = link->l_next;
+                }
+        }
+
+        /*Free the object...*/
+        slab_obj_free(anon_allocator, o);
+        anon_count--;
+
+        return;
 }
 
 /* Get the corresponding page from the mmobj. No special handling is
@@ -96,7 +137,23 @@ anon_put(mmobj_t *o)
 static int
 anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_lookuppage");
+        /*NOT_YET_IMPLEMENTED("VM: anon_lookuppage");*/
+
+		/* no read/write issues for anonymous objects */
+        KASSERT(o != NULL);
+        int found_flag = 0;
+        found_flag = pframe_get(o, pagenum, pf);
+
+        /*We didn't find page with given pagenumber*/
+        if(found_flag != 0){
+                /*TODO set error*/
+                *pf = NULL;
+                return -ENOENT;
+        }
+        else{
+                return found_flag;
+        }
+
         return -1;
 }
 
@@ -105,20 +162,45 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 static int
 anon_fillpage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_fillpage");
-        return 0;
+        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
+        KASSERT(o != NULL);
+        KASSERT(pf != NULL);
+        int res = 0;
+        memcpy(pf->pf_addr, 0, PAGE_SIZE);
+        return res;
 }
 
 static int
 anon_dirtypage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_dirtypage");
-        return -1;
+        /*NOT_YET_IMPLEMENTED("VM: anon_dirtypage");*/
+        KASSERT(o != NULL);
+        int res = 0;
+        return res;
 }
 
 static int
 anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: anon_cleanpage");
-        return -1;
+        /*NOT_YET_IMPLEMENTED("VM: anon_fillpage");*/
+        KASSERT(o != NULL);
+        KASSERT(pf != NULL);
+
+        int res = 0;
+
+        /* Fill the page frame starting at address pf->pf_addr with the
+         * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
+         * This may block.
+         * Return 0 on success and -errno otherwise.
+         */
+        /*
+        pframe_t *dest_pf = NULL;
+        res = o->mmo_ops->lookuppage(o, pf->pf_pagenum, 1, &dest_pf);
+        KASSERT(dest_pf);
+        if(res == 0){
+                memcpy(dest_pf->pf_addr, pf->pf_addr, PAGE_SIZE);
+                return 0;
+        }
+        */
+        return res;
 }

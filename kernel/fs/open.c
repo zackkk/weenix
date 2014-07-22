@@ -134,7 +134,7 @@ do_open(const char *filename, int oflags)
                 dbg(DBG_PRINT, "(GRADING2C) open_namev returned an error\n");
                 return res;
         }
-        if(flags & FMODE_WRITE && S_ISDIR(vno->vn_mode)){
+        if((flags & FMODE_WRITE) && S_ISDIR(vno->vn_mode)){
                 dbg(DBG_PRINT, "(GRADING2C) File is a directory and has write flag enabled (error)\n");
                 vput(vno);
                 return -EISDIR;
@@ -156,8 +156,7 @@ do_open(const char *filename, int oflags)
         /*Set field, ref count and vnode*/
         my_file->f_mode = flags;
         my_file->f_pos = 0;
-        
-        /*Assign file to process*/
+
         curproc->p_files[fd] = my_file;
         
         return fd;
