@@ -81,7 +81,9 @@ do_fork(struct regs *regs)
         vmmap_destroy(new_process->p_vmmap);
         
         /*clonde the vmmap...*/
-        new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
+        if(new_process->p_vmmap != NULL){
+                new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
+        }
         
         KASSERT(new_process->p_vmmap != NULL);                   /*correctly cloned*/
                                                                  
@@ -149,7 +151,49 @@ do_fork(struct regs *regs)
         int i = 0;
         for(i = 0; i < NFILES; i++){
                 new_process->p_files[i] = curproc->p_files[i];
+                
+                if(new_process->p_files[i] != NULL){
+                        fref(new_process->p_files[i]);
+                }
         }
+        
+
+        /*workin directory...*/
+        new_process->p_cwd = curproc->p_cwd;
+        vref(new_process->p_cwd);               /*increment reference count...*/
+                                
+        /*remove all translations to cause Page faults, so PF handler calls COW function*/                
+        pt_unmap_range(curproc->p_pagedir, USER_MEM_LOW, USER_MEM_HIGH);
+        tlb_flush_all();
+        
+        /*clone thread...*/
+        /*When we return from kthread_clone, we have a new context and stack...*/
+        kthread_t *cloned_thread = NULL;
+        
+        KASSERT(cloned_thread);
+        
+        /*Setup new thread's context...*/
+        /*make cloned text context point to new process pagedir, stack and stack size...*/
+        cloned_thread->kt_ctx.c_pdptr = new_process->p_pagedir;
+        cloned_thread->kt_ctx.c_kstack = (uintptr_t)cloned_thread->kt_kstack;
+        cloned_thread->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
+        
+        /*eip points to userland_entry*/
+        cloned_thread->kt_ctx.c_esp = fork_setup_stack(regs, cloned_thread->kt_kstack);
+        cloned_thread->kt_ctx.c_eip = (uintptr_t)userland_entry;
+        
+        /*add thread to new process and make it runnable*/
+        list_insert_head(&new_process->p_threads, &cloned_thread->kt_plink);
+        sched_make_runnable(cloned_thread);
+        
+                                             
+        /*add new process to curproc children...*/
+        list_insert_tail(&curproc->p_children, &new_process->p_child_link);
+       
+       /*set return value in each context...0 for child, and child_pid in the curproc...*/
+        kthread_t *curproc_thread = list_item(curproc->p_threads.l_next, kthread_t, kt_plink);
+
+
         
         return 0;
 }
