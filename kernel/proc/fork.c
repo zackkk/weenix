@@ -113,6 +113,9 @@ do_fork(struct regs *regs)
                         /*increase refcount, same for anon/shadow...*/
                         cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);
                         
+                        /*Add new area vmarea to vmbojt list...*/
+                        list_insert_tail(&cur_area->vma_obj->mmo_un.mmo_vmas, &newproc_cur_area->vma_olink);
+                        
                 }
                 else{
                         /*private mapping*/
@@ -156,11 +159,14 @@ do_fork(struct regs *regs)
                         fref(new_process->p_files[i]);
                 }
         }
-        
 
         /*workin directory...*/
         new_process->p_cwd = curproc->p_cwd;
         vref(new_process->p_cwd);               /*increment reference count...*/
+                                                 
+        /*copy the breaks*/
+        new_process->p_brk = curproc->p_brk;
+        new_process->p_start_brk = curproc->p_start_brk;
                                 
         /*remove all translations to cause Page faults, so PF handler calls COW function*/                
         pt_unmap_range(curproc->p_pagedir, USER_MEM_LOW, USER_MEM_HIGH);
@@ -178,9 +184,8 @@ do_fork(struct regs *regs)
         cloned_thread->kt_ctx.c_kstack = (uintptr_t)cloned_thread->kt_kstack;
         cloned_thread->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
         
-        /*eax for child*/
-        regs->r_eax = new_process->p_pid;
-
+        /*eax for child should be zero*/
+        regs->r_eax = 0;
         
         /*eip points to userland_entry*/
         cloned_thread->kt_ctx.c_esp = fork_setup_stack(regs, cloned_thread->kt_kstack);
@@ -198,8 +203,7 @@ do_fork(struct regs *regs)
        /*set return value in each context...0 for child, and child_pid in the curproc...*/
         kthread_t *curproc_thread = list_item(curproc->p_threads.l_next, kthread_t, kt_plink);
 
-        /*set EAX with return for parent process*/
-
-        
-        return 0;
+        /*set EAX with return for parent process: should be the pid of the parent process...*/
+        /*return from this function? for parent*/
+        return new_process->p_pid;
 }
