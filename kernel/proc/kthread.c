@@ -108,7 +108,6 @@ kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2)
         thr->kt_kstack = alloc_stack();
 	
 	KASSERT(thr->kt_kstack != NULL);
-	dbg(DBG_PRINT, "what!\n");
 
         context_setup(&thr->kt_ctx, func, arg1, arg2, thr->kt_kstack, DEFAULT_STACK_SIZE, p->p_pagedir);
 

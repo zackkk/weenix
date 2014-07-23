@@ -101,32 +101,24 @@ static void
 anon_put(mmobj_t *o)
 {
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
-        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL\n");
+        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymous object refcount > 0 and ops are not NULL\n");
+
         o->mmo_refcount--;
-
-        /*Check if recount == respages*/
-        if(o->mmo_refcount == o->mmo_nrespages){
-                dbg(DBG_PRINT, "(GRADING3E) Anonymus object refcount == nrespages\n");
-
-                pframe_t *frame = NULL;
-                list_link_t *link = o->mmo_respages.l_next;    /*First element*/
-
-                /*iterate through pages..*/
-                /*Uncache and unpin*/
-                while(link != &(o->mmo_respages)){
-                        frame = list_item(link, pframe_t, pf_olink);
-                        list_remove(link);
-                        KASSERT(NULL != frame);
-                        pframe_unpin(frame);    /*Unpin frame*/
-                        pframe_free(frame);     /*CHECK: free frame??*/
-                        link = link->l_next;
-                }
-        }
-
-        /*Free the object...*/
-        slab_obj_free(anon_allocator, o);
-        anon_count--;
-
+		if (o->mmo_nrespages == o->mmo_refcount) {
+			pframe_t *p;
+			 dbg(DBG_PRINT, "1\n");
+			list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
+				dbg(DBG_PRINT, "2\n");
+				while (pframe_is_busy(p))
+					sched_sleep_on(&(p->pf_waitq));
+				dbg(DBG_PRINT, "3\n");
+				pframe_unpin(p);
+				dbg(DBG_PRINT, "4\n");
+				pframe_free(p);
+				dbg(DBG_PRINT, "5\n");
+			} list_iterate_end();
+			anon_count--;
+		}
         return;
 }
 

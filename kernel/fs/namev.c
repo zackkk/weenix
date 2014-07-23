@@ -85,7 +85,7 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
                 dbg(DBG_PRINT, "(GRADING2C) File name is too long\n");
                 return -ENAMETOOLONG;
         }
-        
+
         /*look up file '/dir', use argument 'dir' to get the file system in ramfs.c lookup*/
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/

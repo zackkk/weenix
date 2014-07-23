@@ -263,6 +263,8 @@ pframe_alloc(mmobj_t *o, uint32_t pagenum)
         o->mmo_nrespages++;
         list_insert_head(&o->mmo_respages, &pf->pf_olink);
 
+        /* dbg(DBG_PRINT, "page num:%d, &o->mmo_respages:%p, pf_olink addr:%p\n", pagenum, &o->mmo_respages, &pf->pf_olink);*/
+
         return pf;
 }
 
@@ -423,6 +425,8 @@ pframe_pin(pframe_t *pf)
 
 	/*increment pf_pincount*/
 	pf->pf_pincount++;
+
+	dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
 }
 
 /*
@@ -441,10 +445,11 @@ pframe_unpin(pframe_t *pf)
 	
 	KASSERT(!pframe_is_free(pf));
 	KASSERT(pf->pf_pincount > 0);
-	dbg(DBG_PRINT,"(GRADING3E) pframe_unpin(): assertions passed\n");
 		
 	/*decrement pf_pincount*/
 	pf->pf_pincount--;
+
+	dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
 
 	if(pf->pf_pincount == 0){
 		/*remove from pinned list*/
@@ -566,12 +571,7 @@ pframe_free(pframe_t *pf)
         page_free(pf->pf_addr);
         slab_obj_free(pframe_allocator, pf);
         o->mmo_nrespages--;
-        dbg(DBG_PRINT, "1\n");
-        KASSERT(&pf->pf_olink);
-        dbg(DBG_PRINT, "2\n");
-        dbg(DBG_PRINT, "olink addr %p\n", &pf->pf_olink);
         list_remove(&pf->pf_olink);
-        dbg(DBG_PRINT, "3\n");
         /* Now that pf has effectively been freed, dereference the corresponding
          * object. We don't do this earlier as we are modifying the object's counts
          * and also because this op can block */
