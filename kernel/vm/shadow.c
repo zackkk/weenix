@@ -65,7 +65,7 @@ shadow_init()
 {
         shadow_allocator = slab_allocator_create("shadow_mmobj", sizeof(mmobj_t));
         KASSERT(NULL != shadow_allocator);
-        dbg(DBG_PRINT,"(GRADING3A 6.a) Failed to create shadow allocator!\n");
+        dbg(DBG_PRINT,"(GRADING3A 6.a) Initialized shadow_allocator object.\n");
 }
 
 /*
@@ -80,9 +80,9 @@ shadow_create()
 		mmobj_t *new_shadow = (mmobj_t *) slab_obj_alloc(shadow_allocator);
 		KASSERT(NULL != new_shadow);
 		mmobj_init(new_shadow, &shadow_mmobj_ops);
-		new_shadow->mmo_un.mmo_bottom_obj = NULL; /* this field has not been initialized in mmobj_init */
-		shadow_count++;
+		shadow_count++; /* global variable for debugging purpose */
 		new_shadow->mmo_refcount = 1;
+		dbg(DBG_PRINT,"(GRADING3E) Initialized shadow object.\n");
         return new_shadow;
 }
 
@@ -95,7 +95,7 @@ static void
 shadow_ref(mmobj_t *o)
 {
 		KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
-		dbg(DBG_PRINT,"(GRADING3A 6.b) Failed to ref shadow !\n");
+		dbg(DBG_PRINT,"(GRADING3A 6.b) Referencing shadow object at %p!\n", o);
 	    o->mmo_refcount++;
 }
 
@@ -111,7 +111,7 @@ static void
 shadow_put(mmobj_t *o)
 {
 		KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
-		dbg(DBG_PRINT,"(GRADING3A 6.c) Failed to put shadow !\n");
+		dbg(DBG_PRINT,"(GRADING3A 6.c) Putting shadow object at %p!\n", o);
 
 		o->mmo_refcount--;
 		if (0 == o->mmo_refcount) {
@@ -124,9 +124,10 @@ shadow_put(mmobj_t *o)
 		    } list_iterate_end();
 
 		    KASSERT(0 == o->mmo_refcount);
-		    list_remove(&o->mmo_un.mmo_vmas); /* remove from list of all vm_areas that have this obj */
-		    slab_obj_free(shadow_allocator, o);
+		    /* decrease the ref count of its child in the shadow chain */
+		    o->mmo_shadowed->mmo_ops->put(o->mmo_shadowed);
 		    shadow_count--;
+		    slab_obj_free(shadow_allocator, o);
 		}
 		return;
 }
@@ -143,10 +144,7 @@ shadow_put(mmobj_t *o)
 static int
 shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-	
-	
-	/*need to pin the pframe*/
-	
+		KASSERT(o);
 	
 		/* being looked up for writing */
 		if(forwrite){
@@ -184,10 +182,11 @@ static int
 shadow_fillpage(mmobj_t *o, pframe_t *pf)
 {
         KASSERT(pframe_is_busy(pf));
-        dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is not busy !\n");
+        dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is busy.\n");
         KASSERT(!pframe_is_pinned(pf));
-        dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is pinned !\n");
+        dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is not pinned yet\n");
 
+        o->mmo_shadowed;
         while(o != mmobj_bottom_obj(o)){
         	/*
         	 * Take that data if there is a shadow object which has data for the pf->pf_pagenum-th page,
