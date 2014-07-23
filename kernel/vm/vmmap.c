@@ -568,43 +568,44 @@ vmmap_is_range_empty(vmmap_t *map, uint32_t startvfn, uint32_t npages)
 int
 vmmap_read(vmmap_t *map, const void *vaddr, void *buf, size_t count)
 {
-        if(list_empty(&(map->vmm_list)))
-        {
-               return -1;/*what should be return?*/
-        }
-        /*find the vmareas to read from*/
-        vmarea_t * vmarea;
-        uint32_t areavfn = ADDR_TO_PN(vaddr);
+		dbg(DBG_PRINT, "vmmap_read: starts\n");
+		KASSERT(map);
+		KASSERT(!list_empty(&(map->vmm_list)));
+		vmarea_t *vmarea = NULL;
 
-        while(count>0)
-        {
-               vmarea = vmmap_lookup(map,areavfn);
-               if(vmarea==NULL)
-               {
-                      return -1;
-               }
+		while (count > 0){
+			dbg(DBG_PRINT, "vmmap_read: count:%d\n",count);
+			uint32_t pageoff = PAGE_OFFSET(vaddr); /* vaddr is updating */
 
-        /*find the pframes within those vmareas corresponding to the virtual addresses you want to read*/
-               pframe_t * result;
-               int ret =pframe_get(vmarea->vma_obj, ADDR_TO_PN(vaddr), &result);
-               if(ret<0)
-               {
-                      return ret;
-               }
+			/* find vmarea */
+			vmarea = vmmap_lookup(map, ADDR_TO_PN(vaddr));
+			KASSERT(vmarea);
+			KASSERT(vmarea->vma_obj);
 
-        /*read from the physical memory that pframe points to*/
-               if(count>PAGE_SIZE)
-               {
-                      memcpy((char *)buf, (char *)pt_virt_to_phys((uintptr_t)result->pf_addr),PAGE_SIZE);
-               }
-               else
-               {
-                      memcpy((char *)buf, (char *)pt_virt_to_phys((uintptr_t)result->pf_addr),count);
-               }
-               count -= PAGE_SIZE;
-               areavfn++;
-        }
-        return 0;
+			/* find pframe */
+			pframe_t *pf = NULL;
+			int ret = pframe_get(vmarea->vma_obj, ADDR_TO_PN(vaddr) + vmarea->vma_off - vmarea->vma_start, &pf);
+			KASSERT(ret == 0);
+			pframe_dirty(pf);
+
+			/* read from the physical memory that pframe points to*/
+			/* pf->pf_addr is page-aligned according to vcleanpage in vnode.c */
+			if(count > PAGE_SIZE - pageoff){
+				  memcpy((char *)buf, (char *)pf->pf_addr + pageoff, PAGE_SIZE - pageoff);
+				  count -= (PAGE_SIZE - pageoff);
+				  vaddr = (char *)vaddr + (PAGE_SIZE - pageoff);
+				  buf = (char *)buf + (PAGE_SIZE - pageoff);
+				  continue;
+			}
+			else{
+				  memcpy((char *)buf, (char *)pf->pf_addr + pageoff, count);
+				  vaddr = (char *)vaddr + count;
+				  buf = (char *)buf + count;
+				  break;
+			}
+		}
+		dbg(DBG_PRINT, "vmmap_read: succeed\n");
+		return 0;
 }
 
 /* Write from 'buf' into the virtual address space of 'map' starting at
@@ -639,6 +640,7 @@ vmmap_write(vmmap_t *map, void *vaddr, const void *buf, size_t count)
 			pframe_dirty(pf);
 
 			/* read from the physical memory that pframe points to*/
+			/* pf->pf_addr is page-aligned according to vcleanpage in vnode.c */
 			if(count > PAGE_SIZE - pageoff){
 				  memcpy((char *)pf->pf_addr + pageoff, (char *)buf, PAGE_SIZE - pageoff);
 				  count -= (PAGE_SIZE - pageoff);
