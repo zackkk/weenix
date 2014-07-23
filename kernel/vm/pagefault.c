@@ -102,15 +102,7 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
 		KASSERT(vmarea_pagenum);
 		mmobj_pagenum = vmarea_pagenum + vma->vma_off - vma->vma_start;
 		res = pframe_lookup(vma->vma_obj, mmobj_pagenum, forwrite, &pf);
-		
-		
-		/*pin - figure out a better place*/
-		pframe_pin(pf);
-		
-		
-		
-		
-		
+
 		KASSERT(res == 0);
 		if(forwrite){
 			pframe_dirty(pf);
