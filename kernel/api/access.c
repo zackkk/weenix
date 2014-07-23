@@ -133,30 +133,28 @@ fail:
  */
 int addr_perm(struct proc *p, const void *vaddr, int perm)
 {
+	KASSERT(p);
+	KASSERT(vaddr);
+	KASSERT(p->p_vmmap);
 	/*vaddr is an address, put that address in a uint32_t, use to call vmmap_lookup*/
 	uint32_t addr = (uint32_t) vaddr;
-	int vfn = ((addr - (addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
-	
-	/*be sure p->p_vmmap is not NULL */
-	if(p->p_vmmap) {
+	uint32_t vfn = ((addr - (addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
 		
-		vmarea_t *addrArea;
-		/*check that the area looked up is not NULL*/
-		if((addrArea = vmmap_lookup(p->p_vmmap, vfn)) != NULL) {
-			/*finally, check permission level*/
-			if((addrArea->vma_prot) >= perm) {
-				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful\n");
-				return 1;
-			}
-			else {
-				dbg(DBG_PRINT,"(GRADING3E) addr_perm(): permission denied\n");
-				return 0;
-			}
+	vmarea_t *addrArea;
+	/*check that the area looked up is not NULL*/
+	if((addrArea = vmmap_lookup(p->p_vmmap, vfn)) != NULL) {
+		/*finally, check permission level*/
+		if((addrArea->vma_prot) >= perm) {
+			dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful\n");
+			return 1;
 		}
-	
+		else {
+			dbg(DBG_PRINT,"(GRADING3E) addr_perm(): permission denied\n");
+			return 0;
+		}
 	}
 	
-	dbg(DBG_PRINT,"(GRADING3E) addr_perm(): unsuccessful\n");
+	dbg(DBG_PRINT,"(GRADING3E) addr_perm(): vmarea NULL\n");
 	return 0;
 }
 
