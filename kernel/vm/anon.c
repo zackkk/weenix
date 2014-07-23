@@ -52,7 +52,7 @@ anon_init()
 {
         anon_allocator = slab_allocator_create("anon-alloc", sizeof(mmobj_t));
         KASSERT(anon_allocator);
-        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully\n");
+        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymous object allocator initialized successfully\n");
         return;
 }
 
@@ -71,7 +71,7 @@ anon_create()
         anon_count++;
         mmobj_init(object, &anon_mmobj_ops);
         object->mmo_refcount = 1;
-        dbg(DBG_PRINT,"address of respages (anon create) is %p", &object->mmo_respages);
+        dbg(DBG_PRINT,"(GRADING3E) address of respages (anon create) is %p", &object->mmo_respages);
         return object;
 }
 
@@ -84,7 +84,7 @@ static void
 anon_ref(mmobj_t *o)
 {
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
-        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL\n");
+        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymous object refcount > 0 and ops are not NULL\n");
         o->mmo_refcount++;
         return;
 }
@@ -106,16 +106,11 @@ anon_put(mmobj_t *o)
         o->mmo_refcount--;
 		if (o->mmo_nrespages == o->mmo_refcount) {
 			pframe_t *p;
-			 dbg(DBG_PRINT, "1\n");
 			list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
-				dbg(DBG_PRINT, "2\n");
-				while (pframe_is_busy(p))
-					sched_sleep_on(&(p->pf_waitq));
-				dbg(DBG_PRINT, "3\n");
+				/* while (pframe_is_busy(p))
+					sched_sleep_on(&(p->pf_waitq)); */
 				pframe_unpin(p);
-				dbg(DBG_PRINT, "4\n");
 				pframe_free(p);
-				dbg(DBG_PRINT, "5\n");
 			} list_iterate_end();
 			anon_count--;
 		}
@@ -127,22 +122,22 @@ anon_put(mmobj_t *o)
 static int
 anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-		/* no read/write issues for anonymous objects */
         KASSERT(o != NULL);
         int found_flag = 0;
+
+        /* will create new if it doesn't exist */
         found_flag = pframe_get(o, pagenum, pf);
 
-        /*We didn't find page with given pagenumber*/
+        /*We didn't find page with given page number*/
         if(found_flag != 0){
-                /*TODO set error*/
                 *pf = NULL;
-                return -ENOENT;
+                return -1;
         }
         else{
                 return found_flag;
         }
 
-        return -1;
+        KASSERT(0);/* should never reach to this point */
 }
 
 /* The following three functions should not be difficult. */
@@ -150,8 +145,11 @@ anon_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 static int
 anon_fillpage(mmobj_t *o, pframe_t *pf)
 {
-        KASSERT(o != NULL);
-        KASSERT(pf != NULL);
+        KASSERT(pframe_is_busy(pf));
+        dbg(DBG_PRINT, "(GRADING3A 4.d) pframe is busy\n");
+        KASSERT(!pframe_is_pinned(pf));
+        dbg(DBG_PRINT, "(GRADING3A 4.d) pframe is not pinned yet\n");
+
         int res = 0;
         memset(pf->pf_addr, 0, PAGE_SIZE);
         pframe_pin(pf);
@@ -162,6 +160,7 @@ static int
 anon_dirtypage(mmobj_t *o, pframe_t *pf)
 {
         KASSERT(o != NULL);
+        KASSERT(pf != NULL);
         int res = 0;
         return res;
 }
@@ -171,9 +170,8 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
 {
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
-
         int res = 0;
-
+        return res;
         /* Fill the page frame starting at address pf->pf_addr with the
          * contents of the page identified by pf->pf_obj and pf->pf_pagenum.
          * This may block.
@@ -188,5 +186,4 @@ anon_cleanpage(mmobj_t *o, pframe_t *pf)
                 return 0;
         }
         */
-        return res;
 }
