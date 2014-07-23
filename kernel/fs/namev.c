@@ -85,12 +85,16 @@ lookup(vnode_t *dir, const char *name, size_t len, vnode_t **result)
                 return -ENAMETOOLONG;
         }
         
+        dbg(DBG_PRINT, "dir: %s\n", dir->vn_fs->fs_type);
+        dbg(DBG_PRINT, "buffer: %s\n", buffer);
+        dbg(DBG_PRINT, "tmplen: %d\n", tmplen);
+
         /*look up file '/dir', use argument 'dir' to get the file system in ramfs.c lookup*/
         /* . and .. are part of the directory entry?? CHECK*/
         /*should return the vnode of name, that's in the current dir*/
         res = dir->vn_ops->lookup(dir, buffer, tmplen, result); /*this will increase result refcount */
 
-
+        dbg(DBG_PRINT, "bbb\n");
         return res;
 }
 
