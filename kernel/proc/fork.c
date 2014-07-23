@@ -164,44 +164,48 @@ do_fork(struct regs *regs)
         new_process->p_cwd = curproc->p_cwd;
         vref(new_process->p_cwd);               /*increment reference count...*/
                                                  
-        /*copy the breaks*/
+        
+            
+        /*copy some fields from parent process.*/
         new_process->p_brk = curproc->p_brk;
         new_process->p_start_brk = curproc->p_start_brk;
-                                
+        new_process->p_state = curproc->p_state;
+        new_process->p_status = curproc->p_status;
+        
+        KASSERT(new_process->p_state == PROC_RUNNING);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process state is PROC_RUNNING\n");
+        KASSERT(new_process->p_pagedir != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process page directory is not NULL\n");
+                                        
         /*remove all translations to cause Page faults, so PF handler calls COW function*/                
         pt_unmap_range(curproc->p_pagedir, USER_MEM_LOW, USER_MEM_HIGH);
         tlb_flush_all();
         
         /*clone thread...*/
         /*When we return from kthread_clone, we have a new context and stack...*/
-        kthread_t *cloned_thread = NULL;
-        
-        KASSERT(cloned_thread);
+        kthread_t *newthr = NULL;
+        KASSERT(newthr->kt_kstack != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) Cloned thread stack is not NULL\n");
         
         /*Setup new thread's context...*/
         /*make cloned text context point to new process pagedir, stack and stack size...*/
-        cloned_thread->kt_ctx.c_pdptr = new_process->p_pagedir;
-        cloned_thread->kt_ctx.c_kstack = (uintptr_t)cloned_thread->kt_kstack;
-        cloned_thread->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
+        newthr->kt_ctx.c_pdptr = new_process->p_pagedir;
+        newthr->kt_ctx.c_kstack = (uintptr_t)newthr->kt_kstack;
+        newthr->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
         
         /*eax for child should be zero*/
         regs->r_eax = 0;
         
         /*eip points to userland_entry*/
-        cloned_thread->kt_ctx.c_esp = fork_setup_stack(regs, cloned_thread->kt_kstack);
-        cloned_thread->kt_ctx.c_eip = (uintptr_t)userland_entry;
-        cloned_thread->kt_ctx.c_esp -= sizeof(uintptr_t);
-        
-        /*add thread to new process and make it runnable*/
-        list_insert_head(&new_process->p_threads, &cloned_thread->kt_plink);
-        sched_make_runnable(cloned_thread);
-        
+        newthr->kt_ctx.c_esp = fork_setup_stack(regs, newthr->kt_kstack);
+        newthr->kt_ctx.c_eip = (uintptr_t)userland_entry;
                                              
         /*add new process to curproc children...*/
         list_insert_tail(&curproc->p_children, &new_process->p_child_link);
-       
-       /*set return value in each context...0 for child, and child_pid in the curproc...*/
-        kthread_t *curproc_thread = list_item(curproc->p_threads.l_next, kthread_t, kt_plink);
+        
+        /*add thread to new process and make it runnable*/
+        list_insert_head(&new_process->p_threads, &newthr->kt_plink);
+        sched_make_runnable(newthr);
 
         /*set EAX with return for parent process: should be the pid of the parent process...*/
         /*return from this function? for parent*/

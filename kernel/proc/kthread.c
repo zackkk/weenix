@@ -195,17 +195,21 @@ kthread_exit(void *retval)
 kthread_t *
 kthread_clone(kthread_t *thr)
 {
+	
+	KASSERT(KT_RUN == thr->kt_state);
+        dbg(DBG_PRINT, "(GRADING3A 8.a) Thread to be cloned state is KT_RUN\n");
+	
         /*NOT_YET_IMPLEMENTED("VM: kthread_clone");*/
-        kthread_t *cloned_thr = NULL;
+        kthread_t *new_thr = NULL;
 
 	/*Create new thread*/
-	cloned_thr = slab_obj_alloc(kthread_allocator);
+	new_thr = slab_obj_alloc(kthread_allocator);
 
 	KASSERT(thr != NULL);
 
 	/*new context and stack...*/
-	thr->kt_kstack = alloc_stack();
-	KASSERT(thr->kt_kstack != NULL);
+	new_thr->kt_kstack = alloc_stack();
+	KASSERT(new_thr->kt_kstack != NULL);
 
 	/*New context... EBP points to correct place in stack after returning from this function*/
 	/*context_setup(&cloned_thr->kt_ctx, NULL, NULL, NULL, cloned_thr->kt_kstack, DEFAULT_STACK_SIZE, thr->kt_proc->p_pagedir); */
@@ -230,15 +234,18 @@ kthread_clone(kthread_t *thr)
 	/**(context_func_t *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t)) = *(context_func_t *)(thr->kt_ctx.c_ebp - sizeof(context_func_t));*/
 		
 	/*init other values..*/
-	cloned_thr->kt_retval = thr->kt_retval;
-	cloned_thr->kt_errno = thr->kt_errno;
-	cloned_thr->kt_cancelled = thr->kt_cancelled;
-	cloned_thr->kt_wchan = NULL;		/*Same wait queue?*/
-	cloned_thr->kt_proc = NULL;			/*Single thread per process. Assign to current process?? Newly created proess..?*/
-	cloned_thr->kt_state = thr->kt_state;   	/*Copy state...?*/
+	new_thr->kt_retval = thr->kt_retval;
+	new_thr->kt_errno = thr->kt_errno;
+	new_thr->kt_cancelled = thr->kt_cancelled;
+	new_thr->kt_wchan = NULL;		/*Same wait queue?*/
+	new_thr->kt_proc = NULL;			/*Single thread per process. Assign to current process?? Newly created proess..?*/
+	new_thr->kt_state = thr->kt_state;   	/*Copy state...?*/
+							 
+	KASSERT(KT_RUN == new_thr->kt_state);
+        dbg(DBG_PRINT, "(GRADING3A 8.a) Cloned thread state is KT_RUN\n");
 
 		
-        return cloned_thr;
+        return new_thr;
 }
 
 /*
