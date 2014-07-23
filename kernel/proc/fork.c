@@ -178,9 +178,14 @@ do_fork(struct regs *regs)
         cloned_thread->kt_ctx.c_kstack = (uintptr_t)cloned_thread->kt_kstack;
         cloned_thread->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
         
+        /*eax for child*/
+        regs->r_eax = new_process->p_pid;
+
+        
         /*eip points to userland_entry*/
         cloned_thread->kt_ctx.c_esp = fork_setup_stack(regs, cloned_thread->kt_kstack);
         cloned_thread->kt_ctx.c_eip = (uintptr_t)userland_entry;
+        cloned_thread->kt_ctx.c_esp -= sizeof(uintptr_t);
         
         /*add thread to new process and make it runnable*/
         list_insert_head(&new_process->p_threads, &cloned_thread->kt_plink);
@@ -193,6 +198,7 @@ do_fork(struct regs *regs)
        /*set return value in each context...0 for child, and child_pid in the curproc...*/
         kthread_t *curproc_thread = list_item(curproc->p_threads.l_next, kthread_t, kt_plink);
 
+        /*set EAX with return for parent process*/
 
         
         return 0;
