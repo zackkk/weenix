@@ -55,6 +55,7 @@ int binfmt_add(const char *id, binfmt_load_func_t loadfunc)
 int binfmt_load(const char *filename, char *const *argv, char *const *envp, uint32_t *eip, uint32_t *esp)
 {
         int err, fd = -1;
+        
         if (0 > (fd = do_open(filename, O_RDONLY))) {
                 dbg(DBG_EXEC, "ERROR: exec failed to open file %s\n", filename);
                 return fd;
@@ -72,7 +73,6 @@ int binfmt_load(const char *filename, char *const *argv, char *const *envp, uint
         }
         fput(file);
         file = NULL;
-
         struct binfmt *fmt;
         list_iterate_begin(&binfmt_list, fmt, struct binfmt, bf_link) {
                 dbg(DBG_EXEC, "Trying to exec %s using binary loader %s\n", filename, fmt->bf_id);

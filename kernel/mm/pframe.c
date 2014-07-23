@@ -263,6 +263,8 @@ pframe_alloc(mmobj_t *o, uint32_t pagenum)
         o->mmo_nrespages++;
         list_insert_head(&o->mmo_respages, &pf->pf_olink);
 
+        /* dbg(DBG_PRINT, "page num:%d, &o->mmo_respages:%p, pf_olink addr:%p\n", pagenum, &o->mmo_respages, &pf->pf_olink);*/
+
         return pf;
 }
 
@@ -319,7 +321,6 @@ pframe_fill(pframe_t *pf)
         pframe_set_busy(pf);
         ret = pf->pf_obj->mmo_ops->fillpage(pf->pf_obj, pf);
         pframe_clear_busy(pf);
-
         sched_broadcast_on(&pf->pf_waitq);
 
         return ret;
@@ -348,9 +349,9 @@ pframe_fill(pframe_t *pf)
 int
 pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 {
+	KASSERT(o);
 	/*try to get pframe from resident memory*/
 	pframe_t *pframe = pframe_get_resident(o, pagenum);
-	
 	/*only return the pframe if it isn't NULL and isn't busy*/
 	while((pframe == NULL) || (pframe->pf_flags == PF_BUSY)) {
 		
@@ -363,9 +364,8 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 			/*get new pframe*/
 			if((pframe = pframe_alloc(o, pagenum)) == NULL)
 				return -1;
-			
 			/*fill in new pframe, mark as busy during operation*/
-			pframe->pf_flags = PF_BUSY;
+			pframe_set_busy(pframe);
 			if(pframe_fill(pframe) != 0)
 				return -1;
 			pframe->pf_flags = 0;
@@ -425,6 +425,8 @@ pframe_pin(pframe_t *pf)
 
 	/*increment pf_pincount*/
 	pf->pf_pincount++;
+
+	dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
 }
 
 /*
@@ -443,10 +445,11 @@ pframe_unpin(pframe_t *pf)
 	
 	KASSERT(!pframe_is_free(pf));
 	KASSERT(pf->pf_pincount > 0);
-	dbg(DBG_PRINT,"(GRADING3E) pframe_unpin(): assertions passed\n");
 		
 	/*decrement pf_pincount*/
 	pf->pf_pincount--;
+
+	dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
 
 	if(pf->pf_pincount == 0){
 		/*remove from pinned list*/
@@ -567,10 +570,8 @@ pframe_free(pframe_t *pf)
 
         page_free(pf->pf_addr);
         slab_obj_free(pframe_allocator, pf);
-
         o->mmo_nrespages--;
         list_remove(&pf->pf_olink);
-
         /* Now that pf has effectively been freed, dereference the corresponding
          * object. We don't do this earlier as we are modifying the object's counts
          * and also because this op can block */

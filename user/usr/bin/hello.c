@@ -11,9 +11,9 @@
 int main(int argc, char **argv)
 {
         open("/dev/tty0", O_RDONLY, 0);
-        open("/dev/tty0", O_WRONLY, 0);
+        /*open("/dev/tty0", O_WRONLY, 0);*/
 
-        write(1, "Hello, world!\n", 14);
+        /*write(1, "Hello, world!\n", 14);*/
 
         return 0;
 }

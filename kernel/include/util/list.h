@@ -98,7 +98,7 @@ typedef struct list {
 
 #define list_remove(link)                                               \
         do {                                                            \
-                list_link_t *ll = (link);                               \
+                list_link_t *ll = (link);        						\
                 list_link_t *prev = ll->l_prev;                         \
                 list_link_t *next = ll->l_next;                         \
                 prev->l_next = next;                                    \
