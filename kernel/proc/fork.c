@@ -86,6 +86,18 @@ do_fork(struct regs *regs)
         }
         
         KASSERT(new_process->p_vmmap != NULL);                   /*correctly cloned*/
+                                                                  
+        /*clone thread...*/
+        /*When we return from kthread_clone, we have a new context and stack...*/
+        kthread_t *newthr = NULL;
+        kthread_clone(list_item(&curproc->p_threads.l_next, kthread_t, kt_plink));
+        
+        if(newthr == NULL){
+                /*clean up...*/
+                vmmap_destroy(new_process->p_vmmap);
+                /*how to destroy process..??*/
+                return -1;
+        }
                                                                  
         /*Now we need to increment refcount of all object in vmmareas...*/
         list_link_t *area_link= NULL;
@@ -159,31 +171,11 @@ do_fork(struct regs *regs)
                         fref(new_process->p_files[i]);
                 }
         }
-
-        /*workin directory...*/
-        new_process->p_cwd = curproc->p_cwd;
-        vref(new_process->p_cwd);               /*increment reference count...*/
-                                                 
-        
-            
-        /*copy some fields from parent process.*/
-        new_process->p_brk = curproc->p_brk;
-        new_process->p_start_brk = curproc->p_start_brk;
-        new_process->p_state = curproc->p_state;
-        new_process->p_status = curproc->p_status;
-        
-        KASSERT(new_process->p_state == PROC_RUNNING);
-        dbg(DBG_PRINT, "(GRADING3A 7.a) New process state is PROC_RUNNING\n");
-        KASSERT(new_process->p_pagedir != NULL);
-        dbg(DBG_PRINT, "(GRADING3A 7.a) New process page directory is not NULL\n");
                                         
         /*remove all translations to cause Page faults, so PF handler calls COW function*/                
         pt_unmap_range(curproc->p_pagedir, USER_MEM_LOW, USER_MEM_HIGH);
         tlb_flush_all();
         
-        /*clone thread...*/
-        /*When we return from kthread_clone, we have a new context and stack...*/
-        kthread_t *newthr = NULL;
         KASSERT(newthr->kt_kstack != NULL);
         dbg(DBG_PRINT, "(GRADING3A 7.a) Cloned thread stack is not NULL\n");
         
@@ -199,6 +191,21 @@ do_fork(struct regs *regs)
         /*eip points to userland_entry*/
         newthr->kt_ctx.c_esp = fork_setup_stack(regs, newthr->kt_kstack);
         newthr->kt_ctx.c_eip = (uintptr_t)userland_entry;
+        
+        /*Once thread is successfully cloned, we can set fields of the process*/
+        /*workin directory...*/
+        new_process->p_cwd = curproc->p_cwd;
+        vref(new_process->p_cwd);               /*increment reference count...*/
+                                                 
+        /*copy some fields from parent process.*/
+        new_process->p_brk = curproc->p_brk;
+        new_process->p_start_brk = curproc->p_start_brk;
+        new_process->p_status = curproc->p_status;
+        
+        KASSERT(new_process->p_state == PROC_RUNNING);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process state is PROC_RUNNING\n");
+        KASSERT(new_process->p_pagedir != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process page directory is not NULL\n");
                                              
         /*add new process to curproc children...*/
         list_insert_tail(&curproc->p_children, &new_process->p_child_link);
