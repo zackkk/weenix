@@ -68,7 +68,7 @@ int
 do_brk(void *addr, void **ret)
 {
 
-        /*If we request the same, just return*/
+        /*If we request the same address, just return*/
         if(addr == curproc->p_brk){
                 return 0;               /*Do nothing*/
         }
@@ -197,7 +197,7 @@ do_brk(void *addr, void **ret)
                                         /*range is empty, we can add new vmarea*/
                                         /*Offset must be zero (since whatever extra space we need, will start at the next area's first page boundary*/
                                         vmmap_map(curproc->p_vmmap, NULL, cur_brk_vmarea->vma_end + 1, req_addr_vfn - cur_brk_vmarea->vma_end,
-                                                  PROT_EXEC | PROT_READ, MAP_PRIVATE, 0, 0, &result);
+                                                  PROT_WRITE | PROT_READ, MAP_PRIVATE, 0, 0, &result);
 
                                         if(result != NULL){
                                                 curproc->p_brk = addr;
