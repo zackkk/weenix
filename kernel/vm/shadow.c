@@ -82,6 +82,7 @@ shadow_create()
 		mmobj_init(new_shadow, &shadow_mmobj_ops);
 		new_shadow->mmo_un.mmo_bottom_obj = NULL; /* this field has not been initialized in mmobj_init */
 		shadow_count++;
+		new_shadow->mmo_refcount = 1;
         return new_shadow;
 }
 
@@ -142,6 +143,11 @@ shadow_put(mmobj_t *o)
 static int
 shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
+	
+	
+	/*need to pin the pframe*/
+	
+	
 		/* being looked up for writing */
 		if(forwrite){
 			return pframe_get(o, pagenum, pf);

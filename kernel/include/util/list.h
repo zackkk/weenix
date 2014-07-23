@@ -98,8 +98,10 @@ typedef struct list {
 
 #define list_remove(link)                                               \
         do {                                                            \
-                list_link_t *ll = (link);                               \
+                list_link_t *ll = (link);        						\
+				dbg(DBG_PRINT,"prev addr %p and prev points to%p\n", &ll->l_prev, ll->l_prev);\
                 list_link_t *prev = ll->l_prev;                         \
+                dbg(DBG_PRINT,"next addr %p and next points to%p\n", &ll->l_next, ll->l_next);\
                 list_link_t *next = ll->l_next;                         \
                 prev->l_next = next;                                    \
                 next->l_prev = prev;                                    \

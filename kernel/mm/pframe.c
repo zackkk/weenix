@@ -319,7 +319,6 @@ pframe_fill(pframe_t *pf)
         pframe_set_busy(pf);
         ret = pf->pf_obj->mmo_ops->fillpage(pf->pf_obj, pf);
         pframe_clear_busy(pf);
-
         sched_broadcast_on(&pf->pf_waitq);
 
         return ret;
@@ -348,9 +347,9 @@ pframe_fill(pframe_t *pf)
 int
 pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 {
+	KASSERT(o);
 	/*try to get pframe from resident memory*/
 	pframe_t *pframe = pframe_get_resident(o, pagenum);
-	
 	/*only return the pframe if it isn't NULL and isn't busy*/
 	while((pframe == NULL) || (pframe->pf_flags == PF_BUSY)) {
 		
@@ -363,9 +362,8 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 			/*get new pframe*/
 			if((pframe = pframe_alloc(o, pagenum)) == NULL)
 				return -1;
-			
 			/*fill in new pframe, mark as busy during operation*/
-			pframe->pf_flags = PF_BUSY;
+			pframe_set_busy(pframe);
 			if(pframe_fill(pframe) != 0)
 				return -1;
 			pframe->pf_flags = 0;
@@ -567,10 +565,13 @@ pframe_free(pframe_t *pf)
 
         page_free(pf->pf_addr);
         slab_obj_free(pframe_allocator, pf);
-
         o->mmo_nrespages--;
+        dbg(DBG_PRINT, "1\n");
+        KASSERT(&pf->pf_olink);
+        dbg(DBG_PRINT, "2\n");
+        dbg(DBG_PRINT, "olink addr %p\n", &pf->pf_olink);
         list_remove(&pf->pf_olink);
-
+        dbg(DBG_PRINT, "3\n");
         /* Now that pf has effectively been freed, dereference the corresponding
          * object. We don't do this earlier as we are modifying the object's counts
          * and also because this op can block */

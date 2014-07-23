@@ -52,7 +52,7 @@ anon_init()
 {
         anon_allocator = slab_allocator_create("anon-alloc", sizeof(mmobj_t));
         KASSERT(anon_allocator);
-        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully");
+        dbg(DBG_PRINT, "(GRADING3A 4.a) Anonymus object allocator initialized successfully\n");
         return;
 }
 
@@ -70,6 +70,8 @@ anon_create()
         KASSERT(object);
         anon_count++;
         mmobj_init(object, &anon_mmobj_ops);
+        object->mmo_refcount = 1;
+        dbg(DBG_PRINT,"address of respages (anon create) is %p", &object->mmo_respages);
         return object;
 }
 
@@ -82,7 +84,7 @@ static void
 anon_ref(mmobj_t *o)
 {
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
-        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL");
+        dbg(DBG_PRINT, "(GRADING3A 4.b) Anonymus object refcount > 0 and ops are not NULL\n");
         o->mmo_refcount++;
         return;
 }
@@ -99,12 +101,12 @@ static void
 anon_put(mmobj_t *o)
 {
         KASSERT(o && (0 < o->mmo_refcount) && (&anon_mmobj_ops == o->mmo_ops));
-        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL");
+        dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymus object refcount > 0 and ops are not NULL\n");
         o->mmo_refcount--;
 
         /*Check if recount == respages*/
         if(o->mmo_refcount == o->mmo_nrespages){
-                dbg(DBG_PRINT, "(GRADING3E) Anonymus object refcount == nrespages");
+                dbg(DBG_PRINT, "(GRADING3E) Anonymus object refcount == nrespages\n");
 
                 pframe_t *frame = NULL;
                 list_link_t *link = o->mmo_respages.l_next;    /*First element*/
@@ -159,7 +161,8 @@ anon_fillpage(mmobj_t *o, pframe_t *pf)
         KASSERT(o != NULL);
         KASSERT(pf != NULL);
         int res = 0;
-        memcpy(pf->pf_addr, 0, PAGE_SIZE);
+        memset(pf->pf_addr, 0, PAGE_SIZE);
+        pframe_pin(pf);
         return res;
 }
 

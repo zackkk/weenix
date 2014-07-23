@@ -178,7 +178,7 @@ proc_create(char *name)
         /* VM */
         new_process->p_brk = NULL;           /* process break; see brk(2) */
         new_process->p_start_brk = NULL;     /* initial value of process break */
-        new_process->p_vmmap = NULL;         /* list of areas mapped into
+        new_process->p_vmmap = vmmap_create();         /* list of areas mapped into
                                           * process' user address
                                           * space */
         
