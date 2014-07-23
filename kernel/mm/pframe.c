@@ -317,12 +317,15 @@ static int
 pframe_fill(pframe_t *pf)
 {
         int ret;
-
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 1\n");
         pframe_set_busy(pf);
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 2\n");
         ret = pf->pf_obj->mmo_ops->fillpage(pf->pf_obj, pf);
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 3\n");
         pframe_clear_busy(pf);
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 4\n");
         sched_broadcast_on(&pf->pf_waitq);
-
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 5\n");
         return ret;
 }
 
@@ -365,10 +368,14 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 			if((pframe = pframe_alloc(o, pagenum)) == NULL)
 				return -1;
 			/*fill in new pframe, mark as busy during operation*/
+			dbg(DBG_PRINT,"(GRADING3E) xxxxxxxxxxxxxxxxxxxx\n");
 			pframe_set_busy(pframe);
+			dbg(DBG_PRINT,"(GRADING3E) yyyyyyyyyyyyyyyyyyyy\n");
 			if(pframe_fill(pframe) != 0)
 				return -1;
+			dbg(DBG_PRINT,"(GRADING3E) zzzzzzzzzzzzzzzzzzzz\n");
 			pframe->pf_flags = 0;
+			dbg(DBG_PRINT,"(GRADING3E) rrrrrrrrrrrrrrrrrrrr\n");
 		}
 	
 		/*pframe is in memory*/
