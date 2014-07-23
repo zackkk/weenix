@@ -621,21 +621,18 @@ vmmap_write(vmmap_t *map, void *vaddr, const void *buf, size_t count)
 		dbg(DBG_PRINT, "vmmap_write: starts\n");
 		KASSERT(map);
 		KASSERT(!list_empty(&(map->vmm_list)));
-
-		/*find the vmareas to read from*/
-		vmarea_t *vmarea;
-		uint32_t areavfn = ADDR_TO_PN(vaddr);
-		uint32_t pageoff = PAGE_OFFSET(vaddr);
+		vmarea_t *vmarea = NULL;
 
 		while (count > 0){
 			dbg(DBG_PRINT, "vmmap_write: count:%d\n",count);
+			uint32_t pageoff = PAGE_OFFSET(vaddr); /* vaddr is updating */
 
-			/* get vmarea */
-			vmarea = vmmap_lookup(map, areavfn);
+			/* find vmarea */
+			vmarea = vmmap_lookup(map, ADDR_TO_PN(vaddr));
 			KASSERT(vmarea);
 			KASSERT(vmarea->vma_obj);
 
-			/* get pframe */
+			/* find pframe */
 			pframe_t *pf = NULL;
 			int ret = pframe_get(vmarea->vma_obj, ADDR_TO_PN(vaddr) + vmarea->vma_off - vmarea->vma_start, &pf);
 			KASSERT(ret == 0);
