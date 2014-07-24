@@ -352,40 +352,45 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 	KASSERT(o);
 	/*try to get pframe from resident memory*/
 	pframe_t *pframe = pframe_get_resident(o, pagenum);
-	/*only return the pframe if it isn't NULL and isn't busy*/
-	while((pframe == NULL) || (pframe->pf_flags == PF_BUSY)) {
+
+	/*pframe not in memory*/
+	if (pframe == NULL) {
+		dbg(DBG_PRINT,"pframe get: pframe NULL\n");
+		/*check if pageout daemon should be woken up*/
+		if(pageoutd_needed())
+			pageoutd_wakeup();
 		
-		/*pframe not in memory*/
-		if (pframe == NULL) {
-			/*check if pageout daemon should be woken up*/
-			if(pageoutd_needed())
-				pageoutd_wakeup();
-			
-			/*get new pframe*/
-			if((pframe = pframe_alloc(o, pagenum)) == NULL)
-				return -1;
-			/*fill in new pframe, mark as busy during operation*/
-			pframe_set_busy(pframe);
-			if(pframe_fill(pframe) != 0)
-				return -1;
-			pframe->pf_flags = 0;
+		/*get new pframe*/
+		if((pframe = pframe_alloc(o, pagenum)) == NULL) {
+			dbg(DBG_PRINT,"pframe get: page alloced\n");
+			return -1;
 		}
-	
-		/*pframe is in memory*/
-		else {
-			/*check whether the returned pframe is busy, wait if it is*/
-			if(pframe->pf_flags == PF_BUSY)
-				sched_sleep_on(&(pframe->pf_waitq));
-			
-			/*when the thread is woken up, pframe could have been freed,
-			 * and this will get checked by the while loop condition pframe == NULL*/
-		}
-		
+		/*fill in new pframe, mark as busy during operation*/
+		pframe_set_busy(pframe);
+		if(pframe_fill(pframe) != 0)
+			return -1;
+		pframe_clear_busy(pframe);
 	}
-	
+
+	/*pframe is in memory*/
+	else {
+		dbg(DBG_PRINT,"pframe get: not null..\n");
+		/*check whether the returned pframe is busy, wait if it is*/
+		if(pframe_is_busy(pframe)){
+			dbg(DBG_PRINT,"pframe get: put to sleep\n");
+			sched_sleep_on(&(pframe->pf_waitq));
+		}
+		
+		if(pframe == NULL)
+			return -1;
+		
+		/*when the thread is woken up, pframe could have been freed,
+		 * and this will get checked by the while loop condition pframe == NULL*/
+	}
+		dbg(DBG_PRINT,"pframe page returned:%p\n",pframe->pf_addr);
 	/*now we have a non-NULL, non-busy pframe, put it in result, then return*/
 	*result = pframe;
-	
+	sched_broadcast_on(&pframe->pf_waitq);
 	return 0;
 }
 

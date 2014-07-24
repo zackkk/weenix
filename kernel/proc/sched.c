@@ -108,7 +108,7 @@ sched_queue_empty(ktqueue_t *q)
 void
 sched_sleep_on(ktqueue_t *q)
 {     
-		dbg(DBG_PRINT, "(GRADING1E) Sched_sleep_on is testing \n");
+		dbg(DBG_PRINT, "(GRADING1E) Sched_sleep_on is testing, proc:%d\n",curproc->p_pid);
         curthr->kt_state = KT_SLEEP;
         if(curthr->kt_wchan){
         	dbg(DBG_PRINT, "(GRADING1E) Curthr->kt_wchan is not empty\n");

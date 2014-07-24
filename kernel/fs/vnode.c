@@ -625,7 +625,6 @@ vreadpage(mmobj_t *o, pframe_t *pf)
 {
         KASSERT(NULL != pf);
         KASSERT(NULL != o);
-
         vnode_t *v = mmobj_to_vnode(o);
         return v->vn_ops->fillpage(v, (int)PN_TO_ADDR(pf->pf_pagenum), pf->pf_addr);
 }

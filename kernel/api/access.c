@@ -144,7 +144,7 @@ int addr_perm(struct proc *p, const void *vaddr, int perm)
 	/*check that the area looked up is not NULL*/
 	if((addrArea = vmmap_lookup(p->p_vmmap, vfn)) != NULL) {
 		/*finally, check permission level*/
-		if((addrArea->vma_prot) >= perm) {
+		if(((addrArea->vma_prot)&(perm)) != 0) {
 			dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful\n");
 			return 1;
 		}
@@ -178,27 +178,41 @@ int range_perm(struct proc *p, const void *avaddr, size_t len, int perm)
 			dbg(DBG_PRINT,"(GRADING3E) range_perm(): permission denied\n");
 			return 0;
 		}
+		if(len > PAGE_SIZE){
+			len -= PAGE_SIZE;
+		}
 		len--;
 		next_addr++;
 	}
-	dbg(DBG_PRINT,"(GRADING3E) range_perm() successful\n");
-	/*
-	uint32_t addr = (uint32_t) vaddr;
-	vfn = ((addr - (addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
 	
-	get the vm_area and first page number corresponding to the avaddr passed in
+	
+	dbg(DBG_PRINT,"(GRADING3E) range_perm() successful\n");
+	
+	/*
+	uint32_t curr_addr = (uint32_t) vaddr;
+	curr_vfn = ((curr_addr - (curr_addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
+	
+	addrArea = vmmap_lookup(p->p_vmmap, curr_vfn);
+	KASSERT(addrArea);
+	
+	
+	if(((addrArea->vma_prot)&(perm)) != 0) {
+		dbg(DBG_PRINT,"(GRADING3E) addr_perm(): successful\n");
+		return 1;
+	}
+	else {
+		dbg(DBG_PRINT,"(GRADING3E) addr_perm(): permission denied\n");
+		return 0;
+	}
+	
+	
 	KASSERT(p && p->p_vmmap) {
 		
 	vmarea_t *addrArea;
 			
-	check permissions page by page, b/c the next page in the range could be outside the current vm_area
 	while(len > 0) {
 			
-		check that the area looked up is not NULL
-		addrArea = vmmap_lookup(p->p_vmmap, vfn);
-		KASSERT(addrArea);
 		
-		check the current page for its permissions
 		if(addr_perm(p, avaddr, perm)) {
 			
 		}
