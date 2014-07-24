@@ -186,6 +186,7 @@ shadow_fillpage(mmobj_t *o, pframe_t *pf)
         KASSERT(!pframe_is_pinned(pf));
         dbg(DBG_PRINT,"(GRADING3A 6.d) pframe is not pinned yet\n");
 
+        pframe_pin(pf);
         o->mmo_shadowed;
         while(o != mmobj_bottom_obj(o)){
         	/*
