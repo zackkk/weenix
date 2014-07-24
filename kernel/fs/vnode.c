@@ -1,20 +1,20 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 /*
- *  FILE: vnode.c
- *  AUTH: mcc | mahrens | kma | afenn
- *  DESC: vnode management
- *  $Id: vnode.c,v 1.4 2014/04/22 04:31:30 cvsps Exp $
- */
+* FILE: vnode.c
+* AUTH: mcc | mahrens | kma | afenn
+* DESC: vnode management
+* $Id: vnode.c,v 1.4 2014/04/22 04:31:30 cvsps Exp $
+*/
 
 #include "kernel.h"
 #include "util/init.h"
@@ -47,10 +47,10 @@ static int special_file_cleanpage(vnode_t *file, off_t offset, void *pagebuf);
 static void vo_vref(mmobj_t *o);
 static void vo_vput(mmobj_t *o);
 
-static int  vlookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf);
-static int  vreadpage(mmobj_t *o, pframe_t *pf);
-static int  vdirtypage(mmobj_t *o, pframe_t *pf);
-static int  vcleanpage(mmobj_t *o, pframe_t *pf);
+static int vlookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf);
+static int vreadpage(mmobj_t *o, pframe_t *pf);
+static int vdirtypage(mmobj_t *o, pframe_t *pf);
+static int vcleanpage(mmobj_t *o, pframe_t *pf);
 
 static mmobj_ops_t vnode_mmobj_ops = {
         .ref = vo_vref,
@@ -99,8 +99,8 @@ static vnode_ops_t blockdev_spec_vops = {
 };
 
 /*
- * Initialization:
- */
+* Initialization:
+*/
 static __attribute__((unused)) void
 vnode_init(void)
 {
@@ -110,8 +110,8 @@ vnode_init(void)
 init_func(vnode_init);
 
 /*
- * Core vnode management routines:
- */
+* Core vnode management routines:
+*/
 void
 vref(vnode_t *vn)
 {
@@ -136,8 +136,8 @@ find:
                         /* found it... */
                         if (VN_BUSY & vn->vn_flags) {
                                 /* it's either being brought in or it's on
-                                 * its way out. Let's not race whomever is
-                                 * doing this. */
+* its way out. Let's not race whomever is
+* doing this. */
 
                                 dbg(DBG_VNREF, "vget: wow, found vnode busy (0x%p, 0x%p ino %ld refcount %d)\n",
                                     vn, vn->vn_fs, (long)vn->vn_vno, vn->vn_refcount);
@@ -148,10 +148,10 @@ find:
 
 #ifndef __MOUNTING__
                         /* If we are implementing mountpoint support
-                           then we should get the mounted vnode,
-                           not the requested one (if none is
-                           mounted then vn->vn_mount should
-                           point back to vn) */
+then we should get the mounted vnode,
+not the requested one (if none is
+mounted then vn->vn_mount should
+point back to vn) */
                         vref(vn);
                         return vn;
 #else
@@ -162,7 +162,7 @@ find:
         } list_iterate_end();
 
         /* if we got here, we didn't find the vnode. */
-        /*   alloc a new vnode: */
+        /* alloc a new vnode: */
         vn = slab_obj_alloc(vnode_allocator);
         if (!vn) {
                 dbg(DBG_VNREF, "vget: kmem has been exhausted. "
@@ -172,8 +172,8 @@ find:
                 goto find;
         }
         memset(vn, 0, sizeof(vnode_t));
-        /*   initialize its contents: */
-        /*     members that can be initialized here: */
+        /* initialize its contents: */
+        /* members that can be initialized here: */
         vn->vn_fs = fs;
         vn->vn_vno = vno;
         kmutex_init(&vn->vn_mutex);
@@ -184,27 +184,27 @@ find:
         vn->vn_mount = vn;
 #endif
 
-        /*     use 'read_vnode' to ask underlying fs for initial values of
-         *     vn_mode, vn_len, vn_i, and vn_devid (if
-         *     appropriate)): */
+        /* use 'read_vnode' to ask underlying fs for initial values of
+* vn_mode, vn_len, vn_i, and vn_devid (if
+* appropriate)): */
 
-        /*       mark it busy and place it on vnode_inuse_list (so it can
-         *       be found while we are possibly blocking): (also, seems
-         *       appropriate not to ref it yet since no references from
-         *       outside this context (vnode.c) will exist until we are
-         *       done bringing the vnode in)
-         */
+        /* mark it busy and place it on vnode_inuse_list (so it can
+* be found while we are possibly blocking): (also, seems
+* appropriate not to ref it yet since no references from
+* outside this context (vnode.c) will exist until we are
+* done bringing the vnode in)
+*/
         vn->vn_flags |= VN_BUSY;
         list_insert_head(&vnode_inuse_list, &vn->vn_link);
 
         KASSERT(vn->vn_fs->fs_op && vn->vn_fs->fs_op->read_vnode);
-        /*       this is where we might block (depending on the underlying
-         *       fs): */
+        /* this is where we might block (depending on the underlying
+* fs): */
         vn->vn_fs->fs_op->read_vnode(vn);
 
         vn->vn_flags &= ~VN_BUSY;
 
-        /*     for special files: */
+        /* for special files: */
         if (S_ISCHR(vn->vn_mode) || S_ISBLK(vn->vn_mode))
                 init_special_vnode(vn);
 
@@ -214,28 +214,28 @@ find:
 }
 
 /*
- * - decrement vn->vn_refcount
- * - if it is zero
- *     - (vn->vn_nrespages should also be zero)
- *     - free the vnode
- *
- * - (otherwise it is > zero)
- *
- * - if it is now equal to vn->vn_nrespages and query_vnode returns zero
- *     - (the vnode is not linked in the underlying fs, and no active
- *       references to it exist --> all of its pages can be uncached, etc.)
- *     - add an artificial refcount so we don't spuriously hit this case
- *       in the upcoming steps
- *     - for each page in vn->vn_respages
- *         - pframe_free(page)
- *             - (note: this will decrement nrespages before dropping a
- *               reference to the object containing nrespages, so weknow
- *               that nrespages will be decremented before refcount (or,
- *               equivalently, before vput is called on vn))
- *     - (assert: refcount should be 1, nrespages should be zero, linkcount
- *       should be zero)
- *     - free the vnode
- */
+* - decrement vn->vn_refcount
+* - if it is zero
+* - (vn->vn_nrespages should also be zero)
+* - free the vnode
+*
+* - (otherwise it is > zero)
+*
+* - if it is now equal to vn->vn_nrespages and query_vnode returns zero
+* - (the vnode is not linked in the underlying fs, and no active
+* references to it exist --> all of its pages can be uncached, etc.)
+* - add an artificial refcount so we don't spuriously hit this case
+* in the upcoming steps
+* - for each page in vn->vn_respages
+* - pframe_free(page)
+* - (note: this will decrement nrespages before dropping a
+* reference to the object containing nrespages, so weknow
+* that nrespages will be decremented before refcount (or,
+* equivalently, before vput is called on vn))
+* - (assert: refcount should be 1, nrespages should be zero, linkcount
+* should be zero)
+* - free the vnode
+*/
 void
 vput(struct vnode *vn)
 {
@@ -254,19 +254,19 @@ vput(struct vnode *vn)
             && !vn->vn_fs->fs_op->query_vnode(vn)) {
                 pframe_t *vp;
                 /* vn is becoming passively-referenced, and the linkcount
-                 * is zero, so there is no way for it to become
-                 * actively-referenced ever again, and thus there is no
-                 * point in keeping it or any cached pages of it around.
-                 */
+* is zero, so there is no way for it to become
+* actively-referenced ever again, and thus there is no
+* point in keeping it or any cached pages of it around.
+*/
                 list_iterate_begin(&vn->vn_mmobj.mmo_respages, vp, pframe_t,
                                    pf_olink) {
-                        /*  (dbounov):
-                         * Wait for the page to become not busy.
-                         * At this point the only people who can be accessing the
-                         * page are pframe_sync and the pageoutd (the shadowd does
-                         * not touch non-anonymous objects). Both of them should
-                         * definately free the page, if they have it busy.
-                         */
+                        /* (dbounov):
+* Wait for the page to become not busy.
+* At this point the only people who can be accessing the
+* page are pframe_sync and the pageoutd (the shadowd does
+* not touch non-anonymous objects). Both of them should
+* definately free the page, if they have it busy.
+*/
                         while (pframe_is_busy(vp))
                                 sched_sleep_on(&(vp->pf_waitq));
                         pframe_free(vp);
@@ -306,7 +306,7 @@ vput(struct vnode *vn)
 #endif
 
         /* wake up anyone who might have attempted to vget this vnode while
-         * we were taking it away: */
+* we were taking it away: */
         sched_broadcast_on(&vn->vn_waitq);
 
         list_remove(&vn->vn_link); /* remove from vn_inuse_list */
@@ -317,19 +317,19 @@ int
 vfs_is_in_use(fs_t *fs)
 {
         /* - for each vnode vn that is
-         *     - if vn does not belong to this fs
-         *         - continue
-         *
-         *     - if vn is not the root vnode and (vn->vn_refcount -
-         *       vn->vn_nrespages)
-         *         - vn is in use => return -EBUSY
-         *
-         *     - if vn is the root vnode
-         *         - assert: (1 <= (vn->vn_refcount - vn->vn_nrespages))
-         *         - if (1 < (vn->vn_refcount - vn->vn_nrespages))
-         *             - return -EBUSY
-         *
-         */
+* - if vn does not belong to this fs
+* - continue
+*
+* - if vn is not the root vnode and (vn->vn_refcount -
+* vn->vn_nrespages)
+* - vn is in use => return -EBUSY
+*
+* - if vn is the root vnode
+* - assert: (1 <= (vn->vn_refcount - vn->vn_nrespages))
+* - if (1 < (vn->vn_refcount - vn->vn_nrespages))
+* - return -EBUSY
+*
+*/
         list_t *list = &vnode_inuse_list;
         list_link_t *link;
         int ret = 0;
@@ -346,11 +346,11 @@ vfs_is_in_use(fs_t *fs)
                 /* otherwise, vn belongs to the given fs */
 
                 /* if it is the root vnode and it has more than one
-                 * reference
-                 *
-                 * if it isn't the root vnode and it has at least one
-                 * reference
-                 */
+* reference
+*
+* if it isn't the root vnode and it has at least one
+* reference
+*/
                 refs = (vn->vn_refcount - vn->vn_nrespages);
                 KASSERT(0 <= refs);
                 KASSERT(((vn->vn_fs->fs_root == vn) && (1 <= refs))
@@ -395,7 +395,7 @@ clean:
         } list_iterate_end();
 
         /* all pages of all vnodes belonging to this fs have been cleaned.
-         * Now, uncache all of them: */
+* Now, uncache all of them: */
         list_iterate_begin(&vnode_inuse_list, v, vnode_t, vn_link) {
                 list_iterate_begin(&v->vn_mmobj.mmo_respages,
                                    p, pframe_t, pf_olink) {
@@ -407,8 +407,8 @@ clean:
 
 
 /*
- * Return the number of vnodes from the given filesystem which are in use.
- */
+* Return the number of vnodes from the given filesystem which are in use.
+*/
 int
 vnode_inuse(struct fs *fs)
 {
@@ -437,9 +437,9 @@ init_special_vnode(vnode_t *vn)
 
 
 /* Stat is currently the only filesystem specific routine that we have to worry
- * about for special files.  Here we just call the stat routine for the root
- * directory of the filesystem.
- */
+* about for special files. Here we just call the stat routine for the root
+* directory of the filesystem.
+*/
 static int
 special_file_stat(vnode_t *vnode, struct stat *ss)
 {
@@ -450,11 +450,11 @@ special_file_stat(vnode_t *vnode, struct stat *ss)
 }
 
 /*
- * If the file is a byte device then find the file's
- * bytedev_t, and call read on it. Return what read returns.
- *
- * If the file is a block device then return -ENOTSUP
- */
+* If the file is a byte device then find the file's
+* bytedev_t, and call read on it. Return what read returns.
+*
+* If the file is a block device then return -ENOTSUP
+*/
 static int
 special_file_read(vnode_t *file, off_t offset, void *buf, size_t count)
 {
@@ -480,11 +480,11 @@ special_file_read(vnode_t *file, off_t offset, void *buf, size_t count)
 }
 
 /*
- * If the file is a byte device find the file's
- * bytedev_t, and call its write. Return what write returns.
- *
- * If the file is a block device then return -ENOTSUP.
- */
+* If the file is a byte device find the file's
+* bytedev_t, and call its write. Return what write returns.
+*
+* If the file is a block device then return -ENOTSUP.
+*/
 static int
 special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 {
@@ -509,61 +509,89 @@ special_file_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 }
 
 /* Memory map the special file represented by <file>. All of the
- * work for this function is device-specific, so look up the
- * file's bytedev_t and pass the arguments through to its mmap
- * function. Return what that function returns.
- *
- * Do not worry about this until VM.
- */
+* work for this function is device-specific, so look up the
+* file's bytedev_t and pass the arguments through to its mmap
+* function. Return what that function returns.
+*
+* Do not worry about this until VM.
+*/
 static int
 special_file_mmap(vnode_t *file, vmarea_t *vma, mmobj_t **ret)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_mmap");
-        return 0;
+KASSERT(file);
+KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->mmap);
+
+dbg(DBG_PRINT, "(GRADING3E) special_file_mmap(): assertions passed\n");
+
+/*call file's mmap function*/
+return file->vn_cdev->cd_ops->mmap(file, vma, ret);
 }
 
 /* Just as with mmap above, pass the call through to the
- * device-specific fillpage function.
- *
- * Do not worry about this until VM.
- */
+* device-specific fillpage function.
+*
+* Do not worry about this until VM.
+*/
 static int
 special_file_fillpage(vnode_t *file, off_t offset, void *pagebuf)
-{
-        NOT_YET_IMPLEMENTED("VM: special_file_fillpage");
-        return 0;
+{	
+KASSERT(file);
+KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->fillpage);
+
+dbg(DBG_PRINT, "(GRADING3E) special_file_fillpage(): assertions passed\n");
+
+/*call file's fillpage function*/
+return file->vn_cdev->cd_ops->fillpage(file, offset, pagebuf);
 }
 
 /* Just as with mmap above, pass the call through to the
- * device-specific dirtypage function.
- *
- * Do not worry about this until VM.
- */
+* device-specific dirtypage function.
+*
+* Do not worry about this until VM.
+*/
 static int
 special_file_dirtypage(vnode_t *file, off_t offset)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_dirtypage");
-        return 0;
+KASSERT(file);
+KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->dirtypage);
+
+dbg(DBG_PRINT, "(GRADING3E) special_file_dirtypage(): assertions passed\n");
+
+/*call file's dirtypage function*/
+return file->vn_cdev->cd_ops->dirtypage(file, offset);
 }
 
 /* Just as with mmap above, pass the call through to the
- * device-specific cleanpage function.
- *
- * Do not worry about this until VM.
- */
+* device-specific cleanpage function.
+*
+* Do not worry about this until VM.
+*/
 static int
 special_file_cleanpage(vnode_t *file, off_t offset, void *pagebuf)
 {
-        NOT_YET_IMPLEMENTED("VM: special_file_cleanpage");
-        return 0;
+KASSERT(file);
+KASSERT(S_ISCHR(file->vn_mode) && "because these ops only assigned if vnode represents a special file");
+KASSERT((file->vn_cdev) && "because open shouldn\'t have let us arrive here if vn_cdev was NULL");
+KASSERT(file->vn_cdev->cd_ops && file->vn_cdev->cd_ops->cleanpage);
+
+dbg(DBG_PRINT, "(GRADING3E) special_file_cleanpage(): assertions passed\n");
+
+/*call file's cleanpage function*/
+return file->vn_cdev->cd_ops->cleanpage(file, offset, pagebuf);
 }
 
 /*
- * Related to implementation of vnode vm_object entry points:
- */
+* Related to implementation of vnode vm_object entry points:
+*/
 
 #define mmobj_to_vnode(o) \
-        (CONTAINER_OF((o), vnode_t, vn_mmobj))
+(CONTAINER_OF((o), vnode_t, vn_mmobj))
 
 static void
 vo_vref(mmobj_t *o)

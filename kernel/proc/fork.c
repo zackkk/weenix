@@ -1,12 +1,12 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 #include "types.h"
@@ -38,15 +38,15 @@
 #include "main/interrupt.h"
 
 /* Pushes the appropriate things onto the kernel stack of a newly forked thread
- * so that it can begin execution in userland_entry.
- * regs: registers the new thread should have on execution
- * kstack: location of the new thread's kernel stack
- * Returns the new stack pointer on success. */
+* so that it can begin execution in userland_entry.
+* regs: registers the new thread should have on execution
+* kstack: location of the new thread's kernel stack
+* Returns the new stack pointer on success. */
 static uint32_t
 fork_setup_stack(const regs_t *regs, void *kstack)
 {
         /* Pointer argument and dummy return address, and userland dummy return
-         * address */
+* address */
         uint32_t esp = ((uint32_t) kstack) + DEFAULT_STACK_SIZE - (sizeof(regs_t) + 12);
         *(void **)(esp + 4) = (void *)(esp + 8); /* Set the argument to point to location of struct on stack */
         memcpy((void *)(esp + 8), regs, sizeof(regs_t)); /* Copy over struct */
@@ -55,11 +55,11 @@ fork_setup_stack(const regs_t *regs, void *kstack)
 
 
 /*
- * The implementation of fork(2). Once this works,
- * you're practically home free. This is what the
- * entirety of Weenix has been leading up to.
- * Go forth and conquer.
- */
+* The implementation of fork(2). Once this works,
+* you're practically home free. This is what the
+* entirety of Weenix has been leading up to.
+* Go forth and conquer.
+*/
 int
 do_fork(struct regs *regs)
 {

@@ -557,8 +557,6 @@ ramfs_rmdir(vnode_t *dir, const char *name, size_t name_len)
                 vput(vn);
                 return -ENOTDIR;
         }
-        
-        dbg(DBG_PRINT, "%s refcount is %d\n", name, vn->vn_refcount);
 
         /* We have to make sure that this directory is empty */
         entry = VNODE_TO_DIRENT(vn);
@@ -585,8 +583,6 @@ ramfs_rmdir(vnode_t *dir, const char *name, size_t name_len)
 
         VNODE_TO_RAMFSINODE(vn)->rf_linkcount--;
         vput(vn);
-        
-        dbg(DBG_PRINT, "%s refcount is %d\n", name, vn->vn_refcount);
 
         return 0;
 }
@@ -608,13 +604,10 @@ ramfs_read(vnode_t *file, off_t offset, void *buf, size_t count)
 static int
 ramfs_write(vnode_t *file, off_t offset, const void *buf, size_t count)
 {
-	 dbg(DBG_PRINT, "before: count:%d, offset:%d \n", count, offset);
         int ret;
         ramfs_inode_t *inode = VNODE_TO_RAMFSINODE(file);
 
         KASSERT(!S_ISDIR(file->vn_mode));
-
-        dbg(DBG_PRINT, "count:%d, offset:%d \n", count, offset);
 
         ret = MIN((off_t)count, (off_t)PAGE_SIZE - offset);
         memcpy(inode->rf_mem + offset, buf, ret);

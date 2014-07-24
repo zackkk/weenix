@@ -1,12 +1,12 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 #include "types.h"
@@ -30,8 +30,8 @@ void
 shadowd_wakeup()
 {
         /* If we run out of memory and need to wake up shadowd
-         * before it has been properly initialized then the system
-         * does not have enough memory. */
+* before it has been properly initialized then the system
+* does not have enough memory. */
         KASSERT(shadowd_initialized);
         sched_broadcast_on(&shadowd_waitq);
 }
@@ -40,27 +40,27 @@ void
 shadowd_alloc_sleep()
 {
         /* If we run out of memory and need to wake up shadowd
-         * before it has been properly initialized then the system
-         * does not have enough memory. */
+* before it has been properly initialized then the system
+* does not have enough memory. */
         KASSERT(shadowd_initialized);
         sched_sleep_on(&kmem_alloc_waitq);
 }
 
 /*
- * The shadow daemon main routine. This should periodically
- * traverese all the shadow object trees, removing any
- * unnecessary shadow objects.
- *
- * A shadow object is considered unnecessary if it is not top most
- * (directly descendant from a vmarea), and if it has only 1
- * parent.
- *
- * For each shadow object we want to migrate all of its pages up
- * to the closest mmobj with at least 2 parents, or the topmost
- * one, then remove this object from the tree (if we remove it any
- * earlier we can cause big problems).
- *
- */
+* The shadow daemon main routine. This should periodically
+* traverese all the shadow object trees, removing any
+* unnecessary shadow objects.
+*
+* A shadow object is considered unnecessary if it is not top most
+* (directly descendant from a vmarea), and if it has only 1
+* parent.
+*
+* For each shadow object we want to migrate all of its pages up
+* to the closest mmobj with at least 2 parents, or the topmost
+* one, then remove this object from the tree (if we remove it any
+* earlier we can cause big problems).
+*
+*/
 
 static void *
 shadowd(int arg1, void *arg2)
@@ -75,8 +75,8 @@ shadowd(int arg1, void *arg2)
                                 list_iterate_begin(&p->p_vmmap->vmm_list, vma, vmarea_t, vma_plink) {
                                         mmobj_t *last = vma->vma_obj, *o = last->mmo_shadowed;
                                         /* ref last, so if all processes on this branch die while shadowd is
-                                         * sleeping, the branch won't get destroyed until shadowd() is done
-                                         * with it */
+* sleeping, the branch won't get destroyed until shadowd() is done
+* with it */
                                         last->mmo_ops->ref(last);
                                         while (NULL != o && NULL != o->mmo_shadowed) {
                                                 mmobj_t *shadow = o->mmo_shadowed;
@@ -87,16 +87,16 @@ shadowd(int arg1, void *arg2)
                                                         pframe_t *pf;
                                                         list_iterate_begin(&o->mmo_respages, pf, pframe_t, pf_olink) {
                                                                 /* Because the operations that could be
-                                                                 * performed with an intermediate shadow object
-                                                                 * to make pages busy are non-blocking,
-                                                                 * we always expect to see non-busy pages. */
+* performed with an intermediate shadow object
+* to make pages busy are non-blocking,
+* we always expect to see non-busy pages. */
                                                                 KASSERT(!pframe_is_busy(pf));
                                                                 /* o has refcount 1+nrespages, so this won't delete it yet */
                                                                 pframe_migrate(pf, last);
                                                         } list_iterate_end();
                                                         last->mmo_shadowed = o->mmo_shadowed;
                                                         /* Ref o's shadowed, so we don't accidentally delete it when we
-                                                         * finally put o */
+* finally put o */
                                                         o->mmo_shadowed->mmo_ops->ref(o->mmo_shadowed);
                                                         KASSERT(o->mmo_refcount == 1 && o->mmo_nrespages == 0);
                                                         o->mmo_ops->put(o);
@@ -144,8 +144,8 @@ init_func(shadowd_init);
 init_depends(sched_init);
 
 /*
- * Cancel the shadowd
- */
+* Cancel the shadowd
+*/
 void
 shadowd_shutdown()
 {

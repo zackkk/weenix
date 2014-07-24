@@ -111,7 +111,6 @@ getdent(const char *dir, dirent_t *dirent)
 static int
 removeall(const char *dir)
 {
-        dbg(DBG_PRINT, "REMOVE ALL: root dir %s\n", dir);
         int ret, fd = -1;
         dirent_t dirent;
         struct stat status;
@@ -216,7 +215,7 @@ vfstest_term(void)
                 if (syscall_success(__fd = open((file), O_RDONLY|O_CREAT, 0777))) {             \
                         syscall_success(close(__fd));                                           \
                 }                                                                               \
-        } while (0);                                                                            
+        } while (0);
 #define read_fd(fd, size, goal)                                                                 \
         do {                                                                                    \
                 char __buf[64];                                                                 \
@@ -273,7 +272,7 @@ vfstest_mkdir(void)
         syscall_fail(mkdir("file", 0777), EEXIST);
         syscall_success(mkdir("dir", 0777));
         syscall_fail(mkdir("dir", 0777), EEXIST);
-        
+
         /* mkdir an invalid path */
         syscall_fail(mkdir(LONGNAME, 0777), ENAMETOOLONG);
         syscall_fail(mkdir("file/dir", 0777), ENOTDIR);
@@ -287,20 +286,20 @@ vfstest_mkdir(void)
         syscall_fail(rmdir("dir/.."), ENOTEMPTY);
         syscall_fail(rmdir("noent/."), ENOENT);
         syscall_fail(rmdir("noent/.."), ENOENT);
-        
+
         /* unlink and rmdir the inappropriate types */
         syscall_fail(rmdir("file"), ENOTDIR);
         syscall_fail(unlink("dir"), EISDIR);
-        
+
         /* remove non-empty directory */
         create_file("dir/file");
         syscall_fail(rmdir("dir"), ENOTEMPTY);
-        
+
         /* remove empty directory */
         syscall_success(unlink("dir/file"));
         syscall_success(rmdir("dir"));
-        syscall_success(chdir(".."));
 
+        syscall_success(chdir(".."));
 }
 
 static void
@@ -322,11 +321,9 @@ vfstest_chdir(void)
         syscall_success(stat(".", &sdest));
         syscall_success(stat("..", &sparent));
 
-
         test_assert(sdest.st_ino == sdir.st_ino, NULL);
         test_assert(ssrc.st_ino == sparent.st_ino, NULL);
         test_assert(ssrc.st_ino != sdest.st_ino, NULL);
-        
 
         syscall_success(chdir(".."));
         syscall_success(stat(".", &rsrc));
@@ -341,7 +338,6 @@ vfstest_chdir(void)
         syscall_fail(chdir("file"), ENOTDIR);
         syscall_fail(chdir("noent"), ENOENT);
         syscall_success(chdir(".."));
-
 }
 
 static void
@@ -400,10 +396,11 @@ vfstest_paths(void)
         syscall_fail(stat("1/asdf", &st), ENOENT);
         syscall_fail(stat("1/../asdf", &st), ENOENT);
         syscall_fail(stat("1/2/asdf", &st), ENOENT);
-        
+
         create_file("1/file");
-        syscall_fail(open("1/file/other", O_RDONLY, 0777), ENOTDIR);        
-        syscall_fail(open("1/file/other", O_RDONLY | O_CREAT, 0777), ENOTDIR);        
+        syscall_fail(open("1/file/other", O_RDONLY, 0777), ENOTDIR);
+        syscall_fail(open("1/file/other", O_RDONLY | O_CREAT, 0777), ENOTDIR);
+
         syscall_success(chdir(".."));
 }
 
@@ -422,22 +419,22 @@ vfstest_fd(void)
         syscall_success(chdir("fd"));
 
         /* read/write/close/getdents/dup nonexistent file descriptors */
-        syscall_fail(read(BAD_FD, buf, FD_BUFSIZE), EBADF);        
+        syscall_fail(read(BAD_FD, buf, FD_BUFSIZE), EBADF);
         syscall_fail(read(HUGE_FD, buf, FD_BUFSIZE), EBADF);
         syscall_fail(read(-1, buf, FD_BUFSIZE), EBADF);
 
         syscall_fail(write(BAD_FD, buf, FD_BUFSIZE), EBADF);
         syscall_fail(write(HUGE_FD, buf, FD_BUFSIZE), EBADF);
         syscall_fail(write(-1, buf, FD_BUFSIZE), EBADF);
-        
+
         syscall_fail(close(BAD_FD), EBADF);
         syscall_fail(close(HUGE_FD), EBADF);
         syscall_fail(close(-1), EBADF);
-        
+
         syscall_fail(lseek(BAD_FD, 0, SEEK_SET), EBADF);
         syscall_fail(lseek(HUGE_FD, 0, SEEK_SET), EBADF);
         syscall_fail(lseek(-1, 0, SEEK_SET), EBADF);
-        
+
         syscall_fail(getdents(BAD_FD, &d, sizeof(d)), EBADF);
         syscall_fail(getdents(HUGE_FD, &d, sizeof(d)), EBADF);
         syscall_fail(getdents(-1, &d, sizeof(d)), EBADF);
@@ -445,7 +442,7 @@ vfstest_fd(void)
         syscall_fail(dup(BAD_FD), EBADF);
         syscall_fail(dup(HUGE_FD), EBADF);
         syscall_fail(dup(-1), EBADF);
-        
+
         syscall_fail(dup2(BAD_FD, 10), EBADF);
         syscall_fail(dup2(HUGE_FD, 10), EBADF);
         syscall_fail(dup2(-1, 10), EBADF);
@@ -461,48 +458,61 @@ vfstest_fd(void)
         syscall_fail(dup2(-1, -1), EBADF);
 
         /* dup works properly in normal usage */
-        dbg(DBG_PRINT, "FILE 01\n\n\n\n\n\n\n");
         create_file("file01");
+        
         syscall_success(fd1 = open("file01", O_RDWR, 0));
+        
         syscall_success(fd2 = dup(fd1));
         test_assert(fd1 < fd2, "dup(%d) returned %d", fd1, fd2);
+
+        
         syscall_success(write(fd2, "hello", 5));
-        test_fpos(fd1, 5); test_fpos(fd2, 5);
-    
+        
+        test_fpos(fd1, 5);
+        test_fpos(fd2, 5);
+        
         syscall_success(lseek(fd2, 0, SEEK_SET));
         test_fpos(fd1, 0); test_fpos(fd2, 0);
+        
         read_fd(fd1, 5, "hello");
         test_fpos(fd1, 5); test_fpos(fd2, 5);
+        
         syscall_success(close(fd2));
         
         /* dup2 works properly in normal usage */
         syscall_success(fd2 = dup2(fd1, 10));
         test_assert(10 == fd2, "dup2(%d, 10) returned %d", fd1, fd2);
+
+        
         test_fpos(fd1, 5); test_fpos(fd2, 5);
         syscall_success(lseek(fd2, 0, SEEK_SET));
         test_fpos(fd1, 0); test_fpos(fd2, 0);
+
+        
         syscall_success(close(fd2));
 
         /* dup2-ing a file to itself works */
         syscall_success(fd2 = dup2(fd1, fd1));
-        test_assert(fd1 == fd2, "dup2(%d, %d) returned %d", fd1, fd1, fd2);
+
         
+        test_assert(fd1 == fd2, "dup2(%d, %d) returned %d", fd1, fd1, fd2);
+
         /* dup2 closes previous file */
         int fd3;
         create_file("file02");
         syscall_success(fd3 = open("file02", O_RDWR, 0));
         syscall_success(fd2 = dup2(fd1, fd3));
+
+        
         test_assert(fd2 == fd3, "dup2(%d, %d) returned %d", fd1, fd3, fd2);
         test_fpos(fd1, 0); test_fpos(fd2, 0);
         syscall_success(lseek(fd2, 5, SEEK_SET));
         test_fpos(fd1, 5); test_fpos(fd2, 5);
         syscall_success(close(fd2));
-
-
         /* fd1 is not closed intentionally */
-
-        syscall_success(chdir(".."));
         
+        syscall_success(chdir(".."));
+       
 }
 
 /* These operations should run for a long time and halt when the file
@@ -558,7 +568,7 @@ vfstest_open(void)
          * combination is O_WRONLY|O_RDWR. */
         syscall_fail(open("file01", O_WRONLY | O_RDWR | O_CREAT, 0), EINVAL);
         syscall_fail(open("file01", O_RDONLY | O_RDWR | O_WRONLY | O_CREAT, 0), EINVAL);
-
+        
         /* Cannot open nonexistent file without O_CREAT */
         syscall_fail(open("file02", O_WRONLY, 0), ENOENT);
         syscall_success(fd = open("file02", O_RDONLY | O_CREAT, 0));
@@ -571,7 +581,7 @@ vfstest_open(void)
         syscall_fail(open("tmpfile/test", O_RDONLY | O_CREAT, 0), ENOTDIR);
         syscall_fail(open("noent/test", O_RDONLY | O_CREAT, 0), ENOENT);
         syscall_fail(open(LONGNAME, O_RDONLY | O_CREAT, 0), ENAMETOOLONG);
-        
+
         /* Cannot write to readonly file */
         syscall_success(fd = open("file03", O_RDONLY | O_CREAT, 0));
         syscall_fail(write(fd, "hello", 5), EBADF);
@@ -597,7 +607,6 @@ vfstest_open(void)
         syscall_success(unlink("file04"));
         syscall_fail(stat("file04", &s), ENOENT);
 
-
         /* Cannot open a directory for writing */
         syscall_success(mkdir("file05", 0));
         syscall_fail(open("file05", O_WRONLY, 0), EISDIR);
@@ -613,7 +622,6 @@ vfstest_open(void)
         syscall_fail(unlink("file07"), ENOENT);
 
         syscall_success(chdir(".."));
-
 }
 
 static void
@@ -658,9 +666,6 @@ vfstest_read(void)
         test_lseek(lseek(fd, -1, SEEK_CUR), 4);
         read_fd(fd, 10, "o");
         test_lseek(lseek(fd, 2, SEEK_CUR), 7);
-        
-        
-        
         read_fd(fd, 10, "");
         syscall_fail(lseek(fd, -8, SEEK_CUR), EINVAL);
 
@@ -671,7 +676,6 @@ vfstest_read(void)
         test_lseek(lseek(fd, 7, SEEK_SET), 7);
         read_fd(fd, 10, "");
         syscall_fail(lseek(fd, -1, SEEK_SET), EINVAL);
-        
 
         test_lseek(lseek(fd, 0, SEEK_END), 5);
         read_fd(fd, 10, "");
@@ -688,27 +692,22 @@ vfstest_read(void)
         create_file("file03");
         syscall_success(fd = open("file03", O_RDWR, 0));
         test_fpos(fd, 0);
-        
         syscall_success(write(fd, "hello", 5));
         test_fpos(fd, 5);
-        
         syscall_success(close(fd));
+
         syscall_success(fd = open("file03", O_RDWR | O_APPEND, 0));
         test_fpos(fd, 0);
-        
         syscall_success(write(fd, "hello", 5));
         test_fpos(fd, 10);
 
         syscall_success(lseek(fd, 0, SEEK_SET));
         test_fpos(fd, 0);
-        
         read_fd(fd, 10, "hellohello");
         syscall_success(lseek(fd, 5, SEEK_SET));
         test_fpos(fd, 5);
-        
         syscall_success(write(fd, "again", 5));
         test_fpos(fd, 15);
-        
         syscall_success(lseek(fd, 0, SEEK_SET));
         test_fpos(fd, 0);
         read_fd(fd, 15, "hellohelloagain");
@@ -729,8 +728,6 @@ vfstest_read(void)
         syscall_success(close(fd));
 
         syscall_success(chdir(".."));
-        
-            
 }
 
 static void
@@ -750,7 +747,6 @@ vfstest_getdents(void)
         syscall_success(fd = open("dir01", O_RDONLY, 0));
         syscall_success(ret = getdents(fd, dirents, 4 * sizeof(dirent_t)));
         test_assert(4 * sizeof(dirent_t) == ret, NULL);
-        
 
         syscall_success(ret = getdents(fd, dirents, sizeof(dirent_t)));
         test_assert(0 == ret, NULL);
@@ -771,8 +767,7 @@ vfstest_getdents(void)
         syscall_fail(getdents(fd, dirents, 4 * sizeof(dirent_t)), ENOTDIR);
         syscall_success(close(fd));
 
-        syscall_success(chdir(".."));       
-              
+        syscall_success(chdir(".."));
 }
 
 #ifdef __VM__
@@ -924,40 +919,33 @@ int main(int argc, char **argv)
 int vfstest_main(int argc, char **argv)
 #endif
 {
-	dbg(DBG_PRINT, "vfs test entered\n");
-
         if (argc != 1) {
                 fprintf(stderr, "USAGE: vfstest\n");
                 return 1;
         }
 
-        dbg(DBG_PRINT, "vfs test stage 1\n");
         test_init();
-        dbg(DBG_PRINT, "vfs test stage 2\n");
-
-
         vfstest_start();
-        dbg(DBG_PRINT, "vfs test stage 3\n");
+
         syscall_success(chdir(root_dir));
-        dbg(DBG_PRINT, "vfs test stage 4\n");
-        
-        vfstest_stat();     
-        
+
+        vfstest_stat();
         vfstest_chdir();
         vfstest_mkdir();
         vfstest_paths();
-        vfstest_fd();        
+        vfstest_fd();
         vfstest_open();
         vfstest_read();
         vfstest_getdents();
-        
-        
+
 #ifdef __VM__
         vfstest_s5fs_vm();
 #endif
 
         /*vfstest_infinite();*/
+
         syscall_success(chdir(".."));
+
         vfstest_term();
         test_fini();
 

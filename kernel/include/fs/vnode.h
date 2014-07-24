@@ -208,7 +208,8 @@ typedef struct vnode {
         /*
          * A number which uniquely identifies this vnode within its filesystem.
          * (Similar and usually identical to what you might know as the inode
-         * of a file).
+         * of a fil
+e).
          */
         ino_t              vn_vno;
 

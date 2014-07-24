@@ -1,12 +1,12 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 #include "globals.h"
@@ -30,26 +30,26 @@ init_func(sched_init);
 
 /*** PRIVATE KTQUEUE MANIPULATION FUNCTIONS ***/
 /**
- * Enqueues a thread onto a queue.
- *
- * @param q the queue to enqueue the thread onto
- * @param thr the thread to enqueue onto the queue
- */
+* Enqueues a thread onto a queue.
+*
+* @param q the queue to enqueue the thread onto
+* @param thr the thread to enqueue onto the queue
+*/
 static void
 ktqueue_enqueue(ktqueue_t *q, kthread_t *thr)
 {
-        KASSERT(!thr->kt_wchan); 
+        KASSERT(!thr->kt_wchan);
         list_insert_head(&q->tq_list, &thr->kt_qlink);
         thr->kt_wchan = q;
         q->tq_size++;
 }
 
 /**
- * Dequeues a thread from the queue.
- *
- * @param q the queue to dequeue a thread from
- * @return the thread dequeued from the queue
- */
+* Dequeues a thread from the queue.
+*
+* @param q the queue to dequeue a thread from
+* @return the thread dequeued from the queue
+*/
 static kthread_t *
 ktqueue_dequeue(ktqueue_t *q)
 {
@@ -70,11 +70,11 @@ ktqueue_dequeue(ktqueue_t *q)
 }
 
 /**
- * Removes a given thread from a queue.
- *
- * @param q the queue to remove the thread from
- * @param thr the thread to remove from the queue
- */
+* Removes a given thread from a queue.
+*
+* @param q the queue to remove the thread from
+* @param thr the thread to remove from the queue
+*/
 static void
 ktqueue_remove(ktqueue_t *q, kthread_t *thr)
 {
@@ -99,48 +99,50 @@ sched_queue_empty(ktqueue_t *q)
 }
 
 /*
- * Updates the thread's state and enqueues it on the given
- * queue. Returns when the thread has been woken up with wakeup_on or
- * broadcast_on.
- *
- * Use the private queue manipulation functions above.
- */
+* Updates the thread's state and enqueues it on the given
+* queue. Returns when the thread has been woken up with wakeup_on or
+* broadcast_on.
+*
+* Use the private queue manipulation functions above.
+*/
 void
 sched_sleep_on(ktqueue_t *q)
-{     
-		dbg(DBG_PRINT, "(GRADING1E) Sched_sleep_on is testing \n");
+{
+      
+dbg(DBG_PRINT, "(GRADING1E) Sched_sleep_on is testing \n");
         curthr->kt_state = KT_SLEEP;
         if(curthr->kt_wchan){
-        	dbg(DBG_PRINT, "(GRADING1E) Curthr->kt_wchan is not empty\n");
-        	ktqueue_remove(curthr->kt_wchan, curthr);
+         dbg(DBG_PRINT, "(GRADING1E) Curthr->kt_wchan is not empty\n");
+         ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
         /* switch context: make a runnable thread running */
+        dbg(DBG_PRINT, "curproc is %d\n", curproc->p_pid);
         sched_switch();
 }
 
 
 /*
- * Similar to sleep on, but the sleep can be cancelled.
- *
- * Don't forget to check the kt_cancelled flag at the correct times.
- *
- * Use the private queue manipulation functions above.
- */
+* Similar to sleep on, but the sleep can be cancelled.
+*
+* Don't forget to check the kt_cancelled flag at the correct times.
+*
+* Use the private queue manipulation functions above.
+*/
 int
 sched_cancellable_sleep_on(ktqueue_t *q)
 {
-		dbg(DBG_PRINT, "(GRADING1E) Sched_cancellable_sleep_on is testing \n");
+dbg(DBG_PRINT, "(GRADING1E) Sched_cancellable_sleep_on is testing \n");
         if(curthr->kt_cancelled)
         {
-        	dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
+         dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
              return -EINTR;
         }
         curthr->kt_state=KT_SLEEP_CANCELLABLE;
 
         if(curthr->kt_wchan){
-        	dbg(DBG_PRINT, "(GRADING1E) curthr->kt_wchan is not empty \n");
-        	ktqueue_remove(curthr->kt_wchan, curthr);
+         dbg(DBG_PRINT, "(GRADING1E) curthr->kt_wchan is not empty \n");
+         ktqueue_remove(curthr->kt_wchan, curthr);
         }
         ktqueue_enqueue(q,curthr);
 
@@ -148,7 +150,7 @@ sched_cancellable_sleep_on(ktqueue_t *q)
         sched_switch();
         if(curthr->kt_cancelled)
         {
-        	dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
+         dbg(DBG_PRINT, "(GRADING1E) Curthr is cancelled \n");
              return -EINTR;
         }
         return 0;
@@ -175,12 +177,12 @@ sched_wakeup_on(ktqueue_t *q)
 void
 sched_broadcast_on(ktqueue_t *q)
 {
-		dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on is testing \n");
-		/* move all threads into runnable queue */
+dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on is testing \n");
+/* move all threads into runnable queue */
         kthread_t * singleThr;
         while(!sched_queue_empty(q))
         {
-        	dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on while loop \n");
+         dbg(DBG_PRINT, "(GRADING1E) Sched_broadcast_on while loop \n");
             singleThr = ktqueue_dequeue(q);
             sched_make_runnable(singleThr);
         }
@@ -188,93 +190,94 @@ sched_broadcast_on(ktqueue_t *q)
 }
 
 /*
- * If the thread's sleep is cancellable, we set the kt_cancelled
- * flag and remove it from the queue. Otherwise, we just set the
- * kt_cancelled flag and leave the thread on the queue.
- *
- * Remember, unless the thread is in the KT_NO_STATE or KT_EXITED
- * state, it should be on some queue. Otherwise, it will never be run
- * again.
- */
+* If the thread's sleep is cancellable, we set the kt_cancelled
+* flag and remove it from the queue. Otherwise, we just set the
+* kt_cancelled flag and leave the thread on the queue.
+*
+* Remember, unless the thread is in the KT_NO_STATE or KT_EXITED
+* state, it should be on some queue. Otherwise, it will never be run
+* again.
+*/
 void
 sched_cancel(struct kthread *kthr)
 {
         kthr->kt_cancelled = 1;
         if(kthr->kt_state == KT_SLEEP_CANCELLABLE)
         {
-        	dbg(DBG_PRINT, "(GRADING1E) The current kthr->kt_state is KT_SLEEP_CANCELLABLE\n");
-        	if(kthr->kt_wchan){
-        		dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
-        		ktqueue_remove(kthr->kt_wchan, kthr);
-        	}
+         dbg(DBG_PRINT, "(GRADING1E) The current kthr->kt_state is KT_SLEEP_CANCELLABLE\n");
+         if(kthr->kt_wchan){
+         dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
+         ktqueue_remove(kthr->kt_wchan, kthr);
+         }
             sched_make_runnable(kthr);
         }
 
 }
 
 /*
- * In this function, you will be modifying the run queue, which can
- * also be modified from an interrupt context. In order for thread
- * contexts and interrupt contexts to play nicely, you need to mask
- * all interrupts before reading or modifying the run queue and
- * re-enable interrupts when you are done. This is analagous to
- * locking a mutex before modifying a data structure shared between
- * threads. Masking interrupts is accomplished by setting the IPL to
- * high.
- *
- * Once you have masked interrupts, you need to remove a thread from
- * the run queue and switch into its context from the currently
- * executing context.
- *
- * If there are no threads on the run queue (assuming you do not have
- * any bugs), then all kernel threads are waiting for an interrupt
- * (for example, when reading from a block device, a kernel thread
- * will wait while the block device seeks). You will need to re-enable
- * interrupts and wait for one to occur in the hopes that a thread
- * gets put on the run queue from the interrupt context.
- *
- * The proper way to do this is with the intr_wait call. See
- * interrupt.h for more details on intr_wait.
- *
- * Note: When waiting for an interrupt, don't forget to modify the
- * IPL. If the IPL of the currently executing thread masks the
- * interrupt you are waiting for, the interrupt will never happen, and
- * your run queue will remain empty. This is very subtle, but
- * _EXTREMELY_ important.
- *
- * Note: Don't forget to set curproc and curthr. When sched_switch
- * returns, a different thread should be executing than the thread
- * which was executing when sched_switch was called.
- *
- * Note: The IPL is process specific.
- */
+* In this function, you will be modifying the run queue, which can
+* also be modified from an interrupt context. In order for thread
+* contexts and interrupt contexts to play nicely, you need to mask
+* all interrupts before reading or modifying the run queue and
+* re-enable interrupts when you are done. This is analagous to
+* locking a mutex before modifying a data structure shared between
+* threads. Masking interrupts is accomplished by setting the IPL to
+* high.
+*
+* Once you have masked interrupts, you need to remove a thread from
+* the run queue and switch into its context from the currently
+* executing context.
+*
+* If there are no threads on the run queue (assuming you do not have
+* any bugs), then all kernel threads are waiting for an interrupt
+* (for example, when reading from a block device, a kernel thread
+* will wait while the block device seeks). You will need to re-enable
+* interrupts and wait for one to occur in the hopes that a thread
+* gets put on the run queue from the interrupt context.
+*
+* The proper way to do this is with the intr_wait call. See
+* interrupt.h for more details on intr_wait.
+*
+* Note: When waiting for an interrupt, don't forget to modify the
+* IPL. If the IPL of the currently executing thread masks the
+* interrupt you are waiting for, the interrupt will never happen, and
+* your run queue will remain empty. This is very subtle, but
+* _EXTREMELY_ important.
+*
+* Note: Don't forget to set curproc and curthr. When sched_switch
+* returns, a different thread should be executing than the thread
+* which was executing when sched_switch was called.
+*
+* Note: The IPL is process specific.
+*/
 void
 sched_switch(void)
 {
-		dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
-		/*
-		 * adopted from lecture slides 5.2
-		 */
-		/* set high IPL to prevent interrupts, and save old IPL */
+dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
+/*
+* adopted from lecture slides 5.2
+*/
+/* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
         kthread_t * oldThread;
         oldIPL = intr_getipl();
+        
+        intr_enable();
         intr_setipl(IPL_HIGH);
         /*
-         *  if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
-         *  hardware interrupts, when not masked, can occur between any two code instructions
-         */
+* if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
+* hardware interrupts, when not masked, can occur between any two code instructions
+*/
         while(sched_queue_empty(&kt_runq))
-        {
-                
-        	intr_setipl(IPL_LOW);
-        	intr_setipl(IPL_HIGH);
+        {       
+         intr_setipl(IPL_LOW);
+         intr_setipl(IPL_HIGH);
         }
 
         /* switch thread context, chapter 3.1 */
         oldThread = curthr;
         curthr = ktqueue_dequeue(&kt_runq);
-        curproc = curthr->kt_proc;  /* added on lecture slides*/
+        curproc = curthr->kt_proc; /* added on lecture slides*/
         context_switch(&oldThread->kt_ctx, &curthr->kt_ctx);
 
         /* restore IPL */
@@ -282,22 +285,22 @@ sched_switch(void)
 }
 
 /*
- * Since we are modifying the run queue, we _MUST_ set the IPL to high
- * so that no interrupts happen at an inopportune moment.
+* Since we are modifying the run queue, we _MUST_ set the IPL to high
+* so that no interrupts happen at an inopportune moment.
 
- * Remember to restore the original IPL before you return from this
- * function. Otherwise, we will not get any interrupts after returning
- * from this function.
- *
- * Using intr_disable/intr_enable would be equally as effective as
- * modifying the IPL in this case. However, in some cases, we may want
- * more fine grained control, making modifying the IPL more
- * suitable. We modify the IPL here for consistency.
- */
+* Remember to restore the original IPL before you return from this
+* function. Otherwise, we will not get any interrupts after returning
+* from this function.
+*
+* Using intr_disable/intr_enable would be equally as effective as
+* modifying the IPL in this case. However, in some cases, we may want
+* more fine grained control, making modifying the IPL more
+* suitable. We modify the IPL here for consistency.
+*/
 void
 sched_make_runnable(kthread_t *thr)
 {
-		/* make sure the thread is not currently on the runnable queue */
+/* make sure the thread is not currently on the runnable queue */
         KASSERT(&kt_runq != thr->kt_wchan);
         dbg(DBG_PRINT, "(GRADING1A 4.b) The thread is not blocked on kt_runq\n");
 
@@ -308,15 +311,15 @@ sched_make_runnable(kthread_t *thr)
 
         /* dequeue from the current queue, and enqueue into the runnable queue */
         if(thr->kt_wchan){
-        	dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
-        	ktqueue_remove(thr->kt_wchan, thr);
+         dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
+         ktqueue_remove(thr->kt_wchan, thr);
         }
 
         ktqueue_enqueue(&kt_runq, thr);
         thr->kt_state = KT_RUN;
 
         if(thr->kt_proc->p_pid == 1){
-        	dbg(DBG_PRINT, "(GRADING1E) Process: %d makes init process runnable \n", curproc->p_pid);
+         dbg(DBG_PRINT, "(GRADING1E) Process: %d makes init process runnable \n", curproc->p_pid);
         }
         /* restore IPL */
         intr_setipl(oldIPL);

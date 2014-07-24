@@ -1,4 +1,3 @@
-
 /******************************************************************************/
 /* Important CSCI 402 usage information: */
 /* */
@@ -83,7 +82,7 @@ do_read(int fd, void *buf, size_t nbytes)
 
         if(returnVal>0)
         {
-        	dbg(DBG_PRINT, "(GRADING2C) successful do_read(), return val > 0\n");
+         dbg(DBG_PRINT, "(GRADING2C) successful do_read(), return val > 0\n");
             f -> f_pos += returnVal;
         }
         fput(f);
@@ -260,7 +259,7 @@ do_dup2(int ofd, int nfd)
              fref(f);
         }
         dbg(DBG_PRINT, "(GRADING2C) do_dup2() success\n");
-        fput(f);        
+        fput(f);
         return nfd;
 }
 
@@ -291,7 +290,7 @@ do_dup2(int ofd, int nfd)
 */
 int
 do_mknod(const char *path, int mode, unsigned devid)
-{        
+{
         if(!(S_ISCHR (mode) || S_ISBLK(mode)))
         {
               dbg(DBG_PRINT, "(GRADING2C) mode is not S_IFCHR or S_IFBLK do_mknod\n");
@@ -507,7 +506,7 @@ do_unlink(const char *path)
         /*decrement reference counts for both the file and parent directory*/
         /*unlink does not decrement ref count, so decrement ref count of resNodePtr again, twice total*/
         vput(resNodePtr);
-        vput(parentPtr);    
+        vput(parentPtr);
         
         return 0;
 }
@@ -535,10 +534,10 @@ int
 do_link(const char *from, const char *to)
 {
         /*
-        * CHECK THAT THE VNODE WE ARE LINKING FROM IS A DIR, NOT A FILE?
-        *
-        * SHOULD WE SET OCREAT FLAG?? - IF SO, REUSE THIS CODE FOR RENAME FCN
-        */
+* CHECK THAT THE VNODE WE ARE LINKING FROM IS A DIR, NOT A FILE?
+*
+* SHOULD WE SET OCREAT FLAG?? - IF SO, REUSE THIS CODE FOR RENAME FCN
+*/
         int res;
         
         size_t nameSize;
@@ -563,10 +562,10 @@ do_link(const char *from, const char *to)
         int result = toNodePtr->vn_ops->link((struct vnode*) fromNodePtr, (struct vnode*) toNodePtr, namePtr, *namelen);
         
         /* decrement reference count for only the parent directory ('to')
-        * the ref count for the vnode linked into that directory
-        * was already incremented by calling open_namev, and we need to keep this
-        * increased ref count now that the file is referenced by the directory
-        */
+* the ref count for the vnode linked into that directory
+* was already incremented by calling open_namev, and we need to keep this
+* increased ref count now that the file is referenced by the directory
+*/
         vput(fromNodePtr);
         vput(toNodePtr);
         dbg(DBG_PRINT, "(GRADING2C) do_link() successful\n");
@@ -585,16 +584,16 @@ int
 do_rename(const char *oldname, const char *newname)
 {
     /* basically call same procedure as link, but need to specify the O_CREAT flag in open_namev,
-        * so repeat code here.
-        */
+* so repeat code here.
+*/
         int res;
         
         size_t nameSize;
         vnode_t *oldNodePtr = NULL;
         /*get 'oldname' vnode and check path (ENAMETOOLONG, ENOENT, and ENOTDIR errors)*/
         if((res = open_namev(oldname, O_CREAT, &oldNodePtr, NULL)) != 0) {
-        	dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
-        	return res;
+         dbg(DBG_PRINT, "(GRADING2C) open_namev error: %d\n", res);
+         return res;
         }
         
         /*refcount for newly opened file*/
@@ -605,14 +604,14 @@ do_rename(const char *oldname, const char *newname)
         vnode_t *dirNodePtr = NULL;
         /*get 'oldname' vnode (parent directory) which is needed for link*/
         if((res = dir_namev(oldname, namelen, &namePtr, NULL, &dirNodePtr)) != 0) { /*sanity check*/
-        	dbg(DBG_PRINT, "(GRADING2C) dir_namev error: %d\n", res);
-        	vput(oldNodePtr);
+         dbg(DBG_PRINT, "(GRADING2C) dir_namev error: %d\n", res);
+         vput(oldNodePtr);
         return res;
         }
         /*
-        * +1 refcount for oldNode
-        * +1 refcount for dirNode
-        */
+* +1 refcount for oldNode
+* +1 refcount for dirNode
+*/
         
         /*call link function from 'oldname' parent directory, specifying new name*/
         int namelength = strlen(newname);
@@ -622,9 +621,9 @@ do_rename(const char *oldname, const char *newname)
         int result = dirNodePtr->vn_ops->unlink(((struct vnode *) dirNodePtr), namePtr, *namelen);
         
         /*
-        * the two above operations (link and unlink) really just linked and unlinked the same node
-        * so no adjustment to the reference count due to these operations is necessary
-        */
+* the two above operations (link and unlink) really just linked and unlinked the same node
+* so no adjustment to the reference count due to these operations is necessary
+*/
         
         /*decrement reference counts for both the file and parent directory*/
         vput(oldNodePtr);
@@ -652,8 +651,8 @@ do_chdir(const char *path)
         int res;
 
         /*
-        * error checking in case its not a directory??
-        */
+* error checking in case its not a directory??
+*/
         
         /*ERROR CHECKING*/
         vnode_t *newNodePtr = NULL;
@@ -681,7 +680,7 @@ do_chdir(const char *path)
         dbg(DBG_PRINT, "(GRADING2C) Curproc %d current directory %p\n", curproc->p_pid, curproc->p_cwd);
         
         /*decrement ref count for previous curproc p_cwd vnode*/
-        vput(oldNode);        
+        vput(oldNode);
         return 0;
 }
 
@@ -718,7 +717,7 @@ do_getdent(int fd, struct dirent *dirp)
 
         /* fd is not an open file descriptor. */
         if(NULL == tmp_file){
-        	dbg(DBG_PRINT, "(GRADING2C) invalid file descriptor in do_getdent()\n");
+         dbg(DBG_PRINT, "(GRADING2C) invalid file descriptor in do_getdent()\n");
                 return -EBADF;
         }
 
@@ -731,7 +730,7 @@ do_getdent(int fd, struct dirent *dirp)
         
 
         /* If the end of the file as been reached (offset == file->vn_len),
-        no directory entry will be read and 0 will be returned. */
+no directory entry will be read and 0 will be returned. */
       
         /* vnode.h: int (*readdir)(struct vnode *dir, off_t offset, struct dirent *d); */
         ret_readdir = tmp_file->f_vnode->vn_ops->readdir(tmp_file->f_vnode, tmp_file->f_pos, dirp);
@@ -764,8 +763,8 @@ do_lseek(int fd, int offset, int whence)
 {
         /* NOT_YET_IMPLEMENTED("VFS: do_lseek"); */
         /*
-        * file.h struct file *fget(int fd);
-        */
+* file.h struct file *fget(int fd);
+*/
         
         if(fd<0 || fd >= NFILES)
         {
@@ -776,7 +775,7 @@ do_lseek(int fd, int offset, int whence)
 
         /* fd is not an open file descriptor. */
         if(NULL == tmp_file){
-        	dbg(DBG_PRINT, "(GRADING2C) fd is NULL in do_lseek()\n");
+         dbg(DBG_PRINT, "(GRADING2C) fd is NULL in do_lseek()\n");
                 return -EBADF;
         }
         /* whence is not one of SEEK_SET, SEEK_CUR, SEEK_END */
@@ -795,7 +794,7 @@ do_lseek(int fd, int offset, int whence)
                         fput(tmp_file); /*free file memory*/
                         dbg(DBG_PRINT, "(GRADING2C) whence invalid in do_lseek()\n");
                         return -EINVAL;
-        }        
+        }
         
         /* the resulting file offset would be negative. */
         if(tmp_file->f_pos < 0){
@@ -806,7 +805,7 @@ do_lseek(int fd, int offset, int whence)
         }
         int retval = tmp_file->f_pos;
         fput(tmp_file); /*free file memory*/
-        dbg(DBG_PRINT, "(GRADING2C) do_lseek() successful\n");                         
+        dbg(DBG_PRINT, "(GRADING2C) do_lseek() successful\n");
         return retval; /*return position*/
 }
 
@@ -825,16 +824,16 @@ int
 do_stat(const char *path, struct stat *buf)
 {
         /* NOT_YET_IMPLEMENTED("VFS: do_stat");
-        * modified by Zack
-        */
+* modified by Zack
+*/
         int res_open_namev = 0;
         int res_stat = 0;
         int res = 0;
 
         /*
-        * namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
-        * fchtl.h: #define O_CREAT 0x100 Create file if non-existent.
-        */
+* namev.c: int open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
+* fchtl.h: #define O_CREAT 0x100 Create file if non-existent.
+*/
         
         /*ERROR CHECKING*/
         vnode_t *newNodePtr = NULL;
@@ -846,8 +845,8 @@ do_stat(const char *path, struct stat *buf)
         /*newNodePtr should now point to the vnode of the directory given by 'path'*/
                 
         /*
-        * vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
-        */
+* vnode.h: int (*stat)(struct vnode *vnode, struct stat *buf);
+*/
         KASSERT(newNodePtr->vn_ops->stat);
         dbg(DBG_PRINT,"(GRADING2A 3.f) /pointer to corresponding vnode/->vn_ops->stat is not NULL\n");
         res_stat = newNodePtr->vn_ops->stat(newNodePtr, buf);

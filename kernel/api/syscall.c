@@ -1,12 +1,12 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 #include "kernel.h"
@@ -54,47 +54,141 @@ static __attribute__((unused)) void syscall_init(void)
 init_func(syscall_init);
 
 /*
- * this is one of the few sys_* functions you have to write. be sure to
- * check out the sys_* functions we have provided before trying to write
- * this one.
- *  - copy_from_user() the read_args_t
- *  - page_alloc() a temporary buffer
- *  - call do_read(), and copy_to_user() the read bytes
- *  - page_free() your buffer
- *  - return the number of bytes actually read, or if anything goes wrong
- *    set curthr->kt_errno and return -1
- */
+* this is one of the few sys_* functions you have to write. be sure to
+* check out the sys_* functions we have provided before trying to write
+* this one.
+* - copy_from_user() the read_args_t
+* - page_alloc() a temporary buffer
+* - call do_read(), and copy_to_user() the read bytes
+* - page_free() your buffer
+* - return the number of bytes actually read, or if anything goes wrong
+* set curthr->kt_errno and return -1
+*/
 static int
 sys_read(read_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_read");
-        return -1;
+read_args_t kern_args;
+int numRead;
+int err;
+
+/*copy the read_args_t from userland into kernel address space*/
+if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
+curthr->kt_errno = -err;
+dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_from_user() error\n");
+return -1;
+}
+
+/*set up a buffer in the kernel and read to it*/
+if((kern_args.buf = page_alloc()) == NULL){
+dbg(DBG_PRINT,"(GRADING3E) sys_read() page_alloc() error\n");
+return -ENOMEM;
+}
+if ((numRead = do_read(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
+curthr->kt_errno = -numRead;
+dbg(DBG_PRINT,"(GRADING3E) sys_read() do_read() error\n");
+return -1;
+}
+
+/*what if buffer (1 page) wasn't big enough?*/
+
+/*copy the read_args_t back to userland, containing the new void* that hold the address of the buffer*/
+if ((err = copy_to_user(arg->buf, kern_args.buf, numRead)) < 0) {
+curthr->kt_errno = -err;
+dbg(DBG_PRINT,"(GRADING3E) sys_read() copy_to_user() error\n");
+return -1;
+}
+
+page_free(kern_args.buf);
+
+dbg(DBG_PRINT,"(GRADING3E) sys_read() successful\n");
+return numRead;
 }
 
 /*
- * This function is almost identical to sys_read.  See comments above.
- */
+* This function is almost identical to sys_read. See comments above.
+*/
 static int
 sys_write(write_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_write");
-        return -1;
+read_args_t kern_args;
+int numWritten;
+int err;
+
+/*copy the read_args_t from userland into kernel address space*/
+if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
+curthr->kt_errno = -err;
+dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
+return -1;
+}
+
+/*allocate a buffer, then copy the data to write from userland into the buffer*/
+if((kern_args.buf = page_alloc()) == NULL){
+dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error\n");
+return -ENOMEM;
+}
+if ((err = copy_from_user(kern_args.buf, arg->buf, arg->nbytes)) < 0) {
+curthr->kt_errno = -err;
+dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
+return -1;
+}
+
+if ((numWritten = do_write(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
+curthr->kt_errno = -numWritten;
+dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error\n");
+return -1;
+}
+
+page_free(kern_args.buf);
+
+dbg(DBG_PRINT,"(GRADING3E) sys_write(): successful\n");
+return numWritten;
 }
 
 /*
- * This is another tricly sys_* function that you will need to write.
- * It's pretty similar to sys_read(), but you don't need
- * to allocate a whole page, just a single dirent_t. call do_getdents in a
- * loop until you have read getdent_args_t->count bytes (or an error
- * occurs).  You should note that count is the number of bytes in the
- * buffer, not the number of dirents, which means that you'll need to loop
- * a max of something like count / sizeof(dirent_t) times.
- */
+* This is another tricly sys_* function that you will need to write.
+* It's pretty similar to sys_read(), but you don't need
+* to allocate a whole page, just a single dirent_t. call do_getdents in a
+* loop until you have read getdent_args_t->count bytes (or an error
+* occurs). You should note that count is the number of bytes in the
+* buffer, not the number of dirents, which means that you'll need to loop
+* a max of something like count / sizeof(dirent_t) times.
+*/
 static int
 sys_getdents(getdents_args_t *arg)
 {
-        NOT_YET_IMPLEMENTED("VM: sys_getdents");
-        return -1;
+struct dirent directory;
+int ret_val;
+uint32_t num_read = 0;
+
+if(arg->count < sizeof(directory)) {
+dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): buf too small\n");
+return 0;
+}
+else {
+while(num_read < arg->count){
+/*arg->dirp will point to the dir ent read*/
+ret_val = do_getdent(arg->fd, arg->dirp);
+
+num_read += ret_val;
+
+if(ret_val == 0) {
+dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful\n");
+return num_read;
+}
+
+if(ret_val < 0) {
+curthr->kt_errno = -ret_val;
+dbg(DBG_PRINT,"(GRADING3E) sys_getdents(): do_getdent error\n");
+return -1;
+}
+
+/*after this, dirp will point to the space in the buffer just after the previously read-in dir ent*/
+arg->dirp++;
+}
+}
+
+dbg(DBG_PRINT,"(GRADING3E) sys_getdents() successful\n");
+return num_read;
 }
 
 #ifdef __MOUNTING__
@@ -189,8 +283,8 @@ static int sys_dup(int fd)
 
 static int sys_dup2(const dup2_args_t *arg)
 {
-        dup2_args_t             kern_args;
-        int                     err;
+        dup2_args_t kern_args;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
                 curthr->kt_errno = -err;
@@ -205,9 +299,9 @@ static int sys_dup2(const dup2_args_t *arg)
 
 static int sys_mkdir(mkdir_args_t *arg)
 {
-        mkdir_args_t            kern_args;
-        char                   *path;
-        int                     err;
+        mkdir_args_t kern_args;
+        char *path;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(mkdir_args_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -230,9 +324,9 @@ static int sys_mkdir(mkdir_args_t *arg)
 
 static int sys_rmdir(argstr_t *arg)
 {
-        argstr_t                kern_args;
-        char                   *path;
-        int                     err;
+        argstr_t kern_args;
+        char *path;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(argstr_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -255,9 +349,9 @@ static int sys_rmdir(argstr_t *arg)
 
 static int sys_unlink(argstr_t *arg)
 {
-        argstr_t                kern_args;
-        char                    *path;
-        int                     err;
+        argstr_t kern_args;
+        char *path;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(argstr_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -280,10 +374,10 @@ static int sys_unlink(argstr_t *arg)
 
 static int sys_link(link_args_t *arg)
 {
-        link_args_t             kern_args;
-        char                    *to;
-        char                    *from;
-        int                     err;
+        link_args_t kern_args;
+        char *to;
+        char *from;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(link_args_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -317,10 +411,10 @@ static int sys_link(link_args_t *arg)
 
 static int sys_rename(rename_args_t *arg)
 {
-        rename_args_t           kern_args;
-        char                    *oldname;
-        char                    *newname;
-        int                     err;
+        rename_args_t kern_args;
+        char *oldname;
+        char *newname;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(rename_args_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -352,9 +446,9 @@ static int sys_rename(rename_args_t *arg)
 
 static int sys_chdir(argstr_t *arg)
 {
-        argstr_t        kern_args;
-        char            *path;
-        int             err;
+        argstr_t kern_args;
+        char *path;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(argstr_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -378,8 +472,8 @@ static int sys_chdir(argstr_t *arg)
 
 static int sys_lseek(lseek_args_t *args)
 {
-        lseek_args_t            kargs;
-        int                     err;
+        lseek_args_t kargs;
+        int err;
 
         if ((err = copy_from_user(&kargs, args, sizeof(lseek_args_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -396,9 +490,9 @@ static int sys_lseek(lseek_args_t *args)
 
 static int sys_open(open_args_t *arg)
 {
-        open_args_t             kern_args;
-        char                    *path;
-        int                     err;
+        open_args_t kern_args;
+        char *path;
+        int err;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(open_args_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -421,8 +515,8 @@ static int sys_open(open_args_t *arg)
 
 static int sys_munmap(munmap_args_t *args)
 {
-        munmap_args_t           kargs;
-        int                     err;
+        munmap_args_t kargs;
+        int err;
 
         if (copy_from_user(&kargs, args, sizeof(munmap_args_t))) {
                 curthr->kt_errno = EFAULT;
@@ -439,9 +533,9 @@ static int sys_munmap(munmap_args_t *args)
 
 static void *sys_mmap(mmap_args_t *arg)
 {
-        mmap_args_t             kargs;
-        void                    *ret;
-        int                     err;
+        mmap_args_t kargs;
+        void *ret;
+        int err;
 
         if (copy_from_user(&kargs, arg, sizeof(mmap_args_t)) < 0) {
                 curthr->kt_errno = EFAULT;
@@ -639,8 +733,8 @@ cleanup:
 static int sys_debug(argstr_t *arg)
 {
         argstr_t kern_args;
-        int      err;
-        char    *message;
+        int err;
+        char *message;
 
         if ((err = copy_from_user(&kern_args, arg, sizeof(argstr_t))) < 0) {
                 curthr->kt_errno = -err;
@@ -656,7 +750,7 @@ static int sys_debug(argstr_t *arg)
 static int sys_kshell(int ttyid)
 {
         kshell_t *ksh;
-        int       err;
+        int err;
 
         /* Create a kshell on tty */
         ksh = kshell_create(ttyid);
@@ -680,7 +774,7 @@ static void syscall_handler(regs_t *regs)
 {
 
         /* The syscall number and the (user-address) pointer to the arguments.
-         * Pushed by userland when we trap into the kernel */
+* Pushed by userland when we trap into the kernel */
         uint32_t sysnum = (uint32_t) regs->r_eax;
         uint32_t args = (uint32_t) regs->r_edx;
 
@@ -830,4 +924,5 @@ static int syscall_dispatch(uint32_t sysnum, uint32_t args, regs_t *regs)
                         return -1;
         }
 }
+
 

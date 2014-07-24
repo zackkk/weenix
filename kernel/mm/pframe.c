@@ -1,12 +1,12 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information:                                      */
-/*                                                                            */
-/* This fils is part of CSCI 402 kernel programming assignments at USC.       */
-/* Please understand that you are NOT permitted to distribute or publically   */
-/*         display a copy of this file (or ANY PART of it) for any reason.    */
+/* Important CSCI 402 usage information: */
+/* */
+/* This fils is part of CSCI 402 kernel programming assignments at USC. */
+/* Please understand that you are NOT permitted to distribute or publically */
+/* display a copy of this file (or ANY PART of it) for any reason. */
 /* If anyone (including your prospective employer) asks you to post the code, */
-/*         you must inform them that you do NOT have permissions to do so.    */
-/* You are also NOT permitted to remove this comment block from this file.    */
+/* you must inform them that you do NOT have permissions to do so. */
+/* You are also NOT permitted to remove this comment block from this file. */
 /******************************************************************************/
 
 #include "globals.h"
@@ -29,77 +29,77 @@
 #include "vm/vmmap.h"
 
 /*
- * In this file, physical pages (as represented by pframes) will be
- * referred to as "pages"
- * A particular mmobj and a page number within the mmobj constitute
- * the "identity" of a page, and uniquely identify a page.
- *
- * A page is always in one of three categories:
- *     - (1) free
- *     - (2) allocated
- *     - (3) pinned
- *
- * (1) Free pages do not contain identifiable data and are readily
- *     available for use. They are not pre-zeroed (at the moment, at least
- *     (but often times, OSs will have their equivalent of Weenix's
- *     idleproc (or another thread/process dedicated to this purpose) zero
- *     unzeroed pages on the free list when the system is otherwise idle)).
- *
- * (2) Allocated pages contain identifiable data.
- *
- * (3) Pinned pages contain identifiable data but differ from allocated
- *     pages in that the data they contain is "pinned" to the page frame in
- *     which they reside; pinned pages cannot be reclaimed nor can they be
- *     cleaned. Every pinned page is, of course, allocated also.
- *
- * For example, file system cache pages are typically allocated, but not pinned,
- * because if we needed to claim the page frame they're using, we could write
- * the data out to disk and use that page frame.
- *
- * By contrast, pages used by anonymous mappings are pinned because they can't
- * be paged out - there's no other copy of the data they contain.
- *
- *
- * When a page is allocated or pinned:
- *     - pf_link links the page into allocated_list or pinned_list,
- *       respectively
- *     - pf_hlink links the page into the appropriate hash chain of the
- *       resident page hashtable
- *     - pf_olink links the page into the appropriate mmobj's list of
- *       resident pages
- *
- * When a page is free:
- *     - pf_link links the page into free_list
- *     - pf_hlink does not link the page into any list
- *     - pf_olink does not link the page into any list
- */
+* In this file, physical pages (as represented by pframes) will be
+* referred to as "pages"
+* A particular mmobj and a page number within the mmobj constitute
+* the "identity" of a page, and uniquely identify a page.
+*
+* A page is always in one of three categories:
+* - (1) free
+* - (2) allocated
+* - (3) pinned
+*
+* (1) Free pages do not contain identifiable data and are readily
+* available for use. They are not pre-zeroed (at the moment, at least
+* (but often times, OSs will have their equivalent of Weenix's
+* idleproc (or another thread/process dedicated to this purpose) zero
+* unzeroed pages on the free list when the system is otherwise idle)).
+*
+* (2) Allocated pages contain identifiable data.
+*
+* (3) Pinned pages contain identifiable data but differ from allocated
+* pages in that the data they contain is "pinned" to the page frame in
+* which they reside; pinned pages cannot be reclaimed nor can they be
+* cleaned. Every pinned page is, of course, allocated also.
+*
+* For example, file system cache pages are typically allocated, but not pinned,
+* because if we needed to claim the page frame they're using, we could write
+* the data out to disk and use that page frame.
+*
+* By contrast, pages used by anonymous mappings are pinned because they can't
+* be paged out - there's no other copy of the data they contain.
+*
+*
+* When a page is allocated or pinned:
+* - pf_link links the page into allocated_list or pinned_list,
+* respectively
+* - pf_hlink links the page into the appropriate hash chain of the
+* resident page hashtable
+* - pf_olink links the page into the appropriate mmobj's list of
+* resident pages
+*
+* When a page is free:
+* - pf_link links the page into free_list
+* - pf_hlink does not link the page into any list
+* - pf_olink does not link the page into any list
+*/
 
 /* Page management structures:
- *   Paging lists/queues:
- *     The PINNED list:
- *       Pages on this list have been "pinned" to the page frames in which
- *       they currently reside-- these page frames cannot be reclaimed nor
- *       can the pages be cleaned until they are completely unpinned.
- *       There is no need to keep this list in any order.
- */
+* Paging lists/queues:
+* The PINNED list:
+* Pages on this list have been "pinned" to the page frames in which
+* they currently reside-- these page frames cannot be reclaimed nor
+* can the pages be cleaned until they are completely unpinned.
+* There is no need to keep this list in any order.
+*/
 static int npinned;
 static list_t pinned_list;
 
-/*     The ALLOCATED list: */
-/*       Pages on this list contain useful/actual/real data. This list is
- *       maintained in least-recently-requested (via pframe_get or
- *       pframe_get_resident) (and thus, *roughly/approximately* LRU) order.
- */
+/* The ALLOCATED list: */
+/* Pages on this list contain useful/actual/real data. This list is
+* maintained in least-recently-requested (via pframe_get or
+* pframe_get_resident) (and thus, *roughly/approximately* LRU) order.
+*/
 static int nallocated;
 static list_t alloc_list;
 
 static slab_allocator_t *pframe_allocator;
 
 /* Used to quickly look up pframes. ALL pages "owned by" some
- * mmobj should be in this hash
- * (object, pagenum) --> list of pframes */
-#define hash_page(obj, pagenum)  ((((uint32_t)(obj)) + (pagenum)) \
-                                  % PF_HASH_SIZE)
+* mmobj should be in this hash
+* (object, pagenum) --> list of pframes */
+#define hash_page(obj, pagenum) ((((uint32_t)(obj)) + (pagenum)) \
+% PF_HASH_SIZE)
 static list_t pframe_hash[PF_HASH_SIZE];
 
 /* Related to the Pageout daemon: */
@@ -107,7 +107,7 @@ static list_t pframe_hash[PF_HASH_SIZE];
 static uint32_t nfreepages_min = 0;
 static uint32_t nfreepages_target = 0;
 
-/*   pageoutd sleeps on this queue */
+/* pageoutd sleeps on this queue */
 static proc_t *pageoutd = NULL;
 static kthread_t *pageoutd_thr = NULL;
 static ktqueue_t pageoutd_waitq;
@@ -118,18 +118,18 @@ static ktqueue_t alloc_waitq;
 /* Pageout daemon functions */
 static void *pageoutd_run(int arg1, void *arg2);
 static void pageoutd_exit(void);
-#define pageoutd_wakeup()        (sched_broadcast_on(&pageoutd_waitq))
-#define pageoutd_needed()        \
-	((page_free_count() <= nfreepages_min) && (!list_empty(&alloc_list)))
-#define pageoutd_target_met()    (page_free_count() >= nfreepages_target)
+#define pageoutd_wakeup() (sched_broadcast_on(&pageoutd_waitq))
+#define pageoutd_needed() \
+((page_free_count() <= nfreepages_min) && (!list_empty(&alloc_list)))
+#define pageoutd_target_met() (page_free_count() >= nfreepages_target)
 
 
 /*
- * Initialize the pinned and allocated counts and lists. Then, make a pframe
- * slab allocator. You should also list_init all the lists that make
- * up the pframe_hash. Finally, you need to set things up for pageoutd to
- * run by setting nfreepages_min and nfreepages_target.
- */
+* Initialize the pinned and allocated counts and lists. Then, make a pframe
+* slab allocator. You should also list_init all the lists that make
+* up the pframe_hash. Finally, you need to set things up for pageoutd to
+* run by setting nfreepages_min and nfreepages_target.
+*/
 void
 pframe_init(void)
 {
@@ -151,8 +151,8 @@ pframe_init(void)
         nfreepages_target = page_free_count() >> 1;
         nfreepages_min = 0;
 
-		/* initialize alloc_waitq */
-		sched_queue_init(&alloc_waitq);
+/* initialize alloc_waitq */
+sched_queue_init(&alloc_waitq);
 }
 
 void
@@ -183,20 +183,20 @@ pframe_shutdown()
 }
 
 /*
- * Obtain the (unique) page identified by 'o' and 'pagenum' only if this page is
- * already resident; if this page is not already resident, NULL is
- * returned. This routine will not block.
- *
- * Note that this function may return a busy page. The caller must check this
- * case and deal with it appropriately. When a page is busy, it is being
- * sync'ed, filled, or reclaimed. A page may be sync'ed by pageoutd or an
- * arbitrary thread (which might free the page afterward).
- *
- * @param o the mmobj the page is in
- * @param pagenum the page number identifying this page within the object
- *
- * @return the page requested, or NULL if it is not resident.
- */
+* Obtain the (unique) page identified by 'o' and 'pagenum' only if this page is
+* already resident; if this page is not already resident, NULL is
+* returned. This routine will not block.
+*
+* Note that this function may return a busy page. The caller must check this
+* case and deal with it appropriately. When a page is busy, it is being
+* sync'ed, filled, or reclaimed. A page may be sync'ed by pageoutd or an
+* arbitrary thread (which might free the page afterward).
+*
+* @param o the mmobj the page is in
+* @param pagenum the page number identifying this page within the object
+*
+* @return the page requested, or NULL if it is not resident.
+*/
 pframe_t *
 pframe_get_resident(struct mmobj *o, uint32_t pagenum)
 {
@@ -207,8 +207,8 @@ pframe_get_resident(struct mmobj *o, uint32_t pagenum)
         list_iterate_begin(hashchain, pf, pframe_t, pf_hlink) {
                 if ((o == pf->pf_obj) && (pagenum == pf->pf_pagenum)) {
                         /* found a page with the specified identity. It is
-                         * up to the caller to recognize/care if the page
-                         * is busy. */
+* up to the caller to recognize/care if the page
+* is busy. */
                         if (!pframe_is_pinned(pf)) {
                                 /* send to back of alloc_list */
                                 list_remove(&pf->pf_link);
@@ -222,18 +222,18 @@ pframe_get_resident(struct mmobj *o, uint32_t pagenum)
 }
 
 /*
- * Allocate a pframe to hold the page identified by the object and page number.
- * The given page should not already be resident.
- *
- * We allocate a page from the free list. We then initialize the newly allocated
- * page's object, pagenum, and flags, pin count, and links. We also update the
- * object's nrespages.
- *
- * @param o the mmobj identifying this page
- * @param pagenum the page number of this page in the object
- *
- * @return a new pframe
- */
+* Allocate a pframe to hold the page identified by the object and page number.
+* The given page should not already be resident.
+*
+* We allocate a page from the free list. We then initialize the newly allocated
+* page's object, pagenum, and flags, pin count, and links. We also update the
+* object's nrespages.
+*
+* @param o the mmobj identifying this page
+* @param pagenum the page number of this page in the object
+*
+* @return a new pframe
+*/
 static pframe_t *
 pframe_alloc(mmobj_t *o, uint32_t pagenum)
 {
@@ -263,6 +263,8 @@ pframe_alloc(mmobj_t *o, uint32_t pagenum)
         o->mmo_nrespages++;
         list_insert_head(&o->mmo_respages, &pf->pf_olink);
 
+        /* dbg(DBG_PRINT, "page num:%d, &o->mmo_respages:%p, pf_olink addr:%p\n", pagenum, &o->mmo_respages, &pf->pf_olink);*/
+
         return pf;
 }
 
@@ -276,13 +278,13 @@ pframe_lookup(struct mmobj *o, uint32_t pagenum, int forwrite, pframe_t **result
 }
 
 /*
- * Migrate a page frame up the tree. The destination must be on the same
- * branch as the pframe's current object. pf must not be busy. If dest
- * already has a page with the same number as pf clean pf.
- *
- * @param pf page to be migrated
- * @param dest destination vm object
- */
+* Migrate a page frame up the tree. The destination must be on the same
+* branch as the pframe's current object. pf must not be busy. If dest
+* already has a page with the same number as pf clean pf.
+*
+* @param pf page to be migrated
+* @param dest destination vm object
+*/
 void
 pframe_migrate(pframe_t *pf, mmobj_t *dest)
 {
@@ -307,98 +309,184 @@ pframe_migrate(pframe_t *pf, mmobj_t *dest)
 }
 
 /*
- * Fills the contents of the page (using the mmobj's fillpage op).
- * Make sure to mark the page busy while it's being filled.
- * @param pf the page to fill
- */
+* Fills the contents of the page (using the mmobj's fillpage op).
+* Make sure to mark the page busy while it's being filled.
+* @param pf the page to fill
+*/
 static int
 pframe_fill(pframe_t *pf)
 {
         int ret;
-
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 1\n");
         pframe_set_busy(pf);
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 2\n");
         ret = pf->pf_obj->mmo_ops->fillpage(pf->pf_obj, pf);
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 3\n");
         pframe_clear_busy(pf);
-
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 4\n");
         sched_broadcast_on(&pf->pf_waitq);
-
+        dbg(DBG_PRINT,"(GRADING3E) pframe_fill(): 5\n");
         return ret;
 }
 
 /*
- * Find and return the pframe representing the page identified by the object
- * and page number. If the page is already resident in memory, then we return
- * the existing page. Otherwise, we allocate a new page and fill it (in which
- * case this routine may block). Before allocating the new pframe, we check to
- * see if we need to call pageoutd and wake it up if necessary.
- *
- * If the page is found (resident) but busy, then we will wait for it to become
- * unbusy and then try again (since it may have been freed after that). Thus,
- * as long as this routine returns successfully, the returned page will be a
- * non-busy page that will be guaranteed to remain resident until the calling
- * context blocks without first pinning the page.
- *
- * This routine may block at the mmobj operation level.
- *
- * @param o the parent object of the page
- * @param pagenum the page number of this page in the object
- * @param result used to return the pframe (NULL if there's an error)
- * @return 0 on success, < 0 on failure.
- */
+* Find and return the pframe representing the page identified by the object
+* and page number. If the page is already resident in memory, then we return
+* the existing page. Otherwise, we allocate a new page and fill it (in which
+* case this routine may block). Before allocating the new pframe, we check to
+* see if we need to call pageoutd and wake it up if necessary.
+*
+* If the page is found (resident) but busy, then we will wait for it to become
+* unbusy and then try again (since it may have been freed after that). Thus,
+* as long as this routine returns successfully, the returned page will be a
+* non-busy page that will be guaranteed to remain resident until the calling
+* context blocks without first pinning the page.
+*
+* This routine may block at the mmobj operation level.
+*
+* @param o the parent object of the page
+* @param pagenum the page number of this page in the object
+* @param result used to return the pframe (NULL if there's an error)
+* @return 0 on success, < 0 on failure.
+*/
 int
 pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_get");
-        return 0;
+KASSERT(o);
+/*try to get pframe from resident memory*/
+pframe_t *pframe = pframe_get_resident(o, pagenum);
+/*only return the pframe if it isn't NULL and isn't busy*/
+while((pframe == NULL) || (pframe->pf_flags == PF_BUSY)) {
+
+/*pframe not in memory*/
+if (pframe == NULL) {
+/*check if pageout daemon should be woken up*/
+if(pageoutd_needed())
+pageoutd_wakeup();
+
+/*get new pframe*/
+if((pframe = pframe_alloc(o, pagenum)) == NULL)
+return -1;
+/*fill in new pframe, mark as busy during operation*/
+dbg(DBG_PRINT,"(GRADING3E) xxxxxxxxxxxxxxxxxxxx\n");
+pframe_set_busy(pframe);
+dbg(DBG_PRINT,"(GRADING3E) yyyyyyyyyyyyyyyyyyyy\n");
+if(pframe_fill(pframe) != 0)
+{
+dbg(DBG_PRINT,"(GRADING3E) lllllllllllll\n");
+return -1;
+}
+dbg(DBG_PRINT,"(GRADING3E) zzzzzzzzzzzzzzzzzzzz\n");
+pframe->pf_flags = 0;
+dbg(DBG_PRINT,"(GRADING3E) rrrrrrrrrrrrrrrrrrrr\n");
+}
+
+/*pframe is in memory*/
+else {
+/*check whether the returned pframe is busy, wait if it is*/
+if(pframe->pf_flags == PF_BUSY)
+sched_sleep_on(&(pframe->pf_waitq));
+
+/*when the thread is woken up, pframe could have been freed,
+* and this will get checked by the while loop condition pframe == NULL*/
+}
+
+}
+
+/*now we have a non-NULL, non-busy pframe, put it in result, then return*/
+*result = pframe;
+
+return 0;
 }
 
 /*
- * Increases the pin count on this page. Pages with a pin count > 0 will not be
- * paged out by pageoutd, so this ensures that the page will remain resident
- * until the pin count is decreased.
- *
- * If the pframe has not yet been pinned, remove this pframe's list link from
- * the allocated list and add it to the pinned list.  Be sure to decrement
- * nallocated and increment npinned.
- *
- * In either case, increment the pf_pincount.
- *
- * @param pf the page to pin
- */
+* Increases the pin count on this page. Pages with a pin count > 0 will not be
+* paged out by pageoutd, so this ensures that the page will remain resident
+* until the pin count is decreased.
+*
+* If the pframe has not yet been pinned, remove this pframe's list link from
+* the allocated list and add it to the pinned list. Be sure to decrement
+* nallocated and increment npinned.
+*
+* In either case, increment the pf_pincount.
+*
+* @param pf the page to pin
+*/
 void
 pframe_pin(pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_pin");
+KASSERT(!pframe_is_free(pf));
+KASSERT(pf->pf_pincount >= 0);
+dbg(DBG_PRINT,"(GRADING3E) pframe_pin(): assertions passed\n");
+
+/*pframe not pinned?*/
+if(pf->pf_pincount == 0){
+/*remove from allocated list*/
+list_remove(&(pf->pf_link));
+
+/*put on pinned list*/
+list_insert_tail(&(pinned_list), &(pf->pf_link));
+
+/*update counts*/
+nallocated--;
+npinned++;
+dbg(DBG_PRINT,"(GRADING3E) pframe_pin(): pframe pinned\n");
+}
+
+/*increment pf_pincount*/
+pf->pf_pincount++;
+
+dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
 }
 
 /*
- * Decreases the pin count on a page. If the pin count reaches zero, then the
- * page could be paged out any time after the calling context blocks.
- *
- * If the pin count reaches zero, move the pframe's list link from the pinned
- * list to the allocated list.  Be sure to correctly update npinned and
- * nallocated
- *
- * @param pf a pinned page (a page with a positive pin count)
- */
+* Decreases the pin count on a page. If the pin count reaches zero, then the
+* page could be paged out any time after the calling context blocks.
+*
+* If the pin count reaches zero, move the pframe's list link from the pinned
+* list to the allocated list. Be sure to correctly update npinned and
+* nallocated
+*
+* @param pf a pinned page (a page with a positive pin count)
+*/
 void
 pframe_unpin(pframe_t *pf)
 {
-        NOT_YET_IMPLEMENTED("VM: pframe_unpin");
+
+KASSERT(!pframe_is_free(pf));
+KASSERT(pf->pf_pincount > 0);
+
+/*decrement pf_pincount*/
+pf->pf_pincount--;
+
+dbg(DBG_PRINT,"(GRADING3E) pframe:%d has pincount:%d.\n", pf->pf_pagenum, pf->pf_pincount);
+
+if(pf->pf_pincount == 0){
+/*remove from pinned list*/
+list_remove(&(pf->pf_link));
+/*put on allocated list*/
+list_insert_tail(&(alloc_list), &(pf->pf_link));
+
+/*update counts*/
+nallocated++;
+npinned--;
+dbg(DBG_PRINT,"(GRADING3E) pframe_unpin(): pframe unpinned\n");
+}
+
 }
 
 /*
- * Indicates that a page is about to be modified. This should be called on a
- * page before any attempt to modify its contents. This marks the page dirty
- * (so that pageoutd knows to clean it before reclaiming the page frame)
- * and calls the dirtypage mmobj entry point.
- * The given page must not be busy.
- *
- * This routine can block at the mmobj operation level.
- *
- * @param pf the page to dirty
- * @return 0 on success, -errno on failure
- */
+* Indicates that a page is about to be modified. This should be called on a
+* page before any attempt to modify its contents. This marks the page dirty
+* (so that pageoutd knows to clean it before reclaiming the page frame)
+* and calls the dirtypage mmobj entry point.
+* The given page must not be busy.
+*
+* This routine can block at the mmobj operation level.
+*
+* @param pf the page to dirty
+* @return 0 on success, -errno on failure
+*/
 int
 pframe_dirty(pframe_t *pf)
 {
@@ -418,14 +506,14 @@ pframe_dirty(pframe_t *pf)
 }
 
 /*
- * Clean a dirty page by writing it back to disk. Removes the dirty
- * bit of the page and updates the MMU entry.
- * The page must be dirty but unpinned.
- *
- * This routine can block at the mmobj operation level.
- * @param pf the page to clean
- * @return 0 on success, -errno on failure
- */
+* Clean a dirty page by writing it back to disk. Removes the dirty
+* bit of the page and updates the MMU entry.
+* The page must be dirty but unpinned.
+*
+* This routine can block at the mmobj operation level.
+* @param pf the page to clean
+* @return 0 on success, -errno on failure
+*/
 int
 pframe_clean(pframe_t *pf)
 {
@@ -437,11 +525,11 @@ pframe_clean(pframe_t *pf)
         dbg(DBG_PFRAME, "cleaning page %d of obj %p\n", pf->pf_pagenum, pf->pf_obj);
 
         /*
-         * Clear the dirty bit *before* we potentially (depending on this
-         * particular object type's 'dirtypage' implementation) block so
-         * that if the page is dirtied again while we're writing it out,
-         * we won't (incorrectly) think the page has been fully cleaned.
-         */
+* Clear the dirty bit *before* we potentially (depending on this
+* particular object type's 'dirtypage' implementation) block so
+* that if the page is dirtied again while we're writing it out,
+* we won't (incorrectly) think the page has been fully cleaned.
+*/
         pframe_clear_dirty(pf);
 
         /* Make sure a future write to the page will fault (and hence dirty it) */
@@ -459,13 +547,13 @@ pframe_clean(pframe_t *pf)
 }
 
 /*
- * Deallocates a pframe (reclaims the page frame for use by something else).
- * The page should not be pinned, free, or busy. Note that if the page is dirty
- * it will not be cleaned. This removes the page's reference to its mmobj.
- *
- * This routine may block in the mmobj put operation.
- * @param pf the page to free
- */
+* Deallocates a pframe (reclaims the page frame for use by something else).
+* The page should not be pinned, free, or busy. Note that if the page is dirty
+* it will not be cleaned. This removes the page's reference to its mmobj.
+*
+* This routine may block in the mmobj put operation.
+* @param pf the page to free
+*/
 void
 pframe_free(pframe_t *pf)
 {
@@ -491,20 +579,18 @@ pframe_free(pframe_t *pf)
 
         page_free(pf->pf_addr);
         slab_obj_free(pframe_allocator, pf);
-
         o->mmo_nrespages--;
         list_remove(&pf->pf_olink);
-
         /* Now that pf has effectively been freed, dereference the corresponding
-         * object. We don't do this earlier as we are modifying the object's counts
-         * and also because this op can block */
+* object. We don't do this earlier as we are modifying the object's counts
+* and also because this op can block */
         o->mmo_ops->put(o);
 }
 
 /*
- * Clean all allocated pages (that is, all pages that are not pinned and
- * not free). This is called by sync(2).
- */
+* Clean all allocated pages (that is, all pages that are not pinned and
+* not free). This is called by sync(2).
+*/
 void
 pframe_clean_all()
 {
@@ -512,12 +598,12 @@ pframe_clean_all()
         dbg(DBG_PFRAME, "pframe_clean_all: starting (this may take a while)\n");
 
         /*
-         * Iterate from head of alloc_list to tail; This is a rough attempt to
-         * sync from least active to most active. Note that every time we block we
-         * need to start the loop over as the "current element" pf may have been
-         * moved or removed in the meantime (our list has no multithreaded
-         * integrity)
-         */
+* Iterate from head of alloc_list to tail; This is a rough attempt to
+* sync from least active to most active. Note that every time we block we
+* need to start the loop over as the "current element" pf may have been
+* moved or removed in the meantime (our list has no multithreaded
+* integrity)
+*/
 list_start:
         list_iterate_begin(&alloc_list, pf, pframe_t, pf_link) {
                 KASSERT(!pframe_is_pinned(pf));
@@ -533,15 +619,15 @@ list_start:
         } list_iterate_end();
 
         /* In theory, this function might never terminate (if new pages are
-         * constantly being added at the same time). That's why the user shouldn't
-         * call sync(2) very much... */
+* constantly being added at the same time). That's why the user shouldn't
+* call sync(2) very much... */
         dbg(DBG_PFRAME, "pframe_clean_all: completed!\n");
 }
 
 /* Remove a page frame from the page tables of all processes that map it
- * To do that, traverse all processes that map the given page frame into
- * their address space, and zero the corresponding address entry.
- */
+* To do that, traverse all processes that map the given page frame into
+* their address space, and zero the corresponding address entry.
+*/
 void
 pframe_remove_from_pts(pframe_t *pf)
 {
@@ -565,10 +651,10 @@ pframe_remove_from_pts(pframe_t *pf)
 /* ------------------------------------------------------------------ */
 
 /*
- * Initialize the pageout daemon process. This function is called
- * by pframe_init and simply starts up a new thread with the
- * appropriate function as its first call.
- */
+* Initialize the pageout daemon process. This function is called
+* by pframe_init and simply starts up a new thread with the
+* appropriate function as its first call.
+*/
 static __attribute__((unused)) void
 pageoutd_init(void)
 {
@@ -589,8 +675,8 @@ init_func(pageoutd_init);
 init_depends(sched_init);
 
 /*
- * Just cancel pageoutd
- */
+* Just cancel pageoutd
+*/
 static void
 pageoutd_exit()
 {
@@ -600,13 +686,13 @@ pageoutd_exit()
 }
 
 /*
- * The pageout daemon, when run, gets the least-recently-requested page from the
- * list of pages which are available to be paged out. Make sure to check if the
- * page is busy before yanking it. If the page you select is dirty, make sure
- * to clean it before yanking it. Finally, go back to sleep after having paged
- * out the appropriate page.
- * Both arguments unused.
- */
+* The pageout daemon, when run, gets the least-recently-requested page from the
+* list of pages which are available to be paged out. Make sure to check if the
+* page is busy before yanking it. If the page you select is dirty, make sure
+* to clean it before yanking it. Finally, go back to sleep after having paged
+* out the appropriate page.
+* Both arguments unused.
+*/
 static void *
 pageoutd_run(int arg1, void *arg2)
 {
@@ -624,26 +710,26 @@ pageoutd_run(int arg1, void *arg2)
                                 pframe_clean(pf);
                         } else {
                                 /* it's not busy, it's clean, and it's
-                                 * least-recently-requested; reclaim it: */
+* least-recently-requested; reclaim it: */
                                 pframe_free(pf);
                         }
                 }
 
-                /*   release the thundering herd... */
+                /* release the thundering herd... */
                 sched_broadcast_on(&alloc_waitq);
 
                 dbg(DBG_PFRAME, "PAGEOUT DEMAON: Falling asleep\n");
                 dbg(DBG_PFRAME, "PAGEOUT DEMAON: "
                     "nfreepages_target=|%d| "
-					"nfreepages_min=|%d| "
-					"page_free_count=|%d|\n", nfreepages_target, nfreepages_min, page_free_count());
+"nfreepages_min=|%d| "
+"page_free_count=|%d|\n", nfreepages_target, nfreepages_min, page_free_count());
                 if (sched_cancellable_sleep_on(&pageoutd_waitq))
                         kthread_exit((void *)0);
                 dbg(DBG_PFRAME, "PAGEOUT DEMAON: Waking up\n");
                 dbg(DBG_PFRAME, "PAGEOUT DEMAON: "
                     "nfreepages_target=|%d| "
-					"nfreepages_min=|%d| "
-					"page_free_count=|%d|\n", nfreepages_target, nfreepages_min, page_free_count());
-	}
+"nfreepages_min=|%d| "
+"page_free_count=|%d|\n", nfreepages_target, nfreepages_min, page_free_count());
+}
         return NULL;
 }
