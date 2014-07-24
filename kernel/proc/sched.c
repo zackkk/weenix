@@ -252,6 +252,10 @@ void
 sched_switch(void)
 {
 		dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
+		
+		/*enable interrupts b/c exec disables when entering userland*/
+		intr_enable();
+		
 		/*
 		 * adopted from lecture slides 5.2
 		 */
