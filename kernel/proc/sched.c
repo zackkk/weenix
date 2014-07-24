@@ -264,9 +264,11 @@ sched_switch(void)
          *  if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
          *  hardware interrupts, when not masked, can occur between any two code instructions
          */
+
+        
         while(sched_queue_empty(&kt_runq))
         {
-                
+            
         	intr_setipl(IPL_LOW);
         	intr_setipl(IPL_HIGH);
         }
