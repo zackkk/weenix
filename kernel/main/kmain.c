@@ -440,12 +440,22 @@ static void *hello_test(int arg1, void *arg2){
 
 static void *uname_test(int arg1, void *arg2){
 	/* sunhan_test.c */
-	char *argv[] = { "uname", "-a", "-s", "-r", "-v"  };
+	char *argv[] = { "uname", "-a", "-s", "-r", "-v", NULL };
 	char *envp[] = { NULL };
 	kernel_execve("/bin/uname", argv, envp);
 	dbg(DBG_PRINT,"uname test\n");
 	return NULL;
 }
+
+static void *args_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	char *argv[] = { "args", "ab", "cde", "fghi", "j", NULL};
+	char *envp[] = { NULL };
+	kernel_execve("/usr/bin/args", argv, envp);
+	dbg(DBG_PRINT,"args test\n");
+	return NULL;
+}
+
 
 int hellotests(kshell_t *kshell, int argc, char **argv)
 {
@@ -486,6 +496,30 @@ int unametests(kshell_t *kshell, int argc, char **argv)
     return 0;
 }
 
+int argstests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("uname_test");
+    
+    dbg(DBG_PRINT, "uname_test process pid %d\n", p->p_pid);
+    
+    int i = 0;
+    
+    /*This should be done by fork... In this test, executable opens the tty0*/
+    /*proc_t * init_p = curproc;
+    curproc = p;
+    
+    do_open("/dev/tty0", O_RDONLY);
+    do_open("/dev/tty0", O_WRONLY);
+    
+    curproc = init_p;*/
+    
+    kthread_t *thr = kthread_create(p, args_test, 1251, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
 #endif /* __VM__ */
 
 /**
@@ -519,6 +553,7 @@ initproc_run(int arg1, void *arg2)
 	
 	kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
 	kshell_add_command("unametest", unametests, "Invokes hello_test()...");
+	kshell_add_command("argstest", argstests, "Invokes hello_test()...");
 	
 	#endif /* __VM__ */
 	

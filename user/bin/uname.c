@@ -25,7 +25,7 @@ static struct utsname un;
 
 int main(int argc, char **argv)
 {
-        int     ii;        
+        int     ii;
 
         uname(&un);
 
