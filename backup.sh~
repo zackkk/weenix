@@ -1,4 +1,4 @@
 #!/bin/bash
 
-make procs-submit
-mv procs-submit.tar.gz ../k1_backup/procs-`date +%Y.%m.%d`_`date +%H.%M.%S`.tar.gz
+make vm-submit
+mv vfs-submit.tar.gz ../k3_backup/vm-`date +%Y.%m.%d`_`date +%H.%M.%S`.tar.gz

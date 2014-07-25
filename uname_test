@@ -1,0 +1,1581 @@
+/usr/bin/qemu-system-i386
+[32;40mKernel binary:
+[0m[32;40m text: 0xc0000000-0xc005d000
+[0m[32;40m data: 0xc005d000-0xc005d8fc
+[0m[32;40m bss: 0xc005d8fc-0xc0069000
+[0m[31;40mPhysical Memory Map:
+[0m[31;40m    0x00000000-0x0009f400: Usable
+[0m[31;40m    0x0009f400-0x000a0000: Reserved
+[0m[31;40m    0x000f0000-0x00100000: Reserved
+[0m[31;40m    0x00100000-0x01ffd000: Usable
+[0m[31;40mHighest usable physical memory: 0x01ffd000
+[0m[31;40mAvailable memory: 0x01efd000
+[0m[31;40mPage System adding range: 0xc0075400 to 0xc1efd000
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "slab_allocators" (0xc005eb64)
+[0m[31;40m  Object Size:   32
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 102
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (7) into 0xc1e75000 and 0xc1eb5000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1eb5000 (6) into 0xc1eb5000 and 0xc1ed5000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ed5000 (5) into 0xc1ed5000 and 0xc1ee5000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ee5000 (4) into 0xc1ee5000 and 0xc1eed000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1eed000 (3) into 0xc1eed000 and 0xc1ef1000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ef1000 (2) into 0xc1ef1000 and 0xc1ef3000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ef3000 (1) into 0xc1ef3000 and 0xc1ef4000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1ef4000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "slab_allocators" (0xc005eb64), new slab 0xc1ef4ff0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4000 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 1
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-64" (0xc1ef4004)
+[0m[31;40m  Object Size:   72
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 51
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4028 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 2
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 48
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-128" (0xc1ef402c)
+[0m[31;40m  Object Size:   136
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 455
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4050 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 3
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-256" (0xc1ef4054)
+[0m[31;40m  Object Size:   264
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 15
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4078 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 4
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 384
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 256
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-512" (0xc1ef407c)
+[0m[31;40m  Object Size:   520
+[0m[31;40m  Order:         2
+[0m[31;40m  Slab Capacity: 31
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef40a0 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 5
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 960
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 896
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 768
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 3, waste 512
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-1024" (0xc1ef40a4)
+[0m[31;40m  Object Size:   1032
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 63
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef40c8 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 6
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 2016
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 1984
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 1920
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 3, waste 1792
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 1536
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-2048" (0xc1ef40cc)
+[0m[31;40m  Object Size:   2056
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 31
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef40f0 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 7
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 1, waste 4064
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 4032
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 3, waste 3968
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 3840
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-4096" (0xc1ef40f4)
+[0m[31;40m  Object Size:   4104
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 15
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4118 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 8
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 2, waste 8160
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 3, waste 8128
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 8064
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-8192" (0xc1ef411c)
+[0m[31;40m  Object Size:   8200
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 7
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4140 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 9
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 3, waste 16352
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 16320
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-16384" (0xc1ef4144)
+[0m[31;40m  Object Size:   16392
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4168 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 10
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 4, waste 32736
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-32768" (0xc1ef416c)
+[0m[31;40m  Object Size:   32776
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4190 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 11
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 5, waste 65504
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-65536" (0xc1ef4194)
+[0m[31;40m  Object Size:   65544
+[0m[31;40m  Order:         5
+[0m[31;40m  Slab Capacity: 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef41b8 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 12
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 6, waste 131040
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-131072" (0xc1ef41bc)
+[0m[31;40m  Object Size:   131080
+[0m[31;40m  Order:         6
+[0m[31;40m  Slab Capacity: 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef41e0 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 13
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 7, waste 262112
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "size-262144" (0xc1ef41e4)
+[0m[31;40m  Object Size:   262152
+[0m[31;40m  Order:         7
+[0m[31;40m  Slab Capacity: 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4208 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 14
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 48
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 40
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 24
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "pframe" (0xc1ef420c)
+[0m[31;40m  Object Size:   64
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 910
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1ef3000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "size-64" (0xc1ef4004), new slab 0xc1ef3ff0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3000 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 1
+[0m[32;40m--- ACPI INIT ---
+[0m[32;40mrsdp addr:  000fd9a0
+[0m[32;40mrsdt addr:  c1ef3008
+[0m[32;40mrev:        0
+[0m[32;40moem:        BOCHS 6
+[0m[32;40ments:	[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1ed5000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "size-128" (0xc1ef402c), new slab 0xc1ee4ff0 (16 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5000 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 1
+[0m[32;40mFACP [0m[37;40mmm/page.c:195 __page_split(): split 0xc1ef1000 (1) into 0xc1ef1000 and 0xc1ef2000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1ef2000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "size-256" (0xc1ef4054), new slab 0xc1ef2ff0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef2000 from "size-256" (0xc1ef4054), slab 0xc1ef4054, inuse 1
+[0m[32;40mSSDT [0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5090 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 2
+[0m[32;40mAPIC [0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3050 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 2
+[0m[32;40mHPET [0m[32;40m
+[0m[32;40m--- DISABLE 8259 PIC ---
+[0m[32;40mMasking all interrupts on the i8259 PIC
+[0m[32;40m--- APIC INIT ---
+[0m[32;40mlocal apic paddr:     0xfee00000
+[0m[32;40mPC-AT compatible:    1
+[0m[32;40mLAPIC:
+[0m[32;40m   id:         0x00
+[0m[32;40m   processor:  0x000
+[0m[32;40m   enabled:    1
+[0m[32;40mIOAPIC:
+[0m[32;40m   id:         0x01
+[0m[32;40m   base paddr:  0xfec00000
+[0m[32;40m   inti addr:   0x00000000
+[0m[32;40mUnknown APIC type:  0x2
+[0m[32;40mUnknown APIC type:  0x2
+[0m[32;40mUnknown APIC type:  0x2
+[0m[32;40mUnknown APIC type:  0x2
+[0m[32;40mUnknown APIC type:  0x2
+[0m[32;40m--- Enabling APIC ---
+[0m[32;40mLocal APIC 0x00 Configuration:
+[0m[32;40m    APIC Version:         0x11
+[0m[32;40m    Spurious Vector:      0x000001ff
+[0m[32;40mIO APIC 0x00 Configuration:
+[0m[32;40m    APIC Version:         0x11
+[0m[32;40m    Maximum Redirection:  0x17
+[0m[33;40mdrivers/pci.c:88 pci_build_list(): => PCI DEVICES
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5120 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 3
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: 1237, Class: 6, Subclass: 0, Interface: 0, IRQ Line: 0
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed51b0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 4
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: 7000, Class: 6, Subclass: 1, Interface: 0, IRQ Line: 0
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5240 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 5
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: 7010, Class: 1, Subclass: 1, Interface: 80, IRQ Line: 0
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed52d0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 6
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: 7113, Class: 6, Subclass: 80, Interface: 0, IRQ Line: 9
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5360 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 7
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: b8, Class: 3, Subclass: 0, Interface: 0, IRQ Line: 0
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed53f0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 8
+[0m[33;40mdrivers/pci.c:119 pci_build_list(): DevID: 8139, Class: 2, Subclass: 0, Interface: 0, IRQ Line: b
+[0m[32;40mmain/apic.c:401 apic_setspur(): mapping spurious interrupts to %hu
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4230 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 15
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "anon-alloc" (0xc1ef4234)
+[0m[31;40m  Object Size:   40
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 85
+[0m[0mvm/anon.c:55 anon_init(): (GRADING3A 4.a) Anonymous object allocator initialized successfully
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4258 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 16
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "shadow_mmobj" (0xc1ef425c)
+[0m[31;40m  Object Size:   40
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 85
+[0m[0mvm/shadow.c:68 shadow_init(): (GRADING3A 6.a) Initialized shadow_allocator object.
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4280 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 17
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 20
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "vmmap" (0xc1ef4284)
+[0m[31;40m  Object Size:   20
+[0m[31;40m  Order:         1
+[0m[31;40m  Slab Capacity: 292
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef42a8 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 18
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "vmarea" (0xc1ef42ac)
+[0m[31;40m  Object Size:   52
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 68
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef42d0 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 19
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 240
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 16
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "proc" (0xc1ef42d4)
+[0m[31;40m  Object Size:   472
+[0m[31;40m  Order:         1
+[0m[31;40m  Slab Capacity: 17
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef42f8 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 20
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 48
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 1, waste 28
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 4, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "kthread" (0xc1ef42fc)
+[0m[31;40m  Object Size:   76
+[0m[31;40m  Order:         4
+[0m[31;40m  Slab Capacity: 780
+[0m[32;40mmain/apic.c:412 apic_setredir(): redirecting irq 1 to interrupt %hu
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef30a0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef30f0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 4
+[0m[1;35;40mdrivers/tty/n_tty.c:190 n_tty_attach(): Attaching n_tty line discipline to tty 0
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef2110 from "size-256" (0xc1ef4054), slab 0xc1ef4054, inuse 2
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3140 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 5
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3190 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 6
+[0m[1;35;40mdrivers/tty/n_tty.c:190 n_tty_attach(): Attaching n_tty line discipline to tty 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef2220 from "size-256" (0xc1ef4054), slab 0xc1ef4054, inuse 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef31e0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 7
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3230 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 8
+[0m[1;35;40mdrivers/tty/n_tty.c:190 n_tty_attach(): Attaching n_tty line discipline to tty 2
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef2330 from "size-256" (0xc1ef4054), slab 0xc1ef4054, inuse 4
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3280 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 9
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef32d0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 10
+[0m[32;40mmain/apic.c:412 apic_setredir(): redirecting irq 14 to interrupt %hu
+[0m[32;40mmain/apic.c:412 apic_setredir(): redirecting irq 15 to interrupt %hu
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5480 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 9
+[0m[33;40mdrivers/disk/ata.c:352 ata_init(): Initialized ATA device 0, channel PRIMARY, drive MASTER, size 16384
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1ef1000)
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1eed000 (2) into 0xc1eed000 and 0xc1eef000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1eef000)
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1eed000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "proc" (0xc1ef42d4), new slab 0xc1eeefe0 (2 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1eed000 from "proc" (0xc1ef42d4), slab 0xc1ef42d4, inuse 1
+[0m[0mproc/proc.c:131 proc_create(): (GRADING1A 2.a) New process pid is 0 and is idle_process process
+[0m[0mproc/proc.c:133 proc_create(): (GRADING1A 2.a) New process pid is 0 and is idle_process process
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ee5000 (3) into 0xc1ee5000 and 0xc1ee9000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ee9000 (2) into 0xc1ee9000 and 0xc1eeb000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1eeb000)
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1ee9000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "vmmap" (0xc1ef4284), new slab 0xc1eeaff0 (2 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ee9000 from "vmmap" (0xc1ef4284), slab 0xc1ef4284, inuse 1
+[0m[0mmain/kmain.c:191 bootstrap(): (GRADING1A 1.a) The current process (idle) is not NULL
+[0m[0mmain/kmain.c:193 bootstrap(): (GRADING1A 1.a) The current process is the idle process
+[0m[0mproc/kthread.c:103 kthread_create(): (GRADING1A 3.a) The process:idle_process of the kthread is not empty
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1eb5000 (5) into 0xc1eb5000 and 0xc1ec5000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1ec5000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "kthread" (0xc1ef42fc), new slab 0xc1ed4ff0 (16 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ec5000 from "kthread" (0xc1ef42fc), slab 0xc1ef42fc, inuse 1
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1eb5000)
+[0m[0mmain/kmain.c:199 bootstrap(): (GRADING1A 1.a) The current thread is for the idle process
+[0m[0mmain/kmain.c:226 idleproc_run(): vn_root_node not NULL
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1eed1e0 from "proc" (0xc1ef42d4), slab 0xc1ef42d4, inuse 2
+[0m[0mproc/proc.c:131 proc_create(): (GRADING1A 2.a) New process pid is 1 and is init_process process
+[0m[0mproc/proc.c:133 proc_create(): (GRADING1A 2.a) New process pid is 1 and is init_process process
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1ee5000 (2) into 0xc1ee5000 and 0xc1ee7000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1ee7000)
+[0m[0mproc/proc.c:164 proc_create(): Inserted child with pid 1 into parent (pid 0) children list
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ee901c from "vmmap" (0xc1ef4284), slab 0xc1ef4284, inuse 2
+[0m[0mmain/kmain.c:338 initproc_create(): (GRADING1A 1.b) The pointer to the init process is not NULL
+[0m[0mmain/kmain.c:340 initproc_create(): (GRADING1A 1.b) The pid of the init process is PID_INIT
+[0m[0mproc/kthread.c:103 kthread_create(): (GRADING1A 3.a) The process:init_process of the kthread is not empty
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ec5054 from "kthread" (0xc1ef42fc), slab 0xc1ef42fc, inuse 2
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (6) into 0xc1e75000 and 0xc1e95000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e95000 (5) into 0xc1e95000 and 0xc1ea5000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1ea5000)
+[0m[0mmain/kmain.c:347 initproc_create(): (GRADING1A 1.b) The pointer to the thread for the init process is not NULL
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3320 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 11
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3370 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 12
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef33c0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 13
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3410 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 14
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3460 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 15
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef34b0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 16
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3500 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 17
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3550 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 18
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef35a0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 19
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef35f0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 20
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3640 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 21
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3690 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 22
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef36e0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 23
+[0m[0mutil/init.c:117 init_call_all(): Initialization functions and dependencies:
+[0m[0mpageoutd_init (0xc000fa3f): [0m[0msched_init [0m[0m
+[0m[0msched_init (0xc0016dea): [0m[0m
+[0m[0mfile_init (0xc001a8ff): [0m[0m
+[0m[0mvfs_init (0xc001cfd7): [0m[0mvnode_init [0m[0mfile_init [0m[0m
+[0m[0mvnode_init (0xc0020a5f): [0m[0m
+[0m[0mbinfmt_init (0xc0027063): [0m[0m
+[0m[0melf32_init (0xc002943d): [0m[0mbinfmt_init [0m[0m
+[0m[0msyscall_init (0xc0029781): [0m[0m
+[0m[0mkshell_init (0xc002cb60): [0m[0m
+[0m[0mutil/init.c:62 _init_call(): 'pageoutd_init' depends on 'sched_init': [0m[0mcalling
+[0m[0mutil/init.c:74 _init_call(): Calling sched_init (0xc0016dea)
+[0m[0mutil/init.c:74 _init_call(): Calling pageoutd_init (0xc000fa3f)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1eed3c0 from "proc" (0xc1ef42d4), slab 0xc1ef42d4, inuse 3
+[0m[0mproc/proc.c:131 proc_create(): (GRADING1A 2.a) New process pid is 2 and is pageoutd process
+[0m[0mproc/proc.c:133 proc_create(): (GRADING1A 2.a) New process pid is 2 and is pageoutd process
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1ee5000)
+[0m[0mproc/proc.c:164 proc_create(): Inserted child with pid 2 into parent (pid 0) children list
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ee9038 from "vmmap" (0xc1ef4284), slab 0xc1ef4284, inuse 3
+[0m[0mproc/kthread.c:103 kthread_create(): (GRADING1A 3.a) The process:pageoutd of the kthread is not empty
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ec50a8 from "kthread" (0xc1ef42fc), slab 0xc1ef42fc, inuse 3
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1e95000)
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mutil/init.c:74 _init_call(): Calling file_init (0xc001a8ff)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4320 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 21
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 16
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "file" (0xc1ef4324)
+[0m[31;40m  Object Size:   24
+[0m[31;40m  Order:         0
+[0m[31;40m  Slab Capacity: 127
+[0m[0mutil/init.c:62 _init_call(): 'vfs_init' depends on 'vnode_init': [0m[0mcalling
+[0m[0mutil/init.c:74 _init_call(): Calling vnode_init (0xc0020a5f)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef4348 from "slab_allocators" (0xc005eb64), slab 0xc005eb64, inuse 22
+[0m[31;40mmm/slab.c:150 _calc_slab_size(): calc_slab_size: minorder 0, waste 112
+[0m[31;40mmm/slab.c:161 _calc_slab_size(): calc_slab_size: replacing with order 2, waste 0
+[0m[31;40mmm/slab.c:193 _allocator_init(): Initialized new slab allocator:
+[0m[31;40m  Name:          "vnode" (0xc1ef434c)
+[0m[31;40m  Object Size:   116
+[0m[31;40m  Order:         2
+[0m[31;40m  Slab Capacity: 132
+[0m[0mutil/init.c:62 _init_call(): 'vfs_init' depends on 'file_init': [0m[0malready called
+[0m[0mutil/init.c:74 _init_call(): Calling vfs_init (0xc001cfd7)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5510 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 10
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3730 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 24
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (5) into 0xc1e75000 and 0xc1e85000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1e85000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "pframe" (0xc1ef420c), new slab 0xc1e94ff0 (16 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85000 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 1
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (4) into 0xc1e75000 and 0xc1e7d000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e7d000 (3) into 0xc1e7d000 and 0xc1e81000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e81000 (2) into 0xc1e81000 and 0xc1e83000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e83000 (1) into 0xc1e83000 and 0xc1e84000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e84000)
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e84000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x00, lba1 0x00, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 0
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[1;35;40mmm/pframe.c:721 pageoutd_run(): PAGEOUT DEMAON: Falling asleep
+[0m[1;35;40mmm/pframe.c:725 pageoutd_run(): PAGEOUT DEMAON: nfreepages_target=|3907| nfreepages_min=|0| page_free_count=|7702|
+[0m[0mproc/sched.c:135 sched_cancellable_sleep_on(): (GRADING1E) Sched_cancellable_sleep_on is testing 
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:0 has pincount:1.
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 4 pages (addr 0xc1e7d000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "vnode" (0xc1ef434c), new slab 0xc1e80ff0 (4 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d000 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85048 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 2
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e83000)
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e83000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x08, lba1 0x00, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 0
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:1.
+[0m[0mutil/init.c:74 _init_call(): Calling binfmt_init (0xc0027063)
+[0m[0mutil/init.c:62 _init_call(): 'elf32_init' depends on 'binfmt_init': [0m[0malready called
+[0m[0mutil/init.c:74 _init_call(): Calling elf32_init (0xc002943d)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3780 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 25
+[0m[1;31;40mapi/binfmt.c:47 binfmt_add(): Registering binary loader ELF32
+[0m[0mutil/init.c:74 _init_call(): Calling syscall_init (0xc0029781)
+[0m[0mutil/init.c:74 _init_call(): Calling kshell_init (0xc002cb60)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed55a0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 11
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added help command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5630 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 12
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added echo command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed56c0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 13
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added cat command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5750 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 14
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added ls command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed57e0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 15
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added cd command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5870 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 16
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added rm command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5900 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 17
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added link command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5990 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 18
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added rmdir command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5a20 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 19
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added mkdir command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5ab0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 20
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added stat command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5b40 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 21
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added exit command
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3370 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 24
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3320 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 23
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef33c0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 22
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3410 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 21
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef34b0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 20
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3500 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 19
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3460 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 18
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3550 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 17
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef35a0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 16
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3640 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 15
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef35f0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 14
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3690 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 13
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef36e0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 12
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 2, nrespages=0
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 3, nrespages=0
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 4, nrespages=0
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:0
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up dev len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85090 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 3
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e81000 (1) into 0xc1e81000 and 0xc1e82000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e82000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=0
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:2.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:1.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e82000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0xf8, lba1 0x3f, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 0
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:388 do_mkdir(): (GRADING2A 3.c) mkdir operation is not NULL
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:660 s5fs_mkdir(): [0]: mkdir
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:200 lock_s5(): [0]: s5 mutex locked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e850d8 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 4
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e81000)
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e81000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x10, lba1 0x00, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 0
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:0.
+[0m[0mmm/pframe.c:473 pframe_unpin(): (GRADING3E) pframe_unpin(): pframe unpinned
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:214 unlock_s5(): [0]: s5 mutex unlocked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d07c from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 2
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85120 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 5
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (3) into 0xc1e75000 and 0xc1e79000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e79000 (2) into 0xc1e79000 and 0xc1e7b000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e7b000 (1) into 0xc1e7b000 and 0xc1e7c000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e7c000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d080, 0xc1ed5518 ino 32 up to 2, nrespages=0
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:200 lock_s5(): [0]: s5 mutex locked
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:214 unlock_s5(): [0]: s5 mutex unlocked
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:2.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d080, 0xc1ed5518 ino 32, down to 1, nrespages = 1
+[0m[1;31;40mfs/s5fs/s5fs.c:726 s5fs_mkdir(): [0]: mkdir done
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:211 dir_namev(): (GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)
+[0m[0mfs/namev.c:224 dir_namev(): (GRADING2C) File name less than max file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up dev len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 32
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d080, 0xc1ed5518 ino 32 up to 2, nrespages=1
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:237 dir_namev(): (GRADING2C) Found given file/dir from pathname
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:1
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up null len = 4
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:332 do_mknod(): (GRADING2A 3.b) mknod operation is not NULL
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d080, 0xc1ed5518 ino 32, down to 1, nrespages = 1
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:200 lock_s5(): [0]: s5 mutex locked
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:214 unlock_s5(): [0]: s5 mutex unlocked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 3
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d0fc, 0xc1ed5518 ino 33, down to 0, nrespages = 0
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1e80ff0, inuse 2
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:211 dir_namev(): (GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)
+[0m[0mfs/namev.c:224 dir_namev(): (GRADING2C) File name less than max file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up dev len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 32
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d080, 0xc1ed5518 ino 32 up to 2, nrespages=1
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:237 dir_namev(): (GRADING2C) Found given file/dir from pathname
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:1
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up zero len = 4
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:332 do_mknod(): (GRADING2A 3.b) mknod operation is not NULL
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d080, 0xc1ed5518 ino 32, down to 1, nrespages = 1
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:200 lock_s5(): [0]: s5 mutex locked
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:214 unlock_s5(): [0]: s5 mutex unlocked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 3
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d0fc, 0xc1ed5518 ino 34, down to 0, nrespages = 0
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1e80ff0, inuse 2
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:211 dir_namev(): (GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)
+[0m[0mfs/namev.c:224 dir_namev(): (GRADING2C) File name less than max file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up dev len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 32
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d080, 0xc1ed5518 ino 32 up to 2, nrespages=1
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:237 dir_namev(): (GRADING2C) Found given file/dir from pathname
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:1
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up tty0 len = 4
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:332 do_mknod(): (GRADING2A 3.b) mknod operation is not NULL
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d080, 0xc1ed5518 ino 32, down to 1, nrespages = 1
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 0
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:200 lock_s5(): [0]: s5 mutex locked
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[1;31;40mfs/s5fs/s5fs_subr.c:214 unlock_s5(): [0]: s5 mutex unlocked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 3
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d0fc, 0xc1ed5518 ino 35, down to 0, nrespages = 0
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:2 has pincount:1.
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1e80ff0, inuse 2
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/sched.c:322 sched_make_runnable(): (GRADING1E) Process: 0 makes init process runnable 
+[0m[0mproc/proc.c:495 do_waitpid(): (GRADING1E) pid == -1
+[0m[0mproc/proc.c:515 do_waitpid(): (GRADING1A 2.c) Process p is not NULL
+[0m[0mproc/proc.c:518 do_waitpid(): (GRADING1A 2.c) Process p has a page directory
+[0m[0mproc/proc.c:515 do_waitpid(): (GRADING1A 2.c) Process p is not NULL
+[0m[0mproc/proc.c:518 do_waitpid(): (GRADING1A 2.c) Process p has a page directory
+[0m[0mproc/proc.c:502 do_waitpid(): (GRADING1E) no dead children found
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 0
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5bd0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 22
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added ftest command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5c60 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 23
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added stest command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5cf0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 24
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added dtest command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5d80 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 25
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added vtest command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5e10 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 26
+[0m[31;40mtest/kshell/kshell.c:75 kshell_add_command(): Added hellotest command
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef36e0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 13
+[0m[0mfs/namev.c:274 open_namev(): Trying to open file /dev/tty0
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:211 dir_namev(): (GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)
+[0m[0mfs/namev.c:224 dir_namev(): (GRADING2C) File name less than max file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up dev len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 32
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d080, 0xc1ed5518 ino 32 up to 2, nrespages=1
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:237 dir_namev(): (GRADING2C) Found given file/dir from pathname
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:1
+[0m[0mfs/namev.c:279 open_namev(): (GRADING2C) Found path and file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up tty0 len = 4
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 35
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d0f8 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 3
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:2 has pincount:2.
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d080, 0xc1ed5518 ino 32, down to 1, nrespages = 1
+[0m[0mfs/namev.c:292 open_namev(): (GRADING2C) Found file to open
+[0m[0mfs/file.c:67 fget(): fget process pid 1
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e7b000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "file" (0xc1ef4324), new slab 0xc1e7bfe0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7b000 from "file" (0xc1ef4324), slab 0xc1ef4324, inuse 1
+[0m[35;40mfs/file.c:57 fref(): fref: 0xc1e7b004 up to 1
+[0m[31;40mtest/kshell/kshell.c:110 kshell_create(): kshell successfully created on TTY 0
+[0m[0mfs/vfs_syscall.c:110 do_write(): Process 1 trying to open fd 0
+[0m[0mfs/file.c:67 fget(): fget process pid 1
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b004, 0xc1ed5518 ino 35, up to 2
+[0m[0mfs/vfs_syscall.c:119 do_write(): (GRADING2C) file mode is : 3
+[0m[0mfs/vnode.c:493 special_file_write(): (GRADING2A 1.b) vnode_t *file is not NULL.
+[0m[0mfs/vnode.c:495 special_file_write(): (GRADING2A 1.b) vnode_t *file is byte or block device.
+[0m[0mfs/vnode.c:500 special_file_write(): (GRADING2A 1.b) file->vn_cdev->cd_ops->write not NULL
+[0m[0mfs/vfs_syscall.c:143 do_write(): (GRADING2A 3.a) successful write kassert
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b004, 0xc1ed5518 ino 35, down to 1
+[0m[0mfs/vfs_syscall.c:147 do_write(): (GRADING2C) successful do_write()
+[0m[0mfs/file.c:67 fget(): fget process pid 1
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b004, 0xc1ed5518 ino 35, up to 2
+[0m[0mfs/vnode.c:463 special_file_read(): (GRADING2A 1.a) vnode_t *file is not NULL.
+[0m[0mfs/vnode.c:465 special_file_read(): (GRADING2A 1.a) vnode_t *file is byte or block device.
+[0m[0mfs/vnode.c:471 special_file_read(): (GRADING2A 1.a) file->vn_cdev->cd_ops->read not NULL
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 1
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;35;40mdrivers/tty/n_tty.c:272 n_tty_read(): Cooked buffer is empty. Sleeping
+[0m[0mproc/sched.c:135 sched_cancellable_sleep_on(): (GRADING1E) Sched_cancellable_sleep_on is testing 
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:364 n_tty_receive_char(): Receiving printable character
+[0m[1;35;40mdrivers/tty/n_tty.c:346 n_tty_receive_char(): Received newline
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/sched.c:322 sched_make_runnable(): (GRADING1E) Process: 1 makes init process runnable 
+[0m[1;35;40mdrivers/tty/n_tty.c:279 n_tty_read(): Woken up from sleep
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:85 do_read(): (GRADING2C) successful do_read(), return val > 0
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b004, 0xc1ed5518 ino 35, down to 1
+[0m[0mfs/vfs_syscall.c:89 do_read(): (GRADING2C) successful do_read()
+[0m[31;40mtest/kshell/kshell.c:423 kshell_execute_next(): Attempting to execute command 'hellotest'
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1eed5a0 from "proc" (0xc1ef42d4), slab 0xc1ef42d4, inuse 4
+[0m[0mproc/proc.c:131 proc_create(): (GRADING1A 2.a) New process pid is 3 and is hello_test process
+[0m[0mproc/proc.c:133 proc_create(): (GRADING1A 2.a) New process pid is 3 and is hello_test process
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 2 pages (addr 0xc1e79000)
+[0m[0mproc/proc.c:164 proc_create(): Inserted child with pid 3 into parent (pid 1) children list
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ee9054 from "vmmap" (0xc1ef4284), slab 0xc1ef4284, inuse 4
+[0m[0mmain/kmain.c:446 hellotests(): hello_test process pid 3
+[0m[0mmain/kmain.c:455 hellotests(): p_files[fd] 1 is NOT null...
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b004, 0xc1ed5518 ino 35, up to 2
+[0m[0mproc/kthread.c:103 kthread_create(): (GRADING1A 3.a) The process:hello_test of the kthread is not empty
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ec50fc from "kthread" (0xc1ef42fc), slab 0xc1ef42fc, inuse 4
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1df5000 (7) into 0xc1df5000 and 0xc1e35000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e35000 (6) into 0xc1e35000 and 0xc1e55000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e55000 (5) into 0xc1e55000 and 0xc1e65000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 16 pages (addr 0xc1e65000)
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 1
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[0mfs/namev.c:274 open_namev(): Trying to open file /bin/uname
+[0m[0mfs/namev.c:129 dir_namev(): (GRADING2A 2.b) pathname is not NULL.
+[0m[0mfs/namev.c:131 dir_namev(): (GRADING2A 2.b) namelen is not NULL.
+[0m[0mfs/namev.c:133 dir_namev(): (GRADING2A 2.b) name is not NULL.
+[0m[0mfs/namev.c:135 dir_namev(): (GRADING2A 2.b) res_vode is not NULL.
+[0m[0mfs/namev.c:154 dir_namev(): (GRADING2C) Starting from root directory
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d004, 0xc1ed5518 ino 0 up to 5, nrespages=1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:211 dir_namev(): (GRADING2C) !(next_slash == NULL || *(next_slash + 1) == empty)
+[0m[0mfs/namev.c:224 dir_namev(): (GRADING2C) File name less than max file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up bin len = 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d174 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:2.
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/namev.c:237 dir_namev(): (GRADING2C) Found given file/dir from pathname
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d004, 0xc1ed5518 ino 0, down to 4, nrespages = 1
+[0m[0mfs/namev.c:180 dir_namev(): (GRADING2C) !(pathname[0] != '/' && i == 0)
+[0m[0mfs/namev.c:198 dir_namev(): (GRADING2A 2.b) pointer to corresponding vnode is not NULL.
+[0m[0mfs/namev.c:203 dir_namev(): current_dir is not null, count:1
+[0m[0mfs/namev.c:279 open_namev(): (GRADING2C) Found path and file name
+[0m[0mfs/namev.c:41 lookup(): (GRADING2A 2.a) dir is not NULL.
+[0m[0mfs/namev.c:44 lookup(): (GRADING2A 2.a) name is not NULL
+[0m[0mfs/namev.c:47 lookup(): (GRADING2A 2.a) result is not NULL
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[0mfs/namev.c:74 lookup(): (GRADING2C) *name != / && *name is not null
+[0m[1;31;40mfs/s5fs/s5fs.c:561 s5fs_lookup(): In s5fs_lookup: Looking up uname len = 5
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85168 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 6
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (2) into 0xc1e75000 and 0xc1e77000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e77000 (1) into 0xc1e77000 and 0xc1e78000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e78000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d178, 0xc1ed5518 ino 3 up to 2, nrespages=0
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:2.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e78000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x60, lba1 0x3e, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[1;31;40mfs/s5fs/s5fs.c:574 s5fs_lookup(): In s5fs_lookup: Found num = 9
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7d1f0 from "vnode" (0xc1ef434c), slab 0xc1ef434c, inuse 5
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d178, 0xc1ed5518 ino 3, down to 1, nrespages = 1
+[0m[0mfs/namev.c:292 open_namev(): (GRADING2C) Found file to open
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7b020 from "file" (0xc1ef4324), slab 0xc1ef4324, inuse 2
+[0m[35;40mfs/file.c:57 fref(): fref: 0xc1e7b024 up to 1
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 2
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 1
+[0m[1;31;40mapi/binfmt.c:78 binfmt_load(): Trying to exec /bin/uname using binary loader ELF32
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 2
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e851b0 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 7
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e77000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 2, nrespages=0
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:4.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e77000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x30, lba1 0x3e, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:85 do_read(): (GRADING2C) successful do_read(), return val > 0
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 2
+[0m[0mfs/vfs_syscall.c:89 do_read(): (GRADING2C) successful do_read()
+[0m[1;32;40mapi/elf32.c:171 _elf32_load_ehdr(): loading ELF file
+[0m[1;32;40mELF Header Information:
+[0m[1;32;40mVersion: 1
+[0m[1;32;40mClass:   1
+[0m[1;32;40mData:    1
+[0m[1;32;40mType:    2
+[0m[1;32;40mMachine: 3
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ee9070 from "vmmap" (0xc1ef4284), slab 0xc1ef4284, inuse 5
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ed5ea0 from "size-128" (0xc1ef402c), slab 0xc1ef402c, inuse 27
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 3
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 2
+[0m[0mfs/vfs_syscall.c:811 do_lseek(): (GRADING2C) do_lseek() successful
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 3
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mfs/vfs_syscall.c:85 do_read(): (GRADING2C) successful do_read(), return val > 0
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 2
+[0m[0mfs/vfs_syscall.c:89 do_read(): (GRADING2C) successful do_read()
+[0m[1;32;40mapi/elf32.c:67 _elf32_map_segment(): Mapping program segment: type 0x1, offset 0x000000, vaddr 0x8048000, filesz 0x71a0, memsz 0x71a0, flags 0x5, align 0x1000
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[0mvm/vmmap.c:348 vmmap_map(): (GRADING3A 3.e) map is not NULL. vmmap_map
+[0m[0mvm/vmmap.c:350 vmmap_map(): (GRADING3A 3.e) npages>0. vmmap_map
+[0m[0mvm/vmmap.c:352 vmmap_map(): (GRADING3A 3.e) prot checking. vmmap_map
+[0m[0mvm/vmmap.c:354 vmmap_map(): (GRADING3A 3.e) flags checking. vmmap_map
+[0m[0mvm/vmmap.c:356 vmmap_map(): (GRADING3A 3.e) lopage checking. vmmap_map
+[0m[0mvm/vmmap.c:358 vmmap_map(): (GRADING3A 3.e) lopage and npages checking. vmmap_map
+[0m[0mvm/vmmap.c:360 vmmap_map(): (GRADING3A 3.e) PAGE_ALIGNED(off) checking. vmmap_map
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e75000 (1) into 0xc1e75000 and 0xc1e76000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e76000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "vmarea" (0xc1ef42ac), new slab 0xc1e76ff0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e76000 from "vmarea" (0xc1ef42ac), slab 0xc1ef42ac, inuse 1
+[0m[0mvm/vmmap.c:177 vmmap_insert(): (GRADING3A 3.b) map and newvma are not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:179 vmmap_insert(): (GRADING3A 3.b) newvma->vma_vmmap is not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:181 vmmap_insert(): (GRADING3A 3.b) vma_start<vma_end. vmmap_insert
+[0m[0mvm/vmmap.c:183 vmmap_insert(): (GRADING3A 3.b) vfn bounds. vmmap_insert
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 3, nrespages=1
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 4, nrespages=1
+[0m[0mvm/vmmap.c:436 vmmap_map(): vm_map succeed
+[0m[1;32;40mapi/elf32.c:67 _elf32_map_segment(): Mapping program segment: type 0x1, offset 0x0071a0, vaddr 0x80501a0, filesz 0x14c, memsz 0x4ec, flags 0x6, align 0x1000
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[0mvm/vmmap.c:348 vmmap_map(): (GRADING3A 3.e) map is not NULL. vmmap_map
+[0m[0mvm/vmmap.c:350 vmmap_map(): (GRADING3A 3.e) npages>0. vmmap_map
+[0m[0mvm/vmmap.c:352 vmmap_map(): (GRADING3A 3.e) prot checking. vmmap_map
+[0m[0mvm/vmmap.c:354 vmmap_map(): (GRADING3A 3.e) flags checking. vmmap_map
+[0m[0mvm/vmmap.c:356 vmmap_map(): (GRADING3A 3.e) lopage checking. vmmap_map
+[0m[0mvm/vmmap.c:358 vmmap_map(): (GRADING3A 3.e) lopage and npages checking. vmmap_map
+[0m[0mvm/vmmap.c:360 vmmap_map(): (GRADING3A 3.e) PAGE_ALIGNED(off) checking. vmmap_map
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7603c from "vmarea" (0xc1ef42ac), slab 0xc1ef42ac, inuse 2
+[0m[0mvm/vmmap.c:177 vmmap_insert(): (GRADING3A 3.b) map and newvma are not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:179 vmmap_insert(): (GRADING3A 3.b) newvma->vma_vmmap is not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:181 vmmap_insert(): (GRADING3A 3.b) vma_start<vma_end. vmmap_insert
+[0m[0mvm/vmmap.c:183 vmmap_insert(): (GRADING3A 3.b) vfn bounds. vmmap_insert
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 5, nrespages=1
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 6, nrespages=1
+[0m[0mvm/vmmap.c:436 vmmap_map(): vm_map succeed
+[0m[0mvm/vmmap.c:348 vmmap_map(): (GRADING3A 3.e) map is not NULL. vmmap_map
+[0m[0mvm/vmmap.c:350 vmmap_map(): (GRADING3A 3.e) npages>0. vmmap_map
+[0m[0mvm/vmmap.c:352 vmmap_map(): (GRADING3A 3.e) prot checking. vmmap_map
+[0m[0mvm/vmmap.c:354 vmmap_map(): (GRADING3A 3.e) flags checking. vmmap_map
+[0m[0mvm/vmmap.c:356 vmmap_map(): (GRADING3A 3.e) lopage checking. vmmap_map
+[0m[0mvm/vmmap.c:358 vmmap_map(): (GRADING3A 3.e) lopage and npages checking. vmmap_map
+[0m[0mvm/vmmap.c:360 vmmap_map(): (GRADING3A 3.e) PAGE_ALIGNED(off) checking. vmmap_map
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d1f4, 0xc1ed5518 ino 9, down to 5, nrespages = 1
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1e7603c from "vmarea" (0xc1ef42ac), slab 0xc1e76ff0, inuse 1
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e7603c from "vmarea" (0xc1ef42ac), slab 0xc1ef42ac, inuse 2
+[0m[0mvm/vmmap.c:177 vmmap_insert(): (GRADING3A 3.b) map and newvma are not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:179 vmmap_insert(): (GRADING3A 3.b) newvma->vma_vmmap is not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:181 vmmap_insert(): (GRADING3A 3.b) vma_start<vma_end. vmmap_insert
+[0m[0mvm/vmmap.c:183 vmmap_insert(): (GRADING3A 3.b) vfn bounds. vmmap_insert
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e75000)
+[0m[31;40mmm/slab.c:264 _slab_allocator_grow(): Growing cache "anon-alloc" (0xc1ef4234), new slab 0xc1e75ff0 (1 pages)
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e75000 from "anon-alloc" (0xc1ef4234), slab 0xc1ef4234, inuse 1
+[0m[0mvm/anon.c:74 anon_create(): (GRADING3E) address of respages (anon create) is c1e75010[0m[0mvm/vmmap.c:436 vmmap_map(): vm_map succeed
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e55000 (4) into 0xc1e55000 and 0xc1e5d000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e5d000 (3) into 0xc1e5d000 and 0xc1e61000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e61000 (2) into 0xc1e61000 and 0xc1e63000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e63000 (1) into 0xc1e63000 and 0xc1e64000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e64000)
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e851f8 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 8
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e63000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 6, nrespages=1
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:4.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e63000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0xf8, lba1 0x3d, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mvm/vmmap.c:662 vmmap_write(): vmmap_write: starts
+[0m[0mvm/vmmap.c:668 vmmap_write(): vmmap_write: count:748
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85240 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 9
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e61000 (1) into 0xc1e61000 and 0xc1e62000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e62000)
+[0m[0mvm/anon.c:87 anon_ref(): (GRADING3A 4.b) Anonymous object refcount > 0 and ops are not NULL
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mvm/anon.c:149 anon_fillpage(): (GRADING3A 4.d) pframe is busy
+[0m[0mvm/anon.c:151 anon_fillpage(): (GRADING3A 4.d) pframe is not pinned yet
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:0 has pincount:1.
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:702 vmmap_write(): vmmap_write: succeed
+[0m[31;40mmm/page.c:349 _page_free_order(): page_free: freed 1 pages (addr 0xc1e64000); 7669 pages currently free
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef3690 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 14
+[0m[0mvm/vmmap.c:348 vmmap_map(): (GRADING3A 3.e) map is not NULL. vmmap_map
+[0m[0mvm/vmmap.c:350 vmmap_map(): (GRADING3A 3.e) npages>0. vmmap_map
+[0m[0mvm/vmmap.c:352 vmmap_map(): (GRADING3A 3.e) prot checking. vmmap_map
+[0m[0mvm/vmmap.c:354 vmmap_map(): (GRADING3A 3.e) flags checking. vmmap_map
+[0m[0mvm/vmmap.c:356 vmmap_map(): (GRADING3A 3.e) lopage checking. vmmap_map
+[0m[0mvm/vmmap.c:358 vmmap_map(): (GRADING3A 3.e) lopage and npages checking. vmmap_map
+[0m[0mvm/vmmap.c:360 vmmap_map(): (GRADING3A 3.e) PAGE_ALIGNED(off) checking. vmmap_map
+[0m[0mvm/vmmap.c:575 vmmap_is_range_empty(): (GRADING3A 3.e) vfn bounds. vmmap_is_range_empty
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e76078 from "vmarea" (0xc1ef42ac), slab 0xc1ef42ac, inuse 3
+[0m[0mvm/vmmap.c:177 vmmap_insert(): (GRADING3A 3.b) map and newvma are not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:179 vmmap_insert(): (GRADING3A 3.b) newvma->vma_vmmap is not NULL. vmmap_insert
+[0m[0mvm/vmmap.c:181 vmmap_insert(): (GRADING3A 3.b) vma_start<vma_end. vmmap_insert
+[0m[0mvm/vmmap.c:183 vmmap_insert(): (GRADING3A 3.b) vfn bounds. vmmap_insert
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e75030 from "anon-alloc" (0xc1ef4234), slab 0xc1ef4234, inuse 2
+[0m[0mvm/anon.c:74 anon_create(): (GRADING3E) address of respages (anon create) is c1e75040[0m[0mvm/vmmap.c:436 vmmap_map(): vm_map succeed
+[0m[1;32;40mapi/elf32.c:644 _elf32_load(): Mapped stack at low addr 0x08039000, size 0xf000
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1ef35f0 from "size-64" (0xc1ef4004), slab 0xc1ef4004, inuse 15
+[0m[0mvm/vmmap.c:662 vmmap_write(): vmmap_write: starts
+[0m[0mvm/vmmap.c:668 vmmap_write(): vmmap_write: count:32
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85288 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 10
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e64000)
+[0m[0mvm/anon.c:87 anon_ref(): (GRADING3A 4.b) Anonymous object refcount > 0 and ops are not NULL
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mvm/anon.c:149 anon_fillpage(): (GRADING3A 4.d) pframe is busy
+[0m[0mvm/anon.c:151 anon_fillpage(): (GRADING3A 4.d) pframe is not pinned yet
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:433 pframe_pin(): (GRADING3E) pframe_pin(): pframe pinned
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:14 has pincount:1.
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:702 vmmap_write(): vmmap_write: succeed
+[0m[1;32;40mapi/elf32.c:666 _elf32_load(): Past the point of no return. Swapping to map at 0xc1ee9074, setting brk to 0x0805068c
+[0m[0mvm/vmmap.c:137 vmmap_destroy(): (GRADING3A 3.a) map is not NULL. vmmap_destroy
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ee9054 from "vmmap" (0xc1ef4284), slab 0xc1eeaff0, inuse 4
+[0m[0mvm/vmmap.c:143 vmmap_destroy(): des return
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 1
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ed5ea0 from "size-128" (0xc1ef402c), slab 0xc1ee4ff0, inuse 26
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef3690 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 14
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1ef35f0 from "size-64" (0xc1ef4004), slab 0xc1ef3ff0, inuse 13
+[0m[0mfs/vfs_syscall.c:161 do_close(): process 3 closing fd 1
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0m[35;40mfs/file.c:55 fref(): fref: 0xc1e7b024, 0xc1ed5518 ino 9, up to 2
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 1
+[0m[35;40mfs/file.c:99 fput(): fput: 0xc1e7b024, 0xc1ed5518 ino 9, down to 0
+[0m[36;40mfs/vnode.c:251 vput(): vput: 0xc1e7d1f4, 0xc1ed5518 ino 9, down to 5, nrespages = 2
+[0m[31;40mmm/slab.c:348 slab_obj_free(): Freed object 0xc1e7b020 from "file" (0xc1ef4324), slab 0xc1e7bfe0, inuse 1
+[0m[0mfs/vfs_syscall.c:177 do_close(): (GRADING2C) successful do_close()
+[0m[1;31;40mapi/exec.c:68 kernel_execve(): Entering userland with eip 0x8048274, esp 0x8047fdc
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e61000)
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e852d0 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 11
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e5d000 (2) into 0xc1e5d000 and 0xc1e5f000
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e5f000 (1) into 0xc1e5f000 and 0xc1e60000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e60000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 6, nrespages=2
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:4.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e60000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x28, lba1 0x3e, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[31;40mapi/syscall.c:782 syscall_handler(): >> pid 3, sysnum: 28 (1c), arg: 134546176 (0x8050300)
+[0m[1;32;40m          VADDR RANGE  PROT   FLAGS    MMOBJ     OFFSET    VFN RANGE
+0x08039000-0x08048000 rw- PRIVATE 0xc1e75034 0x00000 0x08039-0x08048
+0x08048000-0x08050000 r-x PRIVATE 0xc1e7d1fc 0x00000 0x08048-0x08050
+0x08050000-0x08051000 rw- PRIVATE 0xc1e75004 0x00000 0x08050-0x08051
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:159 addr_perm(): (GRADING3E) addr_perm(): unsuccessful
+[0m[0mapi/access.c:180 range_perm(): (GRADING3E) range_perm(): permission denied
+[0m[31;40mapi/syscall.c:803 syscall_handler(): << pid 3, sysnum: 28 (1c), returned: -1 (0xffffffff)
+[0m[31;40mapi/syscall.c:782 syscall_handler(): >> pid 3, sysnum: 39 (27), arg: 134546176 (0x8050300)
+[0m[1;32;40m          VADDR RANGE  PROT   FLAGS    MMOBJ     OFFSET    VFN RANGE
+0x08039000-0x08048000 rw- PRIVATE 0xc1e75034 0x00000 0x08039-0x08048
+0x08048000-0x08050000 r-x PRIVATE 0xc1e7d1fc 0x00000 0x08048-0x08050
+0x08050000-0x08051000 rw- PRIVATE 0xc1e75004 0x00000 0x08050-0x08051
+[0m[31;40mapi/syscall.c:803 syscall_handler(): << pid 3, sysnum: 39 (27), returned: 14 (0xe)
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85318 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 12
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e5f000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 7, nrespages=3
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:4.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e5f000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x08, lba1 0x3e, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[31;40mmm/slab.c:306 slab_obj_alloc(): Allocated object 0xc1e85360 from "pframe" (0xc1ef420c), slab 0xc1ef420c, inuse 13
+[0m[37;40mmm/page.c:195 __page_split(): split 0xc1e5d000 (1) into 0xc1e5d000 and 0xc1e5e000
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e5e000)
+[0m[36;40mfs/vnode.c:122 vref(): vref: 0xc1e7d1f4, 0xc1ed5518 ino 9 up to 8, nrespages=4
+[0m[0mmm/pframe.c:371 pframe_get(): (GRADING3E) xxxxxxxxxxxxxxxxxxxx
+[0m[0mmm/pframe.c:373 pframe_get(): (GRADING3E) yyyyyyyyyyyyyyyyyyyy
+[0m[0mmm/pframe.c:320 pframe_fill(): (GRADING3E) pframe_fill(): 1
+[0m[0mmm/pframe.c:322 pframe_fill(): (GRADING3E) pframe_fill(): 2
+[0m[0mmm/pframe.c:420 pframe_pin(): (GRADING3E) pframe_pin(): assertions passed
+[0m[0mmm/pframe.c:439 pframe_pin(): (GRADING3E) pframe:1 has pincount:4.
+[0m[0mmm/pframe.c:462 pframe_unpin(): (GRADING3E) pframe:1 has pincount:3.
+[0m[0mproc/kmutex.c:54 kmutex_lock(): (GRADING1A 5.a) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:55 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:65 kmutex_lock(): curproc is 3
+[0m[0mproc/kmutex.c:66 kmutex_lock(): (GRADING1E) Mutex not locked
+[0m[33;40mdrivers/disk/ata.c:560 ata_do_operation(): Preparing DMA PRD with data at 0xc1e5e000, 8 sectors (total size 4096), and write 0
+[0m[33;40mdrivers/disk/ata.c:569 ata_do_operation(): Preparing disk with seccount 8, lba0 0x20, lba1 0x3e, lba2 0x00
+[0m[33;40mdrivers/disk/ata.c:581 ata_do_operation(): Writing command READ DMA, 0xc8
+[0m[33;40mdrivers/disk/ata.c:591 ata_do_operation(): After command, before start of DMA, disk status is 0xd8
+[0m[0mproc/sched.c:112 sched_sleep_on(): (GRADING1E) Sched_sleep_on is testing 
+[0m[0mproc/sched.c:120 sched_sleep_on(): curproc is 3
+[0m[0mproc/sched.c:256 sched_switch(): (GRADING1E) Sched_switch function test
+[0m[33;40mdrivers/disk/ata.c:372 ata_intr_wrapper(): ATA interrupt
+[0m[33;40mdrivers/disk/ata.c:638 ata_intr(): Received interrupt w/ intr number 208, error code 0, for channel 0, drive 0
+[0m[0mproc/sched.c:171 sched_wakeup_on(): (GRADING1A 4.a) The point to a corresponding thread
+[0m[0mproc/sched.c:305 sched_make_runnable(): (GRADING1A 4.b) The thread is not blocked on kt_runq
+[0m[0mproc/kmutex.c:123 kmutex_unlock(): (GRADING1A 5.c) Current thread is not empty and Current thread does not have the mutex
+[0m[0mproc/kmutex.c:127 kmutex_unlock(): (GRADING1E) Mutex queue is empty
+[0m[0mproc/kmutex.c:137 kmutex_unlock(): (GRADING1A 5.c) Mutex unlocked - old thread no longer hold mutex
+[0m[0mmm/pframe.c:324 pframe_fill(): (GRADING3E) pframe_fill(): 3
+[0m[0mmm/pframe.c:326 pframe_fill(): (GRADING3E) pframe_fill(): 4
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mmm/pframe.c:328 pframe_fill(): (GRADING3E) pframe_fill(): 5
+[0m[0mmm/pframe.c:379 pframe_get(): (GRADING3E) zzzzzzzzzzzzzzzzzzzz
+[0m[0mmm/pframe.c:381 pframe_get(): (GRADING3E) rrrrrrrrrrrrrrrrrrrr
+[0m[31;40mapi/syscall.c:782 syscall_handler(): >> pid 3, sysnum: 4 (4), arg: 134511404 (0x8047b2c)
+[0m[1;32;40m          VADDR RANGE  PROT   FLAGS    MMOBJ     OFFSET    VFN RANGE
+0x08039000-0x08048000 rw- PRIVATE 0xc1e75034 0x00000 0x08039-0x08048
+0x08048000-0x08050000 r-x PRIVATE 0xc1e7d1fc 0x00000 0x08048-0x08050
+0x08050000-0x08051000 rw- PRIVATE 0xc1e75004 0x00000 0x08050-0x08051
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mapi/access.c:186 range_perm(): (GRADING3E) range_perm() successful
+[0m[0mvm/vmmap.c:605 vmmap_read(): vmmap_read: starts
+[0m[0mvm/vmmap.c:612 vmmap_read(): vmmap_read: count:12
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:647 vmmap_read(): vmmap_read: succeed
+[0m[31;40mmm/page.c:279 _page_alloc_order(): allocating 1 pages (addr 0xc1e5d000)
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mapi/access.c:148 addr_perm(): (GRADING3E) addr_perm(): successful
+[0m[0mapi/access.c:186 range_perm(): (GRADING3E) range_perm() successful
+[0m[0mvm/vmmap.c:605 vmmap_read(): vmmap_read: starts
+[0m[0mvm/vmmap.c:612 vmmap_read(): vmmap_read: count:1
+[0m[0mvm/vmmap.c:269 vmmap_lookup(): (GRADING3A 3.d) map is not NULL. vmmap_lookup
+[0m[0mproc/sched.c:180 sched_broadcast_on(): (GRADING1E) Sched_broadcast_on is testing 
+[0m[0mvm/vmmap.c:647 vmmap_read(): vmmap_read: succeed
+[0m[0mfs/vfs_syscall.c:110 do_write(): Process 3 trying to open fd 1
+[0m[0mfs/file.c:67 fget(): fget process pid 3
+[0mpanic in fs/file.c:76 fget(): assertion failed: f != NULL
+Kernel Halting.
+

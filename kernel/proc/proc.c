@@ -606,7 +606,7 @@ do_waitpid(pid_t pid, int options, int *status)
 void
 do_exit(int status)
 {
-dbg(DBG_PRINT, "proc_code_path_check\n");
+	dbg(DBG_PRINT, "Process %d exiting\n", curproc->p_pid);
         kthread_cancel(curthr, &status);
 }
 

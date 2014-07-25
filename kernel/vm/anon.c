@@ -104,16 +104,16 @@ anon_put(mmobj_t *o)
         dbg(DBG_PRINT, "(GRADING3A 4.c) Anonymous object refcount > 0 and ops are not NULL\n");
 
         o->mmo_refcount--;
-if (o->mmo_nrespages == o->mmo_refcount) {
-pframe_t *p;
-list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
-/* while (pframe_is_busy(p))
-sched_sleep_on(&(p->pf_waitq)); */
-pframe_unpin(p);
-pframe_free(p);
-} list_iterate_end();
-anon_count--;
-}
+        if (o->mmo_nrespages == o->mmo_refcount) {
+                pframe_t *p;
+                list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
+                        /* while (pframe_is_busy(p))
+                        sched_sleep_on(&(p->pf_waitq)); */
+                        pframe_unpin(p);
+                        pframe_free(p);
+                } list_iterate_end();
+                anon_count--;
+        }
         return;
 }
 

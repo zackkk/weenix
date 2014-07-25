@@ -271,6 +271,7 @@ open_namev(const char *pathname, int flag, vnode_t **res_vnode, vnode_t *base)
         const char *name = NULL;
         
         /*look for the path and file name...*/
+        dbg(DBG_PRINT, "Trying to open file %s\n", pathname);
         
         res = dir_namev(pathname, &namelen, &name, base, res_vnode);
 

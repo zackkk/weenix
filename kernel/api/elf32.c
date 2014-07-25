@@ -694,12 +694,11 @@ static int _elf32_load(const char *filename, int fd, char *const argv[],
 
         /* And we're done */
         err = 0;
-
 done:
         if (NULL != map) {
                 vmmap_destroy(map);
         }
-        if (NULL != file) {
+        if (NULL != file) {     
                 fput(file);
         }
         if (NULL != pht) {

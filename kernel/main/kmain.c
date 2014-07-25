@@ -429,21 +429,58 @@ int vtests(kshell_t *kshell, int argc, char **argv)
 
 #ifdef __VM__
 
-static void *
-hello_test(int arg1, void *arg2){
-/* sunhan_test.c */
-char *argv[] = { NULL };
-char *envp[] = { NULL };
-kernel_execve("/usr/bin/hello", argv, envp);
-dbg(DBG_PRINT,"hello test\n");
-return NULL;
+static void *hello_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	char *argv[] = { "hello" };
+	char *envp[] = { NULL };
+	kernel_execve("/usr/bin/hello", argv, envp);
+	dbg(DBG_PRINT,"hello test\n");
+	return NULL;
+}
+
+static void *uname_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	char *argv[] = { "uname", "-a", "-s", "-r", "-v"  };
+	char *envp[] = { NULL };
+	kernel_execve("/bin/uname", argv, envp);
+	dbg(DBG_PRINT,"uname test\n");
+	return NULL;
 }
 
 int hellotests(kshell_t *kshell, int argc, char **argv)
 {
     KASSERT(kshell != NULL);
     proc_t *p = proc_create("hello_test");
+    
+    dbg(DBG_PRINT, "hello_test process pid %d\n", p->p_pid);
+    
+    int i = 0;
+    
     kthread_t *thr = kthread_create(p, hello_test, 1111, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
+int unametests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("uname_test");
+    
+    dbg(DBG_PRINT, "uname_test process pid %d\n", p->p_pid);
+    
+    int i = 0;
+    
+    /*This should be done by fork...*/
+    proc_t * init_p = curproc;
+    curproc = p;
+    
+    do_open("/dev/tty0", O_RDONLY);
+    do_open("/dev/tty0", O_WRONLY);
+    
+    curproc = init_p;
+    
+    kthread_t *thr = kthread_create(p, uname_test, 1151, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
     return 0;
@@ -465,33 +502,34 @@ int hellotests(kshell_t *kshell, int argc, char **argv)
 static void *
 initproc_run(int arg1, void *arg2)
 {
-#ifdef __DRIVERS__
-
-kshell_add_command("ftest", ftests, "Invokes testproc()...");
-kshell_add_command("stest", stests, "Invokes sunghan_test()...");
-kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
-#endif /* __DRIVERS__ */
-
-#ifdef __VFS__
-
-kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
-
-#endif /* __VFS__ */
-
-#ifdef __VM__
-
-kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
-
-#endif /* __VM__ */
-
-
-kshell_t *kshell = kshell_create(0);
-if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
-while (kshell_execute_next(kshell))
-;
-kshell_destroy(kshell);
-
-vput(curproc->p_cwd);
+	#ifdef __DRIVERS__
+	
+	kshell_add_command("ftest", ftests, "Invokes testproc()...");
+	kshell_add_command("stest", stests, "Invokes sunghan_test()...");
+	kshell_add_command("dtest", dtests, "Invokes sunghan_deadlock_test()...");
+	#endif /* __DRIVERS__ */
+	
+	#ifdef __VFS__
+	
+	kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
+	
+	#endif /* __VFS__ */
+	
+	#ifdef __VM__
+	
+	kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
+	kshell_add_command("unametest", unametests, "Invokes hello_test()...");
+	
+	#endif /* __VM__ */
+	
+	
+	kshell_t *kshell = kshell_create(0);
+	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
+	while (kshell_execute_next(kshell))
+	;
+	kshell_destroy(kshell);
+	
+	vput(curproc->p_cwd);
 
     return NULL;
 }

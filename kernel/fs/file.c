@@ -63,6 +63,8 @@ file_t *
 fget(int fd)
 {
         file_t *f;
+        
+        dbg(DBG_PRINT, "fget process pid %d\n", curproc->p_pid);
 
         if (fd == -1) {
                 f = slab_obj_alloc(file_allocator);
@@ -71,6 +73,7 @@ fget(int fd)
                 if (fd < 0 || fd >= NFILES)
                         return NULL;
                 f = curproc->p_files[fd];
+                /*KASSERT(f != NULL);*/
         }
         if (f) fref(f);
 

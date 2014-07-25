@@ -110,26 +110,26 @@ o->mmo_refcount++;
 static void
 shadow_put(mmobj_t *o)
 {
-KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
-dbg(DBG_PRINT,"(GRADING3A 6.c) Putting shadow object at %p!\n", o);
-
-o->mmo_refcount--;
-if (0 == o->mmo_refcount) {
-pframe_t *p;
-list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
-while (pframe_is_busy(p))
-sched_sleep_on(&(p->pf_waitq));
-pframe_unpin(p);
-pframe_free(p);
-} list_iterate_end();
-
-KASSERT(0 == o->mmo_refcount);
-/* decrease the ref count of its child in the shadow chain */
-o->mmo_shadowed->mmo_ops->put(o->mmo_shadowed);
-shadow_count--;
-slab_obj_free(shadow_allocator, o);
-}
-return;
+        KASSERT(o && (0 < o->mmo_refcount) && (&shadow_mmobj_ops == o->mmo_ops));
+        dbg(DBG_PRINT,"(GRADING3A 6.c) Putting shadow object at %p!\n", o);
+        
+        o->mmo_refcount--;
+        if (0 == o->mmo_refcount) {
+                pframe_t *p;
+                list_iterate_begin(&o->mmo_respages, p, pframe_t, pf_olink) {
+                        while (pframe_is_busy(p))
+                        sched_sleep_on(&(p->pf_waitq));
+                        pframe_unpin(p);
+                        pframe_free(p);
+                } list_iterate_end();
+        
+                KASSERT(0 == o->mmo_refcount);
+                /* decrease the ref count of its child in the shadow chain */
+                o->mmo_shadowed->mmo_ops->put(o->mmo_shadowed);
+                shadow_count--;
+                slab_obj_free(shadow_allocator, o);
+        }
+        return;
 }
 
 /* This function looks up the given page in this shadow object. The

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/utsname.h>
 #include <stdio.h>
+#include <fcntl.h>
 
 char *TAS = "weenix brought to you by:\n"
             "1998: jal, dep, kma, mcc, cd, tor\n"
@@ -24,7 +25,7 @@ static struct utsname un;
 
 int main(int argc, char **argv)
 {
-        int     ii;
+        int     ii;        
 
         uname(&un);
 

@@ -101,6 +101,7 @@ do_read(int fd, void *buf, size_t nbytes)
 int
 do_write(int fd, const void *buf, size_t nbytes)
 {
+        dbg(DBG_PRINT, "curproc %d fd %d\n", curproc->p_pid, fd);
         if(fd<0 || fd >= NFILES)
         {
              dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_write\n");
@@ -156,6 +157,7 @@ do_write(int fd, const void *buf, size_t nbytes)
 int
 do_close(int fd)
 {
+        dbg(DBG_PRINT, "process %d closing fd %d\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", curproc->p_pid, fd);
         if(fd<0 || fd >= NFILES)
         {
              dbg(DBG_PRINT, "(GRADING2C) invalid fd num do_close\n");

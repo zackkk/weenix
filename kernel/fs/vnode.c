@@ -635,6 +635,8 @@ vdirtypage(mmobj_t *o, pframe_t *pf)
 {
         KASSERT(NULL != pf);
         KASSERT(NULL != o);
+        
+        dbg(DBG_PRINT, "whta\n");
 
         vnode_t *v = mmobj_to_vnode(o);
         if (!pframe_is_dirty(pf)) {
