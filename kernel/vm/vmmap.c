@@ -303,6 +303,7 @@ vmmap_t *
 vmmap_clone(vmmap_t *map)
 {
         vmmap_t * clonemap = vmmap_create();
+        /*clonemap->vmm_proc = map->vmm_proc;*/ /* done in fork.c */
         if(clonemap==NULL)
         {
                return NULL;
@@ -635,7 +636,7 @@ vmmap_read(vmmap_t *map, const void *vaddr, void *buf, size_t count)
 
               /* find pframe */
               pframe_t *vmpframe = NULL;
-              int ret = pframe_lookup(vmarea->vma_obj, ADDR_TO_PN(vaddr) + vmarea->vma_off - vmarea->vma_start,1, &vmpframe);
+              int ret = pframe_lookup(vmarea->vma_obj, ADDR_TO_PN(vaddr) + vmarea->vma_off - vmarea->vma_start,0, &vmpframe);
               if(ret < 0)
               {
                      return ret;
