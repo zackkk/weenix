@@ -372,7 +372,7 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 				return -1;
 			}
 			pframe_clear_busy(pframe);
-	
+	 
 		}
 		
 		/*pframe is in memory*/
