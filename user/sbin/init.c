@@ -58,6 +58,8 @@ static void spawn_shell_on(char *tty)
 
 int main(int argc, char **argv, char **envp)
 {
+
+	printf("fuck init **************************\n");
         int      devdir, ii;
         dirent_t d;
         int      status;

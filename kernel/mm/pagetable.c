@@ -237,6 +237,9 @@ _pt_fault_handler(regs_t *regs)
         uintptr_t vaddr;
         /* Get the address where the fault occurred */
         __asm__ volatile("movl %%cr2, %0" : "=r"(vaddr));
+
+        dbg(DBG_PRINT, "fuck vaddr:pointer:%p, int:%d\n", vaddr,vaddr);
+
         uint32_t cause = regs->r_err;
 
         /* Check if pagefault was in user space (otherwise, BAD!) */

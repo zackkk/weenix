@@ -80,7 +80,7 @@ do_fork(struct regs *regs)
         
         new_process->p_vmmap = NULL;
         
-        /*clonde the vmmap...*/
+        /*clone the vmmap...*/
         if(new_process->p_vmmap == NULL){
                 new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
                 new_process->p_vmmap->vmm_proc = new_process;

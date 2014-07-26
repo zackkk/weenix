@@ -568,6 +568,8 @@ initproc_run(int arg1, void *arg2)
 	         
 	char *argv[] = { NULL};
 	char *envp[] = { NULL };
+
+	dbg(DBG_PRINT, "fuck *******************************\n");
 	kernel_execve("/sbin/init", argv, envp);
 	
 	
