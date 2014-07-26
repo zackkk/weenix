@@ -239,8 +239,11 @@ _pt_fault_handler(regs_t *regs)
         __asm__ volatile("movl %%cr2, %0" : "=r"(vaddr));
         uint32_t cause = regs->r_err;
 
+        dbg(DBG_PRINT, "cause %d\n\n\n\n\n\n\n", cause);
+        	
         /* Check if pagefault was in user space (otherwise, BAD!) */
         if (cause & FAULT_USER) {
+        	
                 handle_pagefault(vaddr, cause);
         } else {
                 panic("\nPage faulted while accessing 0x%08x\n", vaddr);

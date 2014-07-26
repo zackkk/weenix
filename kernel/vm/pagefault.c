@@ -74,8 +74,10 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
         
         /* Find the vmarea that contains the address that was faulted on using vpn */
         vmarea_pagenum = ADDR_TO_PN(vaddr);
+        dbg(DBG_PRINT,"address to lookup: %d\n", vaddr);
         vmarea_t *vma = vmmap_lookup(curproc->p_vmmap, vmarea_pagenum);
         if(NULL == vma){
+        	dbg(DBG_PRINT,"returning efault\n\n\n\n\n");
                 do_exit(EFAULT);
         }
         /* Make sure to check the permissions on the area to see if the process has permission to do [cause]. */

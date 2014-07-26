@@ -137,6 +137,10 @@ int addr_perm(struct proc *p, const void *vaddr, int perm)
 uint32_t addr = (uint32_t) vaddr;
 int vfn = ((addr - (addr % PAGE_SIZE))/ PAGE_SIZE) + 1;
 
+	if(addr > USER_MEM_HIGH || addr < USER_MEM_LOW) {
+		return 0;
+	}
+
 /*be sure p->p_vmmap is not NULL */
 if(p->p_vmmap) {
 
@@ -174,6 +178,13 @@ int range_perm(struct proc *p, const void *avaddr, size_t len, int perm)
         dbg(DBG_PRINT, "address %p range %d\n", avaddr, len);
 
         uint32_t next_addr = (uint32_t) avaddr;
+        
+        if(next_addr > USER_MEM_HIGH || next_addr < USER_MEM_LOW) {
+			return 0;
+		}
+        if((next_addr + len) > USER_MEM_HIGH || (next_addr + len) < USER_MEM_LOW) {
+			return 0;
+		}
 
         while(len > 0) {
                 const void* new_addr = (const void*) next_addr;

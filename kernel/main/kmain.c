@@ -544,6 +544,8 @@ int forkwaittests(kshell_t *kshell, int argc, char **argv)
 static void *
 initproc_run(int arg1, void *arg2)
 {
+	/*do_open("/dev/tty0", O_RDONLY);
+	    do_open("/dev/tty0", O_WRONLY);*/
 	#ifdef __DRIVERS__
 	
 	kshell_add_command("ftest", ftests, "Invokes testproc()...");
@@ -577,7 +579,7 @@ initproc_run(int arg1, void *arg2)
 	;
 	kshell_destroy(kshell);*/
 	
-	vput(curproc->p_cwd);
+	/*vput(curproc->p_cwd);*/
 
     return NULL;
 }

@@ -37,6 +37,8 @@ static int open_tty(char *tty)
 
 static void spawn_shell_on(char *tty)
 {
+	printf("asdfadfasfdadfasdfasdfasdfasdfa\n");
+	
         if (!fork()) {
                 close(0);
                 close(1);
@@ -44,7 +46,7 @@ static void spawn_shell_on(char *tty)
                 if (-1 == open_tty(tty)) {
                         exit(1);
                 }
-
+                fprintf(stdout,"asdfasfd\n\n\n");
                 chdir(home);
 
                 printf(hi,NULL);
@@ -78,15 +80,18 @@ int main(int argc, char **argv, char **envp)
                         spawn_shell_on(d.d_name);
                 }
         }
+        
         close(devdir);
-
+        printf(";lkajsfljkaf;ljka;lfjka;\n\n");
+        
+        
         int pid;
         while (0 <= (pid = wait(&status))) {
                 if (EFAULT == status) {
                         printf("process %i faulted\n", pid);
                 }
         }
-
+/*
         if (ECHILD != errno) {
                 printf("error: wait: %s\n", strerror(errno));
                 return 1;
@@ -94,4 +99,5 @@ int main(int argc, char **argv, char **envp)
                 printf(alldone,NULL);
                 return 0;
         }
+        */
 }

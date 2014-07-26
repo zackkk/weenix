@@ -56,6 +56,7 @@ do_mmap(void *addr, size_t len, int prot, int flags,
                npages=len / PAGE_SIZE +1;
         }
         int retval = vmmap_map(curproc->p_vmmap, curproc->p_files[fd]->f_vnode, 0, npages, prot, flags, off, VMMAP_DIR_LOHI, (vmarea_t**)ret);
+        tlb_flush_all();
         return retval;
 }
 

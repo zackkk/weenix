@@ -161,7 +161,8 @@ shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
                         o = o->mmo_shadowed;
                 }
                 /* not in the chain * */
-                *pf = pframe_get_resident(mmobj_bottom_obj(o), pagenum);
+                /**pf = pframe_get_resident(mmobj_bottom_obj(o), pagenum);*/
+                return pframe_lookup(o, pagenum, forwrite, pf);
                 return 0;
         }
         
@@ -216,7 +217,7 @@ shadow_dirtypage(mmobj_t *o, pframe_t *pf)
 */
 KASSERT(NULL != o);
 KASSERT(NULL != pf);
-pframe_dirty(pf);
+/*pframe_dirty(pf);*/
         return 0;
 }
 

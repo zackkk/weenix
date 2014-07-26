@@ -122,7 +122,7 @@ vmmap_create(void)
         vmmap_t * map = (vmmap_t*)slab_obj_alloc(vmmap_allocator);
         if(map!=NULL)
         {
-               map->vmm_proc = NULL;
+               map->vmm_proc = curproc;
                list_init(&(map->vmm_list));
         }
         return map;
@@ -676,6 +676,7 @@ vmmap_write(vmmap_t *map, void *vaddr, const void *buf, size_t count)
 {
        dbg(DBG_PRINT, "vmmap_write: starts\n");
        KASSERT(map);
+       KASSERT(map->vmm_proc);
        KASSERT(!list_empty(&(map->vmm_list)));
        vmarea_t *vmarea = NULL;
 
