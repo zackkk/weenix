@@ -217,7 +217,7 @@ do_fork(struct regs *regs)
         /*add thread to new process and make it runnable*/
         list_insert_head(&new_process->p_threads, &newthr->kt_plink);
         sched_make_runnable(newthr);
-         dbg(DBG_PRINT, "got out of runnable...\n");
+         dbg(DBG_PRINT, "got out of runnable...\n"); 
         
         /*set EAX with return for parent process: should be the pid of the parent process...*/
         /*return from this function? for parent*/
