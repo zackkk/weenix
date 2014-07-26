@@ -473,8 +473,6 @@ int hellotests(kshell_t *kshell, int argc, char **argv)
     
     dbg(DBG_PRINT, "hello_test process pid %d\n", p->p_pid);
     
-    int i = 0;
-    
     kthread_t *thr = kthread_create(p, hello_test, 1111, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
@@ -487,8 +485,6 @@ int unametests(kshell_t *kshell, int argc, char **argv)
     proc_t *p = proc_create("uname_test");
     
     dbg(DBG_PRINT, "uname_test process pid %d\n", p->p_pid);
-    
-    int i = 0;
     
     /*This should be done by fork...*/
     proc_t * init_p = curproc;
@@ -512,17 +508,6 @@ int argstests(kshell_t *kshell, int argc, char **argv)
     
     dbg(DBG_PRINT, "uname_test process pid %d\n", p->p_pid);
     
-    int i = 0;
-    
-    /*This should be done by fork... In this test, executable opens the tty0*/
-    /*proc_t * init_p = curproc;
-    curproc = p;
-    
-    do_open("/dev/tty0", O_RDONLY);
-    do_open("/dev/tty0", O_WRONLY);
-    
-    curproc = init_p;*/
-    
     kthread_t *thr = kthread_create(p, args_test, 1251, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
@@ -536,22 +521,12 @@ int forkwaittests(kshell_t *kshell, int argc, char **argv)
     
     dbg(DBG_PRINT, "forkwait_test process pid %d\n", p->p_pid);
     
-    int i = 0;
-    
-    /*This should be done by fork... In this test, executable opens the tty0*/
-    /*proc_t * init_p = curproc;
-    curproc = p;
-    
-    do_open("/dev/tty0", O_RDONLY);
-    do_open("/dev/tty0", O_WRONLY);
-    
-    curproc = init_p;*/
-    
     kthread_t *thr = kthread_create(p, forkwait_test, 1251, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
     return 0;
 }
+
 
 #endif /* __VM__ */
 
@@ -585,17 +560,22 @@ initproc_run(int arg1, void *arg2)
 	#ifdef __VM__
 	
 	kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
-	kshell_add_command("unametest", unametests, "Invokes hello_test()...");
-	kshell_add_command("argstest", argstests, "Invokes hello_test()...");
+	kshell_add_command("unametest", unametests, "Invokes uname_test()...");
+	kshell_add_command("argstest", argstests, "Invokes args_test()...");
 	kshell_add_command("fork-and-wait", forkwaittests, "Invokes fork_and_wait()...");
+
 	#endif /* __VM__ */
+	         
+	char *argv[] = { NULL};
+	char *envp[] = { NULL };
+	kernel_execve("/sbin/init", argv, envp);
 	
 	
-	kshell_t *kshell = kshell_create(0);
+	/*kshell_t *kshell = kshell_create(0);
 	if (NULL == kshell) panic("init: Couldn't create kernel shell\n");
 	while (kshell_execute_next(kshell))
 	;
-	kshell_destroy(kshell);
+	kshell_destroy(kshell);*/
 	
 	vput(curproc->p_cwd);
 
