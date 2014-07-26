@@ -144,27 +144,27 @@ shadow_put(mmobj_t *o)
 static int
 shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
-KASSERT(o);
-
-/* being looked up for writing */
-if(forwrite){
-return pframe_get(o, pagenum, pf);
-}
-/* being looked up for reading */
-else{
-while(o != mmobj_bottom_obj(o)){
-*pf = pframe_get_resident(o, pagenum);
-if(*pf){
-return 0;
-}
-o = o->mmo_shadowed;
-}
-/* not in the chain * */
-*pf = pframe_get_resident(mmobj_bottom_obj(o), pagenum);
-return 0;
-}
-
-panic("shadow_lookuppage doesn't return, BAD!!!\n");
+        KASSERT(o);
+        
+        /* being looked up for writing */
+        if(forwrite){
+                return pframe_get(o, pagenum, pf);
+        }
+        /* being looked up for reading */
+        else{
+                while(o != mmobj_bottom_obj(o)){
+                        *pf = pframe_get_resident(o, pagenum);
+                        if(*pf){
+                                return 0;
+                        }
+                        o = o->mmo_shadowed;
+                }
+                /* not in the chain * */
+                *pf = pframe_get_resident(mmobj_bottom_obj(o), pagenum);
+                return 0;
+        }
+        
+        panic("shadow_lookuppage doesn't return, BAD!!!\n");
 }
 
 /* As per the specification in mmobj.h, fill the page frame starting
@@ -189,16 +189,16 @@ shadow_fillpage(mmobj_t *o, pframe_t *pf)
         pframe_pin(pf);
         o=o->mmo_shadowed;
         while(o != mmobj_bottom_obj(o)){
-         /*
-* Take that data if there is a shadow object which has data for the pf->pf_pagenum-th page,
-*/
-pframe_t *src = pframe_get_resident(o, pf->pf_pagenum);
-if(NULL != src){
-memcpy(pf->pf_addr, src->pf_addr, PAGE_SIZE);
-return 0;
-}
-o = o->mmo_shadowed;
-}
+                /*
+               * Take that data if there is a shadow object which has data for the pf->pf_pagenum-th page,
+               */
+               pframe_t *src = pframe_get_resident(o, pf->pf_pagenum);
+               if(NULL != src){
+                       memcpy(pf->pf_addr, src->pf_addr, PAGE_SIZE);
+                       return 0;
+               }
+               o = o->mmo_shadowed;
+        }
 
         /* If there doesn't exist a shadow object which has data for the pf->pf_pagenum-th page. */
         pframe_t *src = pframe_get_resident(mmobj_bottom_obj(o), pf->pf_pagenum);

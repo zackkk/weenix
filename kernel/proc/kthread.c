@@ -194,51 +194,33 @@ return;
 kthread_t *
 kthread_clone(kthread_t *thr)
 {
+        KASSERT(KT_RUN == thr->kt_state);
+        dbg(DBG_PRINT, "(GRADING3A 8.a) Thread to be cloned state is KT_RUN\n");
+
         /*NOT_YET_IMPLEMENTED("VM: kthread_clone");*/
-        kthread_t *cloned_thr = NULL;
+        kthread_t *new_thr = NULL;
 
-/*Create new thread*/
-cloned_thr = slab_obj_alloc(kthread_allocator);
+	/*Create new thread*/
+	new_thr = slab_obj_alloc(kthread_allocator);
 
-KASSERT(thr != NULL);
+	KASSERT(thr != NULL);
 
-/*new context and stack...*/
-thr->kt_kstack = alloc_stack();
-KASSERT(thr->kt_kstack != NULL);
+	/*new context and stack...*/
+	new_thr->kt_kstack = alloc_stack();
+	KASSERT(new_thr->kt_kstack != NULL);
 
-/*New context... EBP points to correct place in stack after returning from this function*/
-context_setup(&cloned_thr->kt_ctx, NULL, NULL, NULL, cloned_thr->kt_kstack, DEFAULT_STACK_SIZE, curproc->p_pagedir); /*current process page directory...*/
+	new_thr->kt_retval = thr->kt_retval;
+	new_thr->kt_errno = thr->kt_errno;
+	new_thr->kt_cancelled = thr->kt_cancelled;
+	new_thr->kt_wchan = NULL;		/*Same wait queue?*/
+	new_thr->kt_proc = NULL;			/*Single thread per process. Assign to current process?? Newly created proess..?*/
+	new_thr->kt_state = thr->kt_state;   	/*Copy state...?*/
 
-/*
-*Now copy address of func, arg1 and arg2 from old thread's context
-*to new thread context. We know where they are with respect to
-*EBP.
-*Function is at EBP - sizeof(context_func_t)
-*arg1 at EBP - sizeof(context_func_t) - sizeof(long)
-*arg2 at EBP - sizeof(context_func_t) - sizeof(long) - sizeof(void *)
-*
-*/
-/*CHECK!!!!*/
-/*arg2 address*/
-*(void **)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *)) = *(void **)(thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long) - sizeof(void *));
+	KASSERT(KT_RUN == new_thr->kt_state);
+        dbg(DBG_PRINT, "(GRADING3A 8.a) Cloned thread state is KT_RUN\n");
 
-/*arg1 address*/
-*(int *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long)) = *(int *)(thr->kt_ctx.c_ebp - sizeof(context_func_t) - sizeof(long));
 
-/*function*/
-*(context_func_t *)(cloned_thr->kt_ctx.c_ebp - sizeof(context_func_t)) = *(context_func_t *)(thr->kt_ctx.c_ebp - sizeof(context_func_t));
-
-/*init other values..*/
-cloned_thr->kt_retval = NULL;
-cloned_thr->kt_errno = NULL;
-cloned_thr->kt_cancelled = thr->kt_cancelled;
-cloned_thr->kt_wchan = NULL;	/*Same wait queue?*/
-cloned_thr->kt_proc = NULL;	/*Single thread per process. Assign to current process?? Newly created proess..?*/
-cloned_thr->kt_state = thr->kt_state; /*Copy state...?*/
-
-/*Insert thread in current process?? Curproc should be cloned process?? Or does fork do this?...*/
-/*list_insert_head(&(curproc->p_threads), &(cloned_thr->kt_plink));*/
-        return cloned_thr;
+        return new_thr;
 }
 
 /*

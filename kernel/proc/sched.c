@@ -253,11 +253,11 @@ sched_cancel(struct kthread *kthr)
 void
 sched_switch(void)
 {
-dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
-/*
-* adopted from lecture slides 5.2
-*/
-/* set high IPL to prevent interrupts, and save old IPL */
+     dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
+     /*
+     * adopted from lecture slides 5.2
+     */
+     /* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
         kthread_t * oldThread;
         oldIPL = intr_getipl();
@@ -265,9 +265,9 @@ dbg(DBG_PRINT, "(GRADING1E) Sched_switch function test\n");
         intr_enable();
         intr_setipl(IPL_HIGH);
         /*
-* if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
-* hardware interrupts, when not masked, can occur between any two code instructions
-*/
+          * if run queue is empty, it is possible that runnable threads are waiting for hardware interrupts
+          * hardware interrupts, when not masked, can occur between any two code instructions
+          */
         while(sched_queue_empty(&kt_runq))
         {       
          intr_setipl(IPL_LOW);
@@ -307,20 +307,19 @@ sched_make_runnable(kthread_t *thr)
         /* set high IPL to prevent interrupts, and save old IPL */
         uint8_t oldIPL;
         oldIPL = intr_getipl();
-        intr_setipl(IPL_HIGH);
+        intr_setipl(IPL_HIGH);       
 
         /* dequeue from the current queue, and enqueue into the runnable queue */
         if(thr->kt_wchan){
-         dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
-         ktqueue_remove(thr->kt_wchan, thr);
+               dbg(DBG_PRINT, "(GRADING1E) The current kt_wchan is not empty\n");
+               ktqueue_remove(thr->kt_wchan, thr);
         }
-
         ktqueue_enqueue(&kt_runq, thr);
-        thr->kt_state = KT_RUN;
+        thr->kt_state = KT_RUN;   
 
         if(thr->kt_proc->p_pid == 1){
-         dbg(DBG_PRINT, "(GRADING1E) Process: %d makes init process runnable \n", curproc->p_pid);
-        }
+               dbg(DBG_PRINT, "(GRADING1E) Process: %d makes init process runnable \n", curproc->p_pid);
+        } 
         /* restore IPL */
         intr_setipl(oldIPL);
 }

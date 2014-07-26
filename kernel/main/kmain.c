@@ -456,6 +456,15 @@ static void *args_test(int arg1, void *arg2){
 	return NULL;
 }
 
+static void *forkwait_test(int arg1, void *arg2){
+	/* sunhan_test.c */
+	char *argv[] = { "fork-and-wait", NULL};
+	char *envp[] = { NULL };
+	kernel_execve("/usr/bin/fork-and-wait", argv, envp);
+	dbg(DBG_PRINT,"forkwait test\n");
+	return NULL;
+}
+
 
 int hellotests(kshell_t *kshell, int argc, char **argv)
 {
@@ -520,6 +529,30 @@ int argstests(kshell_t *kshell, int argc, char **argv)
     return 0;
 }
 
+int forkwaittests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("forkwait_test");
+    
+    dbg(DBG_PRINT, "forkwait_test process pid %d\n", p->p_pid);
+    
+    int i = 0;
+    
+    /*This should be done by fork... In this test, executable opens the tty0*/
+    /*proc_t * init_p = curproc;
+    curproc = p;
+    
+    do_open("/dev/tty0", O_RDONLY);
+    do_open("/dev/tty0", O_WRONLY);
+    
+    curproc = init_p;*/
+    
+    kthread_t *thr = kthread_create(p, forkwait_test, 1251, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
 #endif /* __VM__ */
 
 /**
@@ -554,7 +587,7 @@ initproc_run(int arg1, void *arg2)
 	kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
 	kshell_add_command("unametest", unametests, "Invokes hello_test()...");
 	kshell_add_command("argstest", argstests, "Invokes hello_test()...");
-	
+	kshell_add_command("fork-and-wait", forkwaittests, "Invokes fork_and_wait()...");
 	#endif /* __VM__ */
 	
 	

@@ -62,57 +62,59 @@
 void
 handle_pagefault(uintptr_t vaddr, uint32_t cause)
 {
-pde_t page_dir_flag = PD_PRESENT | PD_USER;
-pte_t page_table_flag = PT_PRESENT | PT_USER;
-int forwrite = 0;
-int res = 0;
-pframe_t *pf = NULL;
-int vmarea_pagenum = 0;
-int mmobj_pagenum = 0;
+        pde_t page_dir_flag = PD_PRESENT | PD_USER;
+        pte_t page_table_flag = PT_PRESENT | PT_USER;
+        int forwrite = 0;
+        int res = 0;
+        pframe_t *pf = NULL;
+        int vmarea_pagenum = 0;
+        int mmobj_pagenum = 0;
+        
+        dbg(DBG_PRINT, "PAGE FAULT HANDLER called \n");
+        
+        /* Find the vmarea that contains the address that was faulted on using vpn */
+        vmarea_pagenum = ADDR_TO_PN(vaddr);
+        vmarea_t *vma = vmmap_lookup(curproc->p_vmmap, vmarea_pagenum);
+        if(NULL == vma){
+                do_exit(EFAULT);
+        }
+        
+        /* Make sure to check the permissions on the area to see if the process has permission to do [cause]. */
+        /* pagefault.h mm/mman.h */
+        if(cause & FAULT_WRITE){
+                if(vma->vma_prot & PROT_WRITE){
+                        forwrite = 1;
+                        page_dir_flag |= PD_WRITE;
+                        page_table_flag |= PT_WRITE;
+                }
+                else{
+                        do_exit(EFAULT);
+                }
+        }
 
-/* Find the vmarea that contains the address that was faulted on using vpn */
-vmarea_pagenum = ADDR_TO_PN(vaddr);
-vmarea_t *vma = vmmap_lookup(curproc->p_vmmap, vmarea_pagenum);
-if(NULL == vma){
-do_exit(EFAULT);
-}
+        if(cause & FAULT_EXEC){
+                if(!(vma->vma_prot & PROT_EXEC)){
+                        do_exit(EFAULT);
+                }
+        }
 
-/* Make sure to check the permissions on the area to see if the process has permission to do [cause]. */
-/* pagefault.h mm/mman.h */
-if(cause & FAULT_WRITE){
-if(vma->vma_prot & PROT_WRITE){
-forwrite = 1;
-page_dir_flag |= PD_WRITE;
-page_table_flag |= PT_WRITE;
-}
-else{
-do_exit(EFAULT);
-}
-}
-
-if(cause & FAULT_EXEC){
-if(!(vma->vma_prot & PROT_EXEC)){
-do_exit(EFAULT);
-}
-}
-
-/* Find the correct page, Make sure that if the user writes to the page it will be handled correctly. */
-KASSERT(vma);
-KASSERT(vma->vma_obj);
-KASSERT(vmarea_pagenum);
-mmobj_pagenum = vmarea_pagenum + vma->vma_off - vma->vma_start;
-res = pframe_lookup(vma->vma_obj, mmobj_pagenum, forwrite, &pf);
-
-KASSERT(res == 0);
-if(forwrite){
-pframe_dirty(pf);
-}
-
-/* 5. Call pt_map(in pagetable.c) to have the new mapping placed into the appropriate page table */
-KASSERT(NULL != pf);
-/* PAGE_ALIGN_DOWN: set least significant 12 bits to zero */
-res = pt_map(curproc->p_pagedir, (uintptr_t)PAGE_ALIGN_DOWN(vaddr), pt_virt_to_phys((uintptr_t)pf->pf_addr), page_dir_flag, page_table_flag);
-KASSERT(res == 0);
+        /* Find the correct page, Make sure that if the user writes to the page it will be handled correctly. */
+        KASSERT(vma);
+        KASSERT(vma->vma_obj);
+        KASSERT(vmarea_pagenum);
+        mmobj_pagenum = vmarea_pagenum + vma->vma_off - vma->vma_start;
+        res = pframe_lookup(vma->vma_obj, mmobj_pagenum, forwrite, &pf);
+        
+        KASSERT(res == 0);
+        if(forwrite){
+                pframe_dirty(pf);
+        }
+        
+        /* 5. Call pt_map(in pagetable.c) to have the new mapping placed into the appropriate page table */
+        KASSERT(NULL != pf);
+        /* PAGE_ALIGN_DOWN: set least significant 12 bits to zero */
+        res = pt_map(curproc->p_pagedir, (uintptr_t)PAGE_ALIGN_DOWN(vaddr), pt_virt_to_phys((uintptr_t)pf->pf_addr), page_dir_flag, page_table_flag);
+        KASSERT(res == 0);
 }
 
 

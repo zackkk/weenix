@@ -63,6 +63,164 @@ fork_setup_stack(const regs_t *regs, void *kstack)
 int
 do_fork(struct regs *regs)
 {
-        NOT_YET_IMPLEMENTED("VM: do_fork");
-        return 0;
+        KASSERT(regs != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) regs are not null\n");
+        KASSERT(curproc != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a)current process is not NULL\n");
+        KASSERT(curproc->p_state == PROC_RUNNING);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) Current process state is PROC_RUNNING\n");
+        
+        proc_t *new_process = NULL;
+        
+        /*Create new process*/
+        new_process = proc_create(curproc->p_comm);            /*use name*/
+        
+        /*deallocate vmmap, since we will clone it...*/
+        vmmap_destroy(new_process->p_vmmap);
+        
+        new_process->p_vmmap = NULL;
+        
+        /*clonde the vmmap...*/
+        if(new_process->p_vmmap == NULL){
+                new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
+        }
+        
+        KASSERT(new_process->p_vmmap != NULL);                   /*correctly cloned*/
+                                                                  
+        /*clone thread...*/
+        /*When we return from kthread_clone, we have a new context and stack...*/
+        kthread_t *newthr = NULL;
+        newthr = kthread_clone(curthr);
+        
+        if(newthr == NULL){
+                /*clean up...*/
+                vmmap_destroy(new_process->p_vmmap);
+                /*how to destroy process..??*/
+                return -1;
+        }
+                                                                 
+        /*Now we need to increment refcount of all object in vmmareas...*/
+        list_link_t *area_link= NULL;
+        list_link_t *newproc_area_link = NULL;
+        
+        area_link = curproc->p_vmmap->vmm_list.l_next;   /*get first area*/
+        newproc_area_link = new_process->p_vmmap->vmm_list.l_next;
+        
+        vmarea_t *cur_area = NULL;
+        vmarea_t *newproc_cur_area = NULL;
+        
+        while(area_link != &(curproc->p_vmmap->vmm_list)){       /*last area will point to the  anchor...*/
+                
+                cur_area = list_item(area_link, vmarea_t, vma_plink);
+                newproc_cur_area = list_item(newproc_area_link, vmarea_t, vma_plink);
+                
+                KASSERT(cur_area != NULL && newproc_cur_area != NULL);
+                
+                /*Now check that if sharing is PRIVATE (COW) or SHARED...*/
+                if(cur_area->vma_flags == MAP_SHARED){
+                        
+                        /*Make new process vmarea point to shared object...*/
+                        newproc_cur_area->vma_obj = cur_area->vma_obj;
+                        
+                        /*increase refcount, same for anon/shadow...*/
+                        cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);
+                        
+                        /*Add new area vmarea to vmbojt list...*/
+                        list_insert_tail(&cur_area->vma_obj->mmo_un.mmo_vmas, &newproc_cur_area->vma_olink);
+                        
+                }
+                else{
+                        /*private mapping*/
+                        /*create two new shadow objects, one for curproc, and one for new process*/
+                        mmobj_t *curproc_shadow = shadow_create();
+                        mmobj_t *newproc_shadow = shadow_create();
+                        
+                        KASSERT(curproc_shadow && newproc_shadow);
+                        
+                        /*make both objects point to the old vma_object...*/
+                        curproc_shadow->mmo_shadowed = cur_area->vma_obj;
+                        newproc_shadow->mmo_shadowed = cur_area->vma_obj;
+                        
+                        /*make new shadow objects point to the botton object too?? CHECK*/
+                        mmobj_t *bottom_obj = NULL;
+                        
+                        bottom_obj = mmobj_bottom_obj(cur_area->vma_obj);
+                        
+                        /*increase bottom obj refcount, since new shadow objects will point to them? CHECK*/
+                        /*bottom_obj->mmo_ops->ref(bottom_obj);
+                        bottom_obj->mmo_ops->ref(bottom_obj);*/
+                        
+                        curproc_shadow->mmo_un.mmo_bottom_obj = bottom_obj;
+                        newproc_shadow->mmo_un.mmo_bottom_obj = bottom_obj;
+                        
+                        /*increase vma_obj refcount by one (one new shadow object references this vma_obj*/
+                        cur_area->vma_obj->mmo_ops->ref(cur_area->vma_obj);                 /*CHECK!! Increase ref of shadowed object or of the shadow object???*/
+                                                                          
+                        /*make vmarea's vma_obj point to their new shadow objects.*/
+                        cur_area->vma_obj = curproc_shadow;
+                        newproc_cur_area->vma_obj = newproc_shadow;
+                }
+                
+                area_link = area_link->l_next;
+        }
+        
+        /*Copy file table*/
+        int i = 0;
+        for(i = 0; i < NFILES; i++){
+                new_process->p_files[i] = curproc->p_files[i];
+                
+                if(new_process->p_files[i] != NULL){
+                        fref(new_process->p_files[i]);
+                }
+        }
+                                        
+        /*remove all translations to cause Page faults, so PF handler calls COW function*/                
+        pt_unmap_range(curproc->p_pagedir, USER_MEM_LOW, USER_MEM_HIGH);
+        tlb_flush_all();
+        
+        KASSERT(newthr->kt_kstack != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) Cloned thread stack is not NULL\n");
+        
+        /*Set thread process*/
+        newthr->kt_proc = new_process;
+        
+        /*Setup new thread's context...*/
+        /*make cloned text context point to new process pagedir, stack and stack size...*/
+        newthr->kt_ctx.c_pdptr = new_process->p_pagedir;
+        newthr->kt_ctx.c_kstack = (uintptr_t)newthr->kt_kstack;
+        newthr->kt_ctx.c_kstacksz = DEFAULT_STACK_SIZE;
+        
+        /*eax for child should be zero*/
+        regs->r_eax = 0;
+        
+        /*eip points to userland_entry*/
+        newthr->kt_ctx.c_esp = fork_setup_stack(regs, newthr->kt_kstack);
+        newthr->kt_ctx.c_eip = (uintptr_t)userland_entry;
+        
+        /*Once thread is successfully cloned, we can set fields of the process*/
+        /*workin directory...*/
+        new_process->p_cwd = curproc->p_cwd;
+        vref(new_process->p_cwd);               /*increment reference count...*/
+                                                 
+        /*copy some fields from parent process.*/
+        new_process->p_brk = curproc->p_brk;
+        new_process->p_start_brk = curproc->p_start_brk;
+        new_process->p_status = curproc->p_status;
+        
+        KASSERT(new_process->p_state == PROC_RUNNING);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process state is PROC_RUNNING\n");
+        KASSERT(new_process->p_pagedir != NULL);
+        dbg(DBG_PRINT, "(GRADING3A 7.a) New process page directory is not NULL\n");
+                                             
+        /*add new process to curproc children...*/
+        list_insert_tail(&curproc->p_children, &new_process->p_child_link);
+        
+        /*add thread to new process and make it runnable*/
+        list_insert_head(&new_process->p_threads, &newthr->kt_plink);
+        sched_make_runnable(newthr);
+         dbg(DBG_PRINT, "got out of runnable...\n");
+        
+        /*set EAX with return for parent process: should be the pid of the parent process...*/
+        /*return from this function? for parent*/
+        return new_process->p_pid;
 }
