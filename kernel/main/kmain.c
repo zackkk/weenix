@@ -333,18 +333,18 @@ idleproc_run(int arg1, void *arg2)
 static kthread_t *
 initproc_create(void)
 {
-proc_t *proc = proc_create("init_process");
-KASSERT(NULL != proc);
-dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
-KASSERT(PID_INIT == proc->p_pid);
-dbg(DBG_PRINT, "(GRADING1A 1.b) The pid of the init process is PID_INIT\n");
+		proc_t *proc = proc_create("init_process");
+		KASSERT(NULL != proc);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the init process is not NULL\n");
+		KASSERT(PID_INIT == proc->p_pid);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pid of the init process is PID_INIT\n");
 
-/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
-* thread is contained in process in kthread_create;
-* argument 1234 is used for test purpose */
-kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
-KASSERT(NULL != thr);
-dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the thread for the init process is not NULL\n");
+		/* kthread_t *kthread_create(struct proc *p, kthread_func_t func, long arg1, void *arg2);
+		* thread is contained in process in kthread_create;
+		* argument 1234 is used for test purpose */
+		kthread_t *thr = kthread_create(proc, initproc_run, 1234, NULL);
+		KASSERT(NULL != thr);
+		dbg(DBG_PRINT, "(GRADING1A 1.b) The pointer to the thread for the init process is not NULL\n");
 
         return thr;
 
@@ -431,12 +431,20 @@ int vtests(kshell_t *kshell, int argc, char **argv)
 
 static void *
 hello_test(int arg1, void *arg2){
-/* sunhan_test.c */
-char *argv[] = { NULL };
-char *envp[] = { NULL };
-kernel_execve("/usr/bin/hello", argv, envp);
-dbg(DBG_PRINT,"hello test\n");
-return NULL;
+	char *argv[] = { NULL };
+	char *envp[] = { NULL };
+	kernel_execve("/usr/bin/hello", argv, envp);
+	dbg(DBG_PRINT,"hello test\n");
+	return NULL;
+}
+
+static void *
+uname_test(int arg1, void *arg2){
+	char *argv[] = { "unametest","-s" };
+	char *envp[] = { NULL };
+	kernel_execve("/bin/uname", argv, envp);
+	dbg(DBG_PRINT,"uname test\n");
+	return NULL;
 }
 
 int hellotests(kshell_t *kshell, int argc, char **argv)
@@ -444,6 +452,16 @@ int hellotests(kshell_t *kshell, int argc, char **argv)
     KASSERT(kshell != NULL);
     proc_t *p = proc_create("hello_test");
     kthread_t *thr = kthread_create(p, hello_test, 1111, NULL);
+    sched_make_runnable(thr);
+    sched_sleep_on(&curproc->p_wait); /* including context switch */
+    return 0;
+}
+
+int unametests(kshell_t *kshell, int argc, char **argv)
+{
+    KASSERT(kshell != NULL);
+    proc_t *p = proc_create("uname_test");
+    kthread_t *thr = kthread_create(p, uname_test, 2222, NULL);
     sched_make_runnable(thr);
     sched_sleep_on(&curproc->p_wait); /* including context switch */
     return 0;
@@ -481,9 +499,9 @@ kshell_add_command("vtest", vtests, "Invokes vfs_test()...");
 #ifdef __VM__
 
 kshell_add_command("hellotest", hellotests, "Invokes hello_test()...");
+kshell_add_command("unametest", unametests, "Invokes uname_test()...");
 
 #endif /* __VM__ */
-
 
 kshell_t *kshell = kshell_create(0);
 if (NULL == kshell) panic("init: Couldn't create kernel shell\n");

@@ -8,6 +8,7 @@
 #include <sys/utsname.h>
 #include <stdio.h>
 
+
 char *TAS = "weenix brought to you by:\n"
             "1998: jal, dep, kma, mcc, cd, tor\n"
             "1999: mbe, tc, kma, mahrens, tor\n"
@@ -26,13 +27,24 @@ int main(int argc, char **argv)
 {
         int     ii;
 
+        /* new */
+
+        write(1, "entering uname!\n", 14);
+        fprintf(stdout, "argc: %d\n",argc);
+        ii = 0;
+        fprintf(stdout, "argv[%d]: %s\n", ii, argv[ii]);
+
         uname(&un);
 
         for (ii = 1; ii < argc ; ii++) {
+
+        		fprintf(stdout, "argv[%d]: %s\n", ii, argv[ii]);
                 if (argv[ii][0] == '-') {
+
                         char *str;
                         str = &argv[ii][1];
                         while (*str) {
+
                                 if (doflag(*str++) < 0)
                                         goto usage;
                         }
@@ -42,9 +54,11 @@ int main(int argc, char **argv)
         if (argc == 1)
                 doflag('s');
         fprintf(stdout, "\n");
+
         return 0;
 
 usage:
+
         return 1;
 }
 

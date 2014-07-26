@@ -142,7 +142,7 @@ do_write(int fd, const void *buf, size_t nbytes)
         }
 
         fput(f);
-        dbg(DBG_PRINT, "(GRADING2C) successful do_write()\n");
+        dbg(DBG_PRINT, "(GRADING2C) successful do_write() of fd:%d\n",fd);
         return returnVal;
 }
 

@@ -1,2 +1,2 @@
 target remote localhost:1234
-python sys.path.append("/home/eduardo/weenix_dev")
+python sys.path.append("/home/zack/Desktop/weenix")

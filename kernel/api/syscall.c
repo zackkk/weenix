@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* Important CSCI 402 usage information: */
+x/* Important CSCI 402 usage information: */
 /* */
 /* This fils is part of CSCI 402 kernel programming assignments at USC. */
 /* Please understand that you are NOT permitted to distribute or publically */
@@ -110,32 +110,32 @@ return numRead;
 static int
 sys_write(write_args_t *arg)
 {
-read_args_t kern_args;
-int numWritten;
-int err;
+		read_args_t kern_args;
+		int numWritten;
+		int err;
 
-/*copy the read_args_t from userland into kernel address space*/
-if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
-curthr->kt_errno = -err;
-dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
-return -1;
-}
+		/*copy the read_args_t from userland into kernel address space*/
+		if ((err = copy_from_user(&kern_args, arg, sizeof(kern_args))) < 0) {
+				curthr->kt_errno = -err;
+				dbg(DBG_PRINT,"(GRADING3E)x sys_write(): copy_from_user() error\n");
+				return -1;
+		}
 
-/*allocate a buffer, then copy the data to write from userland into the buffer*/
-if((kern_args.buf = page_alloc()) == NULL){
-dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error\n");
-return -ENOMEM;
-}
-if ((err = copy_from_user(kern_args.buf, arg->buf, arg->nbytes)) < 0) {
-curthr->kt_errno = -err;
-dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
-return -1;
-}
+		/*allocate a buffer, then copy the data to write from userland into the buffer*/
+		if((kern_args.buf = page_alloc()) == NULL){
+				dbg(DBG_PRINT,"(GRADING3E) sys_write(): page_alloc() error\n");
+				return -ENOMEM;
+		}
+		if ((err = copy_from_user(kern_args.buf, arg->buf, arg->nbytes)) < 0) {
+				curthr->kt_errno = -err;
+				dbg(DBG_PRINT,"(GRADING3E) sys_write(): copy_from_user() error\n");
+				return -1;
+		}
 
-if ((numWritten = do_write(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
-curthr->kt_errno = -numWritten;
-dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error\n");
-return -1;
+		if ((numWritten = do_write(kern_args.fd, kern_args.buf, kern_args.nbytes)) < 0) {
+		curthr->kt_errno = -numWritten;
+		dbg(DBG_PRINT,"(GRADING3E) sys_write(): do_write() error\n");
+		return -1;
 }
 
 page_free(kern_args.buf);
