@@ -610,6 +610,7 @@ vo_vput(mmobj_t *o)
 static int
 vlookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
+        dbg(DBG_PRINT, "vnode\n");
         KASSERT(NULL != pf);
         KASSERT(NULL != o);
 

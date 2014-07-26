@@ -236,46 +236,46 @@ proc_cleanup(int status)
         list_link_t *link = NULL;
         proc_t *my_child_proc = NULL;
 
-/*Close all open files...*/
-int i = 0;
+	/*Close all open files...*/
+	int i = 0;
         for(i = 0; i < NFILES; i++){
                 if(curproc->p_files[i] != NULL){
-do_close(i);
-}
+			do_close(i);
+		}
         }
-        #ifdef __VM__
-            vmmap_destroy(curproc->p_vmmap);
-        #endif
 
         /*Do this for any process except init process*/
         /*we don't check for idle, since we dont exit from idle this way*/
         if(curproc->p_pid > 1){
-         dbg(DBG_PRINT, "(GRADING1E) curproc->p_pid > 1 \n");
+		
+		dbg(DBG_PRINT, "(GRADING1E) curproc->p_pid > 1 \n");
         
                 for(link = curproc->p_children.l_next; link != &(curproc->p_children); ){
-                        my_child_proc = list_item(link, proc_t, p_child_link);
-                        
+     
+			my_child_proc = list_item(link, proc_t, p_child_link);
+  
                         /*assign init as new parent of orphaned child*/
                         my_child_proc->p_pproc = proc_initproc;
-                        
+
                         /*before we lose the next address, point to next element in dead process child list*/
                         link = my_child_proc->p_child_link.l_next;
-                        
+			
                         /*remove this child from dead process children list*/
                         list_remove(&my_child_proc->p_child_link);
                         
                         /*add child to list of init children...*/
                         list_insert_tail(&(proc_initproc->p_children), &(my_child_proc->p_child_link));
                 }
-                
+		              
                 /*DEAD process will be removed when PARENT call waitpid on it, since we need the return status*/
+                
                 sched_wakeup_on(&curproc->p_pproc->p_wait);
                 sched_switch();
-        }
-        /*
-* the current process is init
-* p_children must point to itself, since we CAN'T do cleanup while it has children.
-*/
+	}
+	/*
+	* the current process is init
+	* p_children must point to itself, since we CAN'T do cleanup while it has children.
+	*/
         else{
          dbg(DBG_PRINT, "(GRADING1E) curproc->p_pid <= 1 \n");
                 int w = 0;
@@ -301,6 +301,10 @@ do_close(i);
         
         KASSERT(NULL != curproc->p_pproc); /* this process should have parent process */
         dbg(DBG_PRINT,"(GRADING1A 2.b) The current dead process has a parent\n");
+	
+#ifdef __VM__
+            vmmap_destroy(curproc->p_vmmap);
+#endif
 
         return;
 }

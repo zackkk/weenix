@@ -144,21 +144,31 @@ vmmap_destroy(vmmap_t *map)
               return;
         }
         vmarea_t * vmarea;
-
+        dbg(DBG_PRINT, "1\n");
         list_iterate_begin(&(map->vmm_list), vmarea, vmarea_t, vma_plink)
         {
+                dbg(DBG_PRINT, "2\n");
                list_remove(&(vmarea->vma_plink));
+               dbg(DBG_PRINT, "3\n");
                if (list_link_is_linked(&vmarea->vma_olink)) 
                {
+                      dbg(DBG_PRINT, "7\n");
+                      
                       list_remove(&vmarea->vma_olink);
+                      dbg(DBG_PRINT, "8\n");
                }
+               dbg(DBG_PRINT, "4\n");
                mmobj_t * tempmmobj = vmarea->vma_obj;
                if(tempmmobj!=NULL && tempmmobj->mmo_ops!=NULL)
                {
                       tempmmobj->mmo_ops->put(tempmmobj);
                }
+               dbg(DBG_PRINT, "5\n");
                vmarea_free(vmarea);
+               dbg(DBG_PRINT, "6\n");
         }list_iterate_end();
+        
+        
         map->vmm_proc = NULL;
         slab_obj_free(vmmap_allocator, map);
 
@@ -273,8 +283,10 @@ vmmap_lookup(vmmap_t *map, uint32_t vfn)
         {
                return NULL;
         }
+        
         list_iterate_begin(&(map->vmm_list), vmarea, vmarea_t, vma_plink)
         {
+                
                if(vmarea->vma_start <= vfn && vmarea->vma_end > vfn)
                {
                     return vmarea;
@@ -310,6 +322,10 @@ vmmap_clone(vmmap_t *map)
                clonearea->vma_prot = area->vma_prot;
                clonearea->vma_flags = area->vma_flags;
                vmmap_insert(clonemap, clonearea);
+               
+               /*Add the cloned area to the obj vmas list...*/
+               list_insert_head(&(area->vma_obj->mmo_un.mmo_vmas), &(clonearea->vma_olink));    /*ADDED, CHECK*/
+                                                                                                 
          }list_iterate_end();
 
          return clonemap;
@@ -470,7 +486,7 @@ vmmap_map(vmmap_t *map, vnode_t *file, uint32_t lopage, uint32_t npages,
 int
 vmmap_remove(vmmap_t *map, uint32_t lopage, uint32_t npages)
 {
-KASSERT(map);
+        KASSERT(map);
         if(list_empty(&(map->vmm_list)))
         {
                return 0;

@@ -83,6 +83,7 @@ do_fork(struct regs *regs)
         /*clonde the vmmap...*/
         if(new_process->p_vmmap == NULL){
                 new_process->p_vmmap = vmmap_clone(curproc->p_vmmap);
+                new_process->p_vmmap->vmm_proc = new_process;
         }
         
         KASSERT(new_process->p_vmmap != NULL);                   /*correctly cloned*/
@@ -162,6 +163,7 @@ do_fork(struct regs *regs)
                 }
                 
                 area_link = area_link->l_next;
+                newproc_area_link = newproc_area_link->l_next;
         }
         
         /*Copy file table*/
@@ -211,9 +213,6 @@ do_fork(struct regs *regs)
         dbg(DBG_PRINT, "(GRADING3A 7.a) New process state is PROC_RUNNING\n");
         KASSERT(new_process->p_pagedir != NULL);
         dbg(DBG_PRINT, "(GRADING3A 7.a) New process page directory is not NULL\n");
-                                             
-        /*add new process to curproc children...*/
-        list_insert_tail(&curproc->p_children, &new_process->p_child_link);
         
         /*add thread to new process and make it runnable*/
         list_insert_head(&new_process->p_threads, &newthr->kt_plink);

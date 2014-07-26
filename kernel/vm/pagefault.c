@@ -78,6 +78,7 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
         if(NULL == vma){
                 do_exit(EFAULT);
         }
+        dbg(DBG_PRINT, "what!\n");
         
         /* Make sure to check the permissions on the area to see if the process has permission to do [cause]. */
         /* pagefault.h mm/mman.h */
@@ -91,6 +92,8 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
                         do_exit(EFAULT);
                 }
         }
+        
+        dbg(DBG_PRINT, "the!\n");
 
         if(cause & FAULT_EXEC){
                 if(!(vma->vma_prot & PROT_EXEC)){
@@ -98,12 +101,15 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
                 }
         }
 
+        dbg(DBG_PRINT, "fuck!\n");
         /* Find the correct page, Make sure that if the user writes to the page it will be handled correctly. */
         KASSERT(vma);
         KASSERT(vma->vma_obj);
         KASSERT(vmarea_pagenum);
         mmobj_pagenum = vmarea_pagenum + vma->vma_off - vma->vma_start;
         res = pframe_lookup(vma->vma_obj, mmobj_pagenum, forwrite, &pf);
+        
+        
         
         KASSERT(res == 0);
         /*if(forwrite){

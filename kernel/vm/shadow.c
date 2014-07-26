@@ -144,6 +144,7 @@ shadow_put(mmobj_t *o)
 static int
 shadow_lookuppage(mmobj_t *o, uint32_t pagenum, int forwrite, pframe_t **pf)
 {
+        dbg(DBG_PRINT, "shadow\n");
         KASSERT(o);
         
         /* being looked up for writing */
