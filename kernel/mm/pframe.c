@@ -363,15 +363,16 @@ pframe_get(struct mmobj *o, uint32_t pagenum, pframe_t **result)
 			/*get new pframe*/
 			if((pframe = pframe_alloc(o, pagenum)) == NULL)
 				return -1;
+			
 			/*fill in new pframe, mark as busy during operation*/
-			pframe_set_busy(pframe);
+			/*pframe_set_busy(pframe);*/
 			
 			if(pframe_fill(pframe) != 0)
 			{
-				pframe_clear_busy(pframe);
+				/*pframe_clear_busy(pframe);*/
 				return -1;
 			}
-			pframe_clear_busy(pframe);
+			/*pframe_clear_busy(pframe);*/
 	 
 		}
 		
@@ -518,11 +519,11 @@ pframe_clean(pframe_t *pf)
         dbg(DBG_PFRAME, "cleaning page %d of obj %p\n", pf->pf_pagenum, pf->pf_obj);
 
         /*
-* Clear the dirty bit *before* we potentially (depending on this
-* particular object type's 'dirtypage' implementation) block so
-* that if the page is dirtied again while we're writing it out,
-* we won't (incorrectly) think the page has been fully cleaned.
-*/
+	* Clear the dirty bit *before* we potentially (depending on this
+	* particular object type's 'dirtypage' implementation) block so
+	* that if the page is dirtied again while we're writing it out,
+	* we won't (incorrectly) think the page has been fully cleaned.
+	*/
         pframe_clear_dirty(pf);
 
         /* Make sure a future write to the page will fault (and hence dirty it) */

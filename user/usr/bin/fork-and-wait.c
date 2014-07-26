@@ -25,6 +25,7 @@ int main(int argc, char **argv)
                 write(1, "fork() failed.\n", 15);
         } else {
                 write(1, "(Parent) Calling waitpid()...\n", 30);
+                printf("waiting for pid %d\n", pid);
                 waitpid(pid, 0, NULL);
                 write(1, "(Parent) waitpid() returned successfully.\n", 42);
         }

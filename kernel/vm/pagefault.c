@@ -106,9 +106,10 @@ handle_pagefault(uintptr_t vaddr, uint32_t cause)
         res = pframe_lookup(vma->vma_obj, mmobj_pagenum, forwrite, &pf);
         
         KASSERT(res == 0);
-        if(forwrite){
+        /*if(forwrite){
+                dbg(DBG_PRINT, "Hi Linkun\n");
                 pframe_dirty(pf);
-        }
+        }*/
         
         /* 5. Call pt_map(in pagetable.c) to have the new mapping placed into the appropriate page table */
         KASSERT(NULL != pf);

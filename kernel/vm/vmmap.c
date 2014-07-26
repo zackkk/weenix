@@ -624,7 +624,6 @@ vmmap_read(vmmap_t *map, const void *vaddr, void *buf, size_t count)
               {
                      return ret;
               }
-              pframe_dirty(vmpframe);
 
               /* read from the physical memory that pframe points to*/
               /* pf->pf_addr is page-aligned according to vcleanpage in vnode.c */
